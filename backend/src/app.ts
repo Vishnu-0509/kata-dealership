@@ -1,13 +1,15 @@
 import express from 'express';
 import cors from 'cors';
-import authRoutes from './routes/auth.routes';
-import vehicleRoutes from './routes/vehicle.routes';
+import { PrismaClient } from '@prisma/client';
+import { createAuthRouter } from './routes/auth.routes';
+import { createVehicleRouter } from './routes/vehicle.routes';
 
 /**
  * Creates and configures the Express application.
- * Exported separately from server startup to allow supertest to import it.
+ * Accepts an optional PrismaClient instance to support test injection.
  */
-export function createApp() {
+export function createApp(prisma?: PrismaClient) {
+  const db = prisma || new PrismaClient();
   const app = express();
 
   // Middleware
@@ -19,9 +21,9 @@ export function createApp() {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
-  // Routes
-  app.use('/api/auth', authRoutes);
-  app.use('/api/vehicles', vehicleRoutes);
+  // Routes — pass db so controllers use the injected client
+  app.use('/api/auth', createAuthRouter(db));
+  app.use('/api/vehicles', createVehicleRouter(db));
 
   // 404 handler
   app.use((_req, res) => {

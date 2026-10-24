@@ -1,10 +1,6 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import { AuthService } from '../services/auth.service';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-const authService = new AuthService(prisma);
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -17,47 +13,54 @@ const loginSchema = z.object({
 });
 
 /**
- * POST /api/auth/register
- * Registers a new user account.
+ * AuthController handles HTTP requests for user authentication.
  */
-export const register = async (req: Request, res: Response): Promise<void> => {
-  const parsed = registerSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ message: 'Validation error', errors: parsed.error.flatten().fieldErrors });
-    return;
-  }
+export class AuthController {
+  constructor(private authService: AuthService) {}
 
-  try {
-    const user = await authService.register(parsed.data);
-    res.status(201).json({ message: 'User registered successfully', user });
-  } catch (err: unknown) {
-    if (err instanceof Error && err.message === 'EMAIL_EXISTS') {
-      res.status(409).json({ message: 'Email already in use' });
+  /**
+   * POST /api/auth/register
+   * Registers a new user account.
+   */
+  register = async (req: Request, res: Response): Promise<void> => {
+    const parsed = registerSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ message: 'Validation error', errors: parsed.error.flatten().fieldErrors });
       return;
     }
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
 
-/**
- * POST /api/auth/login
- * Authenticates a user and returns a JWT.
- */
-export const login = async (req: Request, res: Response): Promise<void> => {
-  const parsed = loginSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ message: 'Validation error', errors: parsed.error.flatten().fieldErrors });
-    return;
-  }
+    try {
+      const user = await this.authService.register(parsed.data);
+      res.status(201).json({ message: 'User registered successfully', user });
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message === 'EMAIL_EXISTS') {
+        res.status(409).json({ message: 'Email already in use' });
+        return;
+      }
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
 
-  try {
-    const result = await authService.login(parsed.data);
-    res.status(200).json({ message: 'Login successful', ...result });
-  } catch (err: unknown) {
-    if (err instanceof Error && err.message === 'INVALID_CREDENTIALS') {
-      res.status(401).json({ message: 'Invalid email or password' });
+  /**
+   * POST /api/auth/login
+   * Authenticates a user and returns a JWT.
+   */
+  login = async (req: Request, res: Response): Promise<void> => {
+    const parsed = loginSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ message: 'Validation error', errors: parsed.error.flatten().fieldErrors });
       return;
     }
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
+
+    try {
+      const result = await this.authService.login(parsed.data);
+      res.status(200).json({ message: 'Login successful', ...result });
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message === 'INVALID_CREDENTIALS') {
+        res.status(401).json({ message: 'Invalid email or password' });
+        return;
+      }
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+}

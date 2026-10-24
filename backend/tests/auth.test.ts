@@ -7,13 +7,13 @@ import request from 'supertest';
 import { PrismaClient } from '@prisma/client';
 import { createApp } from '../src/app';
 
-// Use test environment variables
 process.env.NODE_ENV = 'test';
-process.env.DATABASE_URL = 'file:./test.db';
 process.env.JWT_SECRET = 'test-jwt-secret-key';
 
-const app = createApp();
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasources: { db: { url: 'file:./test.db' } },
+});
+const app = createApp(prisma);
 
 beforeAll(async () => {
   // Ensure test DB is clean

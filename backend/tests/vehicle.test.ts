@@ -7,16 +7,18 @@ import request from 'supertest';
 import { PrismaClient } from '@prisma/client';
 import { createApp } from '../src/app';
 
+// Must be set before any imports that use process.env
 process.env.NODE_ENV = 'test';
-process.env.DATABASE_URL = 'file:./test.db';
 process.env.JWT_SECRET = 'test-jwt-secret-key';
 
-const app = createApp();
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasources: { db: { url: 'file:./test.db' } },
+});
+const app = createApp(prisma);
 
 // Test users
-const adminUser = { email: 'admin@test.com', password: 'password123' };
-const regularUser = { email: 'user@test.com', password: 'password123' };
+const adminUser = { email: 'admin_v@test.com', password: 'password123' };
+const regularUser = { email: 'user_v@test.com', password: 'password123' };
 
 let adminToken: string;
 let userToken: string;
