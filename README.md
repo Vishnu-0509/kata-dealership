@@ -19,6 +19,26 @@ A luxury, full-stack Car Dealership Inventory Management System built following 
 
 ## ✨ Feature Highlights
 
+- **⚖️ Side-by-Side Vehicle Specifications & Comparison Tool:**
+  - Dedicated comparison matrix allowing buyers to select and evaluate up to 4 vehicles simultaneously.
+  - Deep factory telemetry & engineering metrics:
+    - **Horsepower (BHP):** Highlighted with `⚡ Highest Power` badge for class leaders.
+    - **0 – 60 mph Acceleration:** Highlighted with `🚀 Quickest` badge.
+    - **Top Speed (V-Max):** Highlighted with `🏁 Highest V-Max` badge.
+    - **Showroom Price:** Highlighted with `★ Best Value` indicator.
+    - **Efficiency & Range:** City/Hwy MPG and EV battery range.
+    - **Fuel & Battery Pack:** Gallons capacity and kWh battery pack specifications.
+    - **Transmission:** PDK dual-clutch, M Steptronic, fixed direct drive, and eCVT.
+    - **Drivetrain:** AWD, RWD, and FWD configurations.
+    - **Powertrain Architecture:** Flat-6, Twin-Power Turbo Inline-6, Coyote V8, Atkinson Hybrid, Dual/Quad EV motors.
+    - **Seating & Curb Weight:** Passenger capacity and vehicle gross weights.
+  - Interactive "Rev Exhaust" test and 1-click "Purchase Vehicle" triggers directly within the comparison grid.
+  - Floating sticky comparison drawer dock for rapid access across the showroom floor.
+- **🎬 Live Cinematic Car Video & Showroom Atmosphere Backdrop:**
+  - Looping high-definition automotive video streams (Alpine Supercar Run, Metropolis Night Cruise).
+  - High-resolution dynamic rotating photography gallery fallback.
+  - Floating atmosphere switcher: 1-click toggle between **Live Video**, **Rotating Photos**, and **Minimalist Dark Mode**.
+  - Tuned frosted glassmorphic overlay for maximum contrast and WCAG readability.
 - **🔊 Multi-Profile Exhaust Sound Simulator & Real Audio Player:**
   - Distinct acoustic signatures engineered specifically for each individual vehicle:
     - **Porsche 911 Carrera:** High-RPM Flat-6 boxer roar with rapid deceleration backfire pops.
@@ -218,21 +238,22 @@ All files               |   90.38 |    83.01 |   93.33 |   90.54 |
 ------------------------|---------|----------|---------|---------|-----------------------------------
 
 Test Suites: 2 passed, 2 total
-Tests:       31 passed, 31 total
+Tests:       32 passed, 32 total
 ```
 
 ### Frontend Test Results (Vitest + React Testing Library)
 
 ```text
- ✓ src/tests/VehicleCard.test.tsx   (5 tests passed)
- ✓ src/tests/LoginForm.test.tsx     (3 tests passed)
- ✓ src/tests/RegisterForm.test.tsx  (3 tests passed)
+ ✓ src/tests/VehicleCard.test.tsx            (5 tests passed)
+ ✓ src/tests/LoginForm.test.tsx              (3 tests passed)
+ ✓ src/tests/RegisterForm.test.tsx           (3 tests passed)
+ ✓ src/tests/VehicleComparisonModal.test.tsx (3 tests passed)
 
-Test Files:  3 passed (3)
-Tests:       11 passed (11)
+Test Files:  4 passed (4)
+Tests:       14 passed (14)
 ```
 
-**Total automated tests across stack:** **42 tests, 100% passing.**
+**Total automated tests across stack:** **46 tests, 100% passing.**
 
 ---
 
