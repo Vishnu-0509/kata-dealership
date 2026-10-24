@@ -34,6 +34,16 @@ export interface CreateVehicleBody {
   imageUrl?: string | null;
   exhaustAudioUrl?: string | null;
   year?: number | null;
+  bhp?: number | null;
+  zeroToSixty?: number | null;
+  topSpeed?: number | null;
+  mileage?: string | null;
+  fuelCapacity?: string | null;
+  transmission?: string | null;
+  drivetrain?: string | null;
+  seating?: number | null;
+  engine?: string | null;
+  curbWeight?: string | null;
 }
 
 export interface UpdateVehicleBody {
@@ -45,6 +55,16 @@ export interface UpdateVehicleBody {
   imageUrl?: string | null;
   exhaustAudioUrl?: string | null;
   year?: number | null;
+  bhp?: number | null;
+  zeroToSixty?: number | null;
+  topSpeed?: number | null;
+  mileage?: string | null;
+  fuelCapacity?: string | null;
+  transmission?: string | null;
+  drivetrain?: string | null;
+  seating?: number | null;
+  engine?: string | null;
+  curbWeight?: string | null;
 }
 
 export interface VehicleSearchQuery {

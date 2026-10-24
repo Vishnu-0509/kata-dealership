@@ -11,6 +11,16 @@ const createVehicleSchema = z.object({
   imageUrl: z.string().url('Invalid image URL').optional().or(z.literal('')).nullable(),
   exhaustAudioUrl: z.string().url('Invalid audio URL').optional().or(z.literal('')).nullable(),
   year: z.number().int().min(1900).max(2100).optional().nullable(),
+  bhp: z.number().int().positive().optional().nullable(),
+  zeroToSixty: z.number().positive().optional().nullable(),
+  topSpeed: z.number().int().positive().optional().nullable(),
+  mileage: z.string().optional().nullable(),
+  fuelCapacity: z.string().optional().nullable(),
+  transmission: z.string().optional().nullable(),
+  drivetrain: z.string().optional().nullable(),
+  seating: z.number().int().positive().optional().nullable(),
+  engine: z.string().optional().nullable(),
+  curbWeight: z.string().optional().nullable(),
 });
 
 const updateVehicleSchema = createVehicleSchema.partial();

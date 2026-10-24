@@ -188,6 +188,37 @@ describe('POST /api/vehicles', () => {
     expect(res.body.year).toBe(2024);
   });
 
+  it('should allow admin to create a vehicle with full engineering specifications', async () => {
+    const res = await request(app)
+      .post('/api/vehicles')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        ...sampleVehicle,
+        bhp: 503,
+        zeroToSixty: 3.4,
+        topSpeed: 180,
+        mileage: '16 City / 23 Hwy MPG',
+        fuelCapacity: '15.6 Gallons',
+        transmission: '8-Speed M Steptronic',
+        drivetrain: 'Rear-Wheel Drive (RWD)',
+        seating: 4,
+        engine: '3.0L Twin-Turbo Inline-6',
+        curbWeight: '3,880 lbs',
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.bhp).toBe(503);
+    expect(res.body.zeroToSixty).toBe(3.4);
+    expect(res.body.topSpeed).toBe(180);
+    expect(res.body.mileage).toBe('16 City / 23 Hwy MPG');
+    expect(res.body.fuelCapacity).toBe('15.6 Gallons');
+    expect(res.body.transmission).toBe('8-Speed M Steptronic');
+    expect(res.body.drivetrain).toBe('Rear-Wheel Drive (RWD)');
+    expect(res.body.seating).toBe(4);
+    expect(res.body.engine).toBe('3.0L Twin-Turbo Inline-6');
+    expect(res.body.curbWeight).toBe('3,880 lbs');
+  });
+
   it('should return 400 for missing required fields', async () => {
     const res = await request(app)
       .post('/api/vehicles')
