@@ -1,0 +1,77 @@
+import axios from 'axios';
+
+const API_BASE = '/api';
+
+export const apiClient = axios.create({
+  baseURL: API_BASE,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+// Attach JWT token to every request if available
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Redirect to login on 401
+apiClient.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
+export const authApi = {
+  register: (email: string, password: string) =>
+    apiClient.post('/auth/register', { email, password }),
+  login: (email: string, password: string) =>
+    apiClient.post<{ token: string; user: { id: string; email: string; role: string } }>(
+      '/auth/login',
+      { email, password }
+    ),
+};
+
+// ─── Vehicles ─────────────────────────────────────────────────────────────────
+
+export interface Vehicle {
+  id: string;
+  make: string;
+  model: string;
+  category: string;
+  price: number;
+  quantity: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VehicleFilters {
+  make?: string;
+  model?: string;
+  category?: string;
+  minPrice?: string;
+  maxPrice?: string;
+}
+
+export const vehicleApi = {
+  getAll: () => apiClient.get<Vehicle[]>('/vehicles'),
+  search: (filters: VehicleFilters) =>
+    apiClient.get<Vehicle[]>('/vehicles/search', { params: filters }),
+  create: (data: Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'>) =>
+    apiClient.post<Vehicle>('/vehicles', data),
+  update: (id: string, data: Partial<Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'>>) =>
+    apiClient.put<Vehicle>(`/vehicles/${id}`, data),
+  delete: (id: string) => apiClient.delete(`/vehicles/${id}`),
+  purchase: (id: string) => apiClient.post<{ message: string; vehicle: Vehicle }>(`/vehicles/${id}/purchase`),
+  restock: (id: string, quantity: number) =>
+    apiClient.post<{ message: string; vehicle: Vehicle }>(`/vehicles/${id}/restock`, { quantity }),
+};
