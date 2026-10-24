@@ -32,6 +32,7 @@ export interface CreateVehicleBody {
   price: number;
   quantity: number;
   imageUrl?: string | null;
+  exhaustAudioUrl?: string | null;
   year?: number | null;
 }
 
@@ -42,6 +43,7 @@ export interface UpdateVehicleBody {
   price?: number;
   quantity?: number;
   imageUrl?: string | null;
+  exhaustAudioUrl?: string | null;
   year?: number | null;
 }
 

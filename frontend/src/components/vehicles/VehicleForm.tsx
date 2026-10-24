@@ -17,6 +17,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
   const [price, setPrice] = useState(String(initial?.price || ''));
   const [quantity, setQuantity] = useState(String(initial?.quantity ?? ''));
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl || '');
+  const [exhaustAudioUrl, setExhaustAudioUrl] = useState(initial?.exhaustAudioUrl || '');
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -28,6 +29,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
       price: parseFloat(price),
       quantity: parseInt(quantity, 10),
       imageUrl: imageUrl.trim() || null,
+      exhaustAudioUrl: exhaustAudioUrl.trim() || null,
     });
   };
 
@@ -187,6 +189,34 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                 </span>
               </div>
             )}
+          </div>
+
+          {/* Custom Exhaust Audio URL (Optional) */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs font-semibold text-slate-300">
+                Custom Real Exhaust Audio URL <span className="text-slate-500 font-normal">(Optional MP3/WAV)</span>
+              </label>
+              {exhaustAudioUrl && (
+                <button
+                  type="button"
+                  onClick={() => setExhaustAudioUrl('')}
+                  className="text-[11px] text-rose-400 hover:text-rose-300 underline"
+                >
+                  Clear Audio
+                </button>
+              )}
+            </div>
+            <input
+              type="url"
+              className="glass-input"
+              value={exhaustAudioUrl}
+              onChange={(e) => setExhaustAudioUrl(e.target.value)}
+              placeholder="https://example.com/exhaust.mp3 (leave empty for procedural synthesis)"
+            />
+            <p className="text-[10px] text-slate-500 mt-1">
+              If left blank, our custom engine simulator generates the exact acoustic profile for this model automatically.
+            </p>
           </div>
 
           <div className="flex gap-3 pt-3 border-t border-slate-800">

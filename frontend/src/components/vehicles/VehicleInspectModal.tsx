@@ -14,11 +14,30 @@ export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing
 
   const handleRev = () => {
     setIsRevving(true);
-    exhaustSound.playExhaustRev(vehicle.category, `${vehicle.make} ${vehicle.model}`);
-    setTimeout(() => setIsRevving(false), 1800);
+    exhaustSound.playVehicleExhaust({
+      make: vehicle.make,
+      model: vehicle.model,
+      category: vehicle.category,
+      audioUrl: vehicle.exhaustAudioUrl,
+    });
+    setTimeout(() => setIsRevving(false), 2000);
   };
 
   const isOutOfStock = vehicle.quantity === 0;
+
+  // Model-specific acoustic description
+  const getPowertrainBadge = () => {
+    const s = `${vehicle.make} ${vehicle.model}`.toLowerCase();
+    if (s.includes('911') || s.includes('porsche')) return '3.0L Twin-Turbo Flat-6 Boxer';
+    if (s.includes('m4') || s.includes('bmw')) return '3.0L S58 Twin-Turbo Inline-6';
+    if (s.includes('f-150') || s.includes('coyote')) return '5.0L Coyote V8 Powerplant';
+    if (s.includes('civic') || s.includes('honda')) return '1.5L Turbo VTEC Tuner';
+    if (s.includes('tesla')) return 'Dual-Motor High Voltage AWD';
+    if (s.includes('rivian')) return 'Quad-Motor Torque Vectoring';
+    if (s.includes('rav4')) return '2.5L Dynamic Force Hybrid';
+    if (s.includes('buzz')) return 'Electric Rear Stator Drive';
+    return `${vehicle.category} Tuned Exhaust`;
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-xl animate-slide-up">
@@ -75,15 +94,15 @@ export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing
               </div>
               <div>
                 <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                  Exhaust Sound Simulator
+                  <span>Exhaust Sound Simulator</span>
                   {isRevving && (
                     <span className="text-[10px] font-bold tracking-widest text-cyan-400 uppercase animate-pulse">
-                      REV ACTIVE • 6,500 RPM
+                      REV ACTIVE • THROTTLE ENGAGED
                     </span>
                   )}
                 </h4>
                 <p className="text-xs text-slate-400">
-                  Synthesized acoustic signature for this {vehicle.category.toLowerCase()} powertrain.
+                  Acoustic signature: <strong className="text-cyan-300">{getPowertrainBadge()}</strong>.
                 </p>
               </div>
             </div>
@@ -97,7 +116,7 @@ export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing
                   : 'bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 shadow-cyan-500/10'
               }`}
             >
-              {isRevving ? '🔥 Revving Engine...' : '⚡ Hear Exhaust Rev'}
+              {isRevving ? '🔥 Revving...' : '⚡ Hear Real Exhaust Rev'}
             </button>
           </div>
 
@@ -108,19 +127,27 @@ export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing
               <p className="text-base font-bold text-slate-200">{vehicle.year || 2024}</p>
             </div>
             <div className="glass-card p-3">
-              <p className="text-xs text-slate-400">Category</p>
-              <p className="text-base font-bold text-slate-200">{vehicle.category}</p>
+              <p className="text-xs text-slate-400">Powertrain</p>
+              <p className="text-xs font-bold text-slate-200 truncate">{vehicle.category}</p>
             </div>
             <div className="glass-card p-3">
-              <p className="text-xs text-slate-400">Inventory</p>
+              <p className="text-xs text-slate-400">Inventory Status</p>
               <p className={`text-base font-bold ${isOutOfStock ? 'text-rose-400' : 'text-emerald-400'}`}>
-                {isOutOfStock ? 'Out of Stock' : `${vehicle.quantity} Units`}
+                {isOutOfStock ? 'Sold Out' : `${vehicle.quantity} In Stock`}
               </p>
             </div>
             <div className="glass-card p-3">
-              <p className="text-xs text-slate-400">Warranty</p>
+              <p className="text-xs text-slate-400">CPO Warranty</p>
               <p className="text-base font-bold text-slate-200">4 Yr / 50k Mi</p>
             </div>
+          </div>
+
+          {/* Concierge Hotline Prompt */}
+          <div className="text-xs text-slate-400 flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+            <span>Need assistance or financing guidance?</span>
+            <a href="tel:+18005552739" className="text-cyan-400 hover:underline font-semibold">
+              📞 +1 (800) 555-APEX
+            </a>
           </div>
 
           {/* Footer Actions */}

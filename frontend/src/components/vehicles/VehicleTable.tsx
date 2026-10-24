@@ -86,7 +86,12 @@ export function VehicleTable({
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        exhaustSound.playExhaustRev(v.category, `${v.make} ${v.model}`);
+                        exhaustSound.playVehicleExhaust({
+                          make: v.make,
+                          model: v.model,
+                          category: v.category,
+                          audioUrl: v.exhaustAudioUrl,
+                        });
                       }}
                       className="p-1.5 rounded-lg bg-slate-800 hover:bg-cyan-500/20 text-slate-300 hover:text-cyan-300 border border-white/10 text-xs"
                       title="Play Exhaust"

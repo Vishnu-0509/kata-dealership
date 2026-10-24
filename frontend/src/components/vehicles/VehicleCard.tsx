@@ -36,7 +36,12 @@ export function VehicleCard({
   const handleQuickRev = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsRevving(true);
-    exhaustSound.playExhaustRev(vehicle.category, `${vehicle.make} ${vehicle.model}`);
+    exhaustSound.playVehicleExhaust({
+      make: vehicle.make,
+      model: vehicle.model,
+      category: vehicle.category,
+      audioUrl: vehicle.exhaustAudioUrl,
+    });
     setTimeout(() => setIsRevving(false), 1600);
   };
 

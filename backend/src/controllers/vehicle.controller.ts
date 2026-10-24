@@ -9,6 +9,7 @@ const createVehicleSchema = z.object({
   price: z.number().positive('Price must be positive'),
   quantity: z.number().int().min(0, 'Quantity must be non-negative'),
   imageUrl: z.string().url('Invalid image URL').optional().or(z.literal('')).nullable(),
+  exhaustAudioUrl: z.string().url('Invalid audio URL').optional().or(z.literal('')).nullable(),
   year: z.number().int().min(1900).max(2100).optional().nullable(),
 });
 

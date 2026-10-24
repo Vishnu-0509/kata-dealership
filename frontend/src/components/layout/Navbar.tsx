@@ -3,7 +3,12 @@ import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { exhaustSound } from '../../utils/exhaustAudio';
 
-export function Navbar() {
+interface Props {
+  onOpenAbout?: () => void;
+  onOpenContact?: () => void;
+}
+
+export function Navbar({ onOpenAbout, onOpenContact }: Props) {
   const { user, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const [isMuted, setIsMuted] = useState(exhaustSound.getIsMuted());
@@ -20,7 +25,7 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-40 backdrop-blur-xl bg-slate-950/80 border-b border-white/10">
+    <nav className="sticky top-0 z-40 backdrop-blur-xl bg-slate-950/85 border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-18 py-3">
           {/* Logo & Dealership Brand */}
@@ -38,7 +43,32 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Controls & User Capsule */}
+          {/* Center Navigation Links (About, Contact, Hotline) */}
+          <div className="hidden md:flex items-center gap-6 text-xs font-semibold">
+            <button
+              type="button"
+              onClick={onOpenAbout}
+              className="text-slate-300 hover:text-cyan-400 transition-colors"
+            >
+              About Heritage
+            </button>
+            <button
+              type="button"
+              onClick={onOpenContact}
+              className="text-slate-300 hover:text-cyan-400 transition-colors flex items-center gap-1.5"
+            >
+              <span>📞</span> Contact & Support
+            </button>
+            <a
+              href="tel:+18005552739"
+              className="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1"
+              title="Direct Toll-Free Line"
+            >
+              <span>📱</span> +1 (800) 555-APEX
+            </a>
+          </div>
+
+          {/* Right Controls & User Capsule */}
           <div className="flex items-center gap-3">
             {/* Audio Toggle */}
             <button
@@ -51,9 +81,19 @@ export function Navbar() {
               title={isMuted ? 'Unmute Exhaust Audio' : 'Mute Exhaust Audio'}
             >
               <span>{isMuted ? '🔇' : '🔊'}</span>
-              <span className="hidden sm:inline text-[11px] font-semibold">
+              <span className="hidden lg:inline text-[11px] font-semibold">
                 {isMuted ? 'Muted' : 'Exhaust Sound On'}
               </span>
+            </button>
+
+            {/* Mobile Contact Quick Button */}
+            <button
+              type="button"
+              onClick={onOpenContact}
+              className="md:hidden p-2 rounded-xl text-xs border border-white/10 bg-white/5 text-slate-300"
+              title="Contact Support"
+            >
+              📞
             </button>
 
             {/* User Capsule */}

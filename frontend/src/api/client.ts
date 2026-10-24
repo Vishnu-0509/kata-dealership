@@ -51,6 +51,7 @@ export interface Vehicle {
   price: number;
   quantity: number;
   imageUrl?: string | null;
+  exhaustAudioUrl?: string | null;
   year?: number | null;
   createdAt: string;
   updatedAt: string;
