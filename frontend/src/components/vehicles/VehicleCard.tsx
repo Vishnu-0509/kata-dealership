@@ -11,6 +11,8 @@ interface Props {
   onInspect?: (vehicle: Vehicle) => void;
   onPurchaseRequest?: (vehicle: Vehicle) => void;
   isPurchasing?: boolean;
+  isCompared?: boolean;
+  onToggleCompare?: (vehicle: Vehicle) => void;
 }
 
 export function VehicleCard({
@@ -22,6 +24,8 @@ export function VehicleCard({
   onInspect,
   onPurchaseRequest,
   isPurchasing,
+  isCompared,
+  onToggleCompare,
 }: Props) {
   const [isRevving, setIsRevving] = useState(false);
 
@@ -99,6 +103,15 @@ export function VehicleCard({
           <p className="text-2xl font-black text-cyan-400 mt-1">
             ${vehicle.price.toLocaleString()}
           </p>
+
+          {/* Quick Specifications Pill */}
+          {(vehicle.bhp || vehicle.zeroToSixty || vehicle.drivetrain) && (
+            <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium pt-1.5">
+              {vehicle.bhp && <span className="text-slate-300">⚡ {vehicle.bhp} HP</span>}
+              {vehicle.zeroToSixty && <span>• 🚀 {vehicle.zeroToSixty}s (0-60)</span>}
+              {vehicle.drivetrain && <span>• {vehicle.drivetrain.split(' ')[0]}</span>}
+            </div>
+          )}
         </div>
 
         {/* Actions Container */}
@@ -120,6 +133,35 @@ export function VehicleCard({
               <>🛒 Purchase Now</>
             )}
           </button>
+
+          {/* Compare & Inspect Secondary Bar */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleCompare?.(vehicle);
+              }}
+              className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                isCompared
+                  ? 'bg-cyan-500/25 border border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
+                  : 'bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300'
+              }`}
+            >
+              <span>{isCompared ? '✓' : '⚖️'}</span>
+              <span>{isCompared ? 'Comparing' : 'Compare'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onInspect?.(vehicle);
+              }}
+              className="btn-glass flex-1 py-1.5 text-xs text-slate-300"
+            >
+              🔍 Full Specs
+            </button>
+          </div>
 
           {/* Admin Management Controls */}
           {isAdmin && (

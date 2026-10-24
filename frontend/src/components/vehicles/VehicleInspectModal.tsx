@@ -142,6 +142,79 @@ export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing
             </div>
           </div>
 
+          {/* Detailed Engineering Telemetry Grid */}
+          {(vehicle.bhp || vehicle.zeroToSixty || vehicle.topSpeed || vehicle.mileage || vehicle.fuelCapacity || vehicle.transmission) && (
+            <div className="glass-card p-4 space-y-3 bg-slate-900/60 border-cyan-500/20">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                  <span>⚡</span> Factory Engineering Specifications
+                </span>
+                {vehicle.engine && (
+                  <span className="text-[11px] text-slate-400 font-mono">
+                    {vehicle.engine}
+                  </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                {vehicle.bhp && (
+                  <div className="bg-white/5 p-2.5 rounded-lg border border-white/5">
+                    <span className="text-[10px] text-slate-400 block uppercase">Output</span>
+                    <span className="font-bold text-white text-sm">{vehicle.bhp} <span className="text-cyan-400 text-xs">BHP</span></span>
+                  </div>
+                )}
+                {vehicle.zeroToSixty && (
+                  <div className="bg-white/5 p-2.5 rounded-lg border border-white/5">
+                    <span className="text-[10px] text-slate-400 block uppercase">0 - 60 mph</span>
+                    <span className="font-bold text-white text-sm">{vehicle.zeroToSixty} <span className="text-cyan-400 text-xs">sec</span></span>
+                  </div>
+                )}
+                {vehicle.topSpeed && (
+                  <div className="bg-white/5 p-2.5 rounded-lg border border-white/5">
+                    <span className="text-[10px] text-slate-400 block uppercase">V-Max Speed</span>
+                    <span className="font-bold text-white text-sm">{vehicle.topSpeed} <span className="text-cyan-400 text-xs">mph</span></span>
+                  </div>
+                )}
+                {vehicle.mileage && (
+                  <div className="bg-white/5 p-2.5 rounded-lg border border-white/5">
+                    <span className="text-[10px] text-slate-400 block uppercase">Efficiency / Range</span>
+                    <span className="font-bold text-white truncate block">{vehicle.mileage}</span>
+                  </div>
+                )}
+                {vehicle.fuelCapacity && (
+                  <div className="bg-white/5 p-2.5 rounded-lg border border-white/5">
+                    <span className="text-[10px] text-slate-400 block uppercase">Capacity / Pack</span>
+                    <span className="font-bold text-white truncate block">{vehicle.fuelCapacity}</span>
+                  </div>
+                )}
+                {vehicle.transmission && (
+                  <div className="bg-white/5 p-2.5 rounded-lg border border-white/5">
+                    <span className="text-[10px] text-slate-400 block uppercase">Transmission</span>
+                    <span className="font-bold text-white truncate block">{vehicle.transmission}</span>
+                  </div>
+                )}
+                {vehicle.drivetrain && (
+                  <div className="bg-white/5 p-2.5 rounded-lg border border-white/5">
+                    <span className="text-[10px] text-slate-400 block uppercase">Drivetrain</span>
+                    <span className="font-bold text-white truncate block">{vehicle.drivetrain}</span>
+                  </div>
+                )}
+                {vehicle.seating && (
+                  <div className="bg-white/5 p-2.5 rounded-lg border border-white/5">
+                    <span className="text-[10px] text-slate-400 block uppercase">Seating</span>
+                    <span className="font-bold text-white">{vehicle.seating} Passengers</span>
+                  </div>
+                )}
+                {vehicle.curbWeight && (
+                  <div className="bg-white/5 p-2.5 rounded-lg border border-white/5">
+                    <span className="text-[10px] text-slate-400 block uppercase">Curb Weight</span>
+                    <span className="font-bold text-white">{vehicle.curbWeight}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Concierge Hotline Prompt */}
           <div className="text-xs text-slate-400 flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
             <span>Need assistance or financing guidance?</span>

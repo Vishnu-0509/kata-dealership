@@ -6,9 +6,11 @@ import { exhaustSound } from '../../utils/exhaustAudio';
 interface Props {
   onOpenAbout?: () => void;
   onOpenContact?: () => void;
+  onOpenCompare?: () => void;
+  comparisonCount?: number;
 }
 
-export function Navbar({ onOpenAbout, onOpenContact }: Props) {
+export function Navbar({ onOpenAbout, onOpenContact, onOpenCompare, comparisonCount = 0 }: Props) {
   const { user, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const [isMuted, setIsMuted] = useState(exhaustSound.getIsMuted());
@@ -45,6 +47,22 @@ export function Navbar({ onOpenAbout, onOpenContact }: Props) {
 
           {/* Center Navigation Links (About, Contact, Hotline) */}
           <div className="hidden md:flex items-center gap-6 text-xs font-semibold">
+            <button
+              type="button"
+              onClick={onOpenCompare}
+              className={`transition-colors flex items-center gap-1.5 ${
+                comparisonCount > 0
+                  ? 'text-cyan-400 font-bold'
+                  : 'text-slate-300 hover:text-cyan-400'
+              }`}
+            >
+              <span>⚖️</span> Specifications
+              {comparisonCount > 0 && (
+                <span className="w-5 h-5 rounded-full bg-cyan-500 text-slate-950 text-[10px] font-black flex items-center justify-center">
+                  {comparisonCount}
+                </span>
+              )}
+            </button>
             <button
               type="button"
               onClick={onOpenAbout}

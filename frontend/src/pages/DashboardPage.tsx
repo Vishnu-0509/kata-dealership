@@ -4,11 +4,16 @@ import { Footer } from '../components/layout/Footer';
 import { VehicleList } from '../components/vehicles/VehicleList';
 import { ContactSupportModal } from '../components/support/ContactSupportModal';
 import { AboutModal } from '../components/about/AboutModal';
-import { useVehicles } from '../hooks/useVehicles';
+import { VehicleComparisonModal } from '../components/vehicles/VehicleComparisonModal';
+import { CarLiveBackground } from '../components/layout/CarLiveBackground';
+import { useVehicles, usePurchaseVehicle } from '../hooks/useVehicles';
 import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../components/common/Toast';
+import { Vehicle } from '../api/client';
 
 export function DashboardPage() {
   const { isAdmin } = useAuth();
+  const { showToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [minPrice, setMinPrice] = useState<string>('');
@@ -18,8 +23,41 @@ export function DashboardPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
+  const [showCompareModal, setShowCompareModal] = useState(false);
+  const [comparedVehicleIds, setComparedVehicleIds] = useState<string[]>([]);
 
   const { data: allVehicles = [], isLoading, isError, refetch } = useVehicles();
+  const purchaseMutation = usePurchaseVehicle();
+
+  const toggleCompareVehicle = (vehicle: Vehicle) => {
+    setComparedVehicleIds((prev) => {
+      if (prev.includes(vehicle.id)) {
+        return prev.filter((id) => id !== vehicle.id);
+      }
+      if (prev.length >= 4) {
+        showToast('warning', 'Comparison Limit Reached', 'You can compare up to 4 vehicles simultaneously.');
+        return prev;
+      }
+      showToast('info', 'Added to Comparison', `${vehicle.make} ${vehicle.model} added to comparison matrix.`);
+      return [...prev, vehicle.id];
+    });
+  };
+
+  const handleComparisonPurchase = (vehicle: Vehicle) => {
+    purchaseMutation.mutate(vehicle.id, {
+      onSuccess: () => {
+        showToast(
+          'success',
+          'Order Placed Successfully!',
+          `Congratulations! Your purchase of the ${vehicle.year || 2024} ${vehicle.make} ${vehicle.model} has been confirmed.`
+        );
+      },
+      onError: (err: unknown) => {
+        const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+        showToast('error', 'Purchase Failed', message || 'Could not complete vehicle purchase.');
+      },
+    });
+  };
 
   const categories = ['All', 'Coupe', 'Electric', 'SUV', 'Sedan', 'Truck', 'Van'];
 
@@ -82,6 +120,9 @@ export function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 relative flex flex-col justify-between">
+      {/* Live Cinematic Automotive Video & Photo Backdrop */}
+      <CarLiveBackground />
+
       {/* Ambient Lighting & Glow */}
       <div className="ambient-glow" />
 
@@ -89,6 +130,8 @@ export function DashboardPage() {
         <Navbar
           onOpenAbout={() => setShowAboutModal(true)}
           onOpenContact={() => setShowContactModal(true)}
+          onOpenCompare={() => setShowCompareModal(true)}
+          comparisonCount={comparedVehicleIds.length}
         />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 space-y-8">
@@ -131,17 +174,30 @@ export function DashboardPage() {
                 </div>
               </div>
 
-              {/* Quick Action Button for Admin */}
-              {isAdmin && (
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              {/* Action Buttons: Specifications & Admin Add */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowCompareModal(true)}
+                  className="btn-glass py-3 px-5 text-sm font-bold flex items-center justify-center gap-2 border-cyan-500/40 text-cyan-300 hover:text-white"
+                >
+                  <span>⚖️</span> Specifications & Compare
+                  {comparedVehicleIds.length > 0 && (
+                    <span className="w-5 h-5 rounded-full bg-cyan-500 text-slate-950 text-xs font-black flex items-center justify-center">
+                      {comparedVehicleIds.length}
+                    </span>
+                  )}
+                </button>
+
+                {isAdmin && (
                   <button
                     onClick={() => setShowCreateModal(true)}
                     className="btn-primary py-3 px-6 text-sm font-bold flex items-center justify-center gap-2 shadow-cyan-500/30"
                   >
                     <span>✨</span> Add New Vehicle
                   </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             {/* Real-time Fleet Metrics Bar */}
@@ -311,10 +367,43 @@ export function DashboardPage() {
               onOpenCreate={() => setShowCreateModal(true)}
               showCreate={showCreateModal}
               onCloseCreate={() => setShowCreateModal(false)}
+              comparedIds={comparedVehicleIds}
+              onToggleCompare={toggleCompareVehicle}
             />
           )}
         </main>
       </div>
+
+      {/* Floating Bottom Comparison Drawer Dock */}
+      {comparedVehicleIds.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-xl px-4 animate-slide-up">
+          <div className="glass-panel p-3.5 border border-cyan-500/50 shadow-2xl flex items-center justify-between gap-3 bg-slate-950/95 backdrop-blur-2xl">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">⚖️</span>
+              <div>
+                <p className="text-xs font-bold text-white">
+                  {comparedVehicleIds.length} Vehicle{comparedVehicleIds.length > 1 ? 's' : ''} Selected
+                </p>
+                <p className="text-[10px] text-slate-400">Ready for side-by-side spec comparison</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setComparedVehicleIds([])}
+                className="text-xs text-slate-400 hover:text-rose-400 underline px-2 py-1"
+              >
+                Clear
+              </button>
+              <button
+                onClick={() => setShowCompareModal(true)}
+                className="btn-primary text-xs px-4 py-2 font-bold shadow-cyan-500/30 flex items-center gap-1.5"
+              >
+                <span>Compare Specs</span> <span>➔</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer with Contact, Mail, Phone, About Links */}
       <Footer
@@ -332,6 +421,16 @@ export function DashboardPage() {
         <AboutModal
           onClose={() => setShowAboutModal(false)}
           onOpenContact={() => setShowContactModal(true)}
+        />
+      )}
+
+      {/* Vehicle Comparison & Specifications Modal */}
+      {showCompareModal && (
+        <VehicleComparisonModal
+          allVehicles={allVehicles}
+          initialSelectedIds={comparedVehicleIds}
+          onClose={() => setShowCompareModal(false)}
+          onPurchase={handleComparisonPurchase}
         />
       )}
     </div>

@@ -18,6 +18,19 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
   const [quantity, setQuantity] = useState(String(initial?.quantity ?? ''));
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl || '');
   const [exhaustAudioUrl, setExhaustAudioUrl] = useState(initial?.exhaustAudioUrl || '');
+  
+  // Engineering Specifications
+  const [bhp, setBhp] = useState(initial?.bhp ? String(initial.bhp) : '');
+  const [zeroToSixty, setZeroToSixty] = useState(initial?.zeroToSixty ? String(initial.zeroToSixty) : '');
+  const [topSpeed, setTopSpeed] = useState(initial?.topSpeed ? String(initial.topSpeed) : '');
+  const [mileage, setMileage] = useState(initial?.mileage || '');
+  const [fuelCapacity, setFuelCapacity] = useState(initial?.fuelCapacity || '');
+  const [transmission, setTransmission] = useState(initial?.transmission || '');
+  const [drivetrain, setDrivetrain] = useState(initial?.drivetrain || '');
+  const [seating, setSeating] = useState(initial?.seating ? String(initial.seating) : '5');
+  const [engine, setEngine] = useState(initial?.engine || '');
+  const [curbWeight, setCurbWeight] = useState(initial?.curbWeight || '');
+  const [showSpecsSection, setShowSpecsSection] = useState(Boolean(initial?.bhp || initial?.zeroToSixty || initial?.transmission));
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -30,6 +43,16 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
       quantity: parseInt(quantity, 10),
       imageUrl: imageUrl.trim() || null,
       exhaustAudioUrl: exhaustAudioUrl.trim() || null,
+      bhp: bhp ? parseInt(bhp, 10) : null,
+      zeroToSixty: zeroToSixty ? parseFloat(zeroToSixty) : null,
+      topSpeed: topSpeed ? parseInt(topSpeed, 10) : null,
+      mileage: mileage.trim() || null,
+      fuelCapacity: fuelCapacity.trim() || null,
+      transmission: transmission.trim() || null,
+      drivetrain: drivetrain.trim() || null,
+      seating: seating ? parseInt(seating, 10) : null,
+      engine: engine.trim() || null,
+      curbWeight: curbWeight.trim() || null,
     });
   };
 
@@ -217,6 +240,138 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
             <p className="text-[10px] text-slate-500 mt-1">
               If left blank, our custom engine simulator generates the exact acoustic profile for this model automatically.
             </p>
+          </div>
+
+          {/* Engineering Specifications & Performance Toggle */}
+          <div className="pt-2 border-t border-slate-800">
+            <button
+              type="button"
+              onClick={() => setShowSpecsSection(!showSpecsSection)}
+              className="flex items-center justify-between w-full py-2 text-xs font-bold text-cyan-400 hover:text-cyan-300"
+            >
+              <span className="flex items-center gap-1.5">
+                <span>⚙️</span> Engineering Specifications & Telemetry
+              </span>
+              <span className="text-slate-400">{showSpecsSection ? '▲ Hide Specs' : '▼ Expand Specs'}</span>
+            </button>
+
+            {showSpecsSection && (
+              <div className="space-y-4 pt-3 pb-2 animate-slide-up">
+                {/* BHP & 0-60 & Top Speed */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">BHP (Horsepower)</label>
+                    <input
+                      type="number"
+                      className="glass-input text-xs"
+                      value={bhp}
+                      onChange={(e) => setBhp(e.target.value)}
+                      placeholder="e.g. 503"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">0-60 mph (sec)</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      className="glass-input text-xs"
+                      value={zeroToSixty}
+                      onChange={(e) => setZeroToSixty(e.target.value)}
+                      placeholder="e.g. 3.4"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Top Speed (mph)</label>
+                    <input
+                      type="number"
+                      className="glass-input text-xs"
+                      value={topSpeed}
+                      onChange={(e) => setTopSpeed(e.target.value)}
+                      placeholder="e.g. 180"
+                    />
+                  </div>
+                </div>
+
+                {/* Mileage/Range & Fuel/Battery Capacity */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Mileage / Range</label>
+                    <input
+                      className="glass-input text-xs"
+                      value={mileage}
+                      onChange={(e) => setMileage(e.target.value)}
+                      placeholder="e.g. 24 MPG or 315 Mi Range"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Fuel / Battery Pack</label>
+                    <input
+                      className="glass-input text-xs"
+                      value={fuelCapacity}
+                      onChange={(e) => setFuelCapacity(e.target.value)}
+                      placeholder="e.g. 16.9 Gal or 82 kWh"
+                    />
+                  </div>
+                </div>
+
+                {/* Transmission & Drivetrain */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Transmission</label>
+                    <input
+                      className="glass-input text-xs"
+                      value={transmission}
+                      onChange={(e) => setTransmission(e.target.value)}
+                      placeholder="e.g. 8-Speed PDK / Single-Speed"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Drivetrain</label>
+                    <input
+                      className="glass-input text-xs"
+                      value={drivetrain}
+                      onChange={(e) => setDrivetrain(e.target.value)}
+                      placeholder="e.g. AWD, RWD, FWD"
+                    />
+                  </div>
+                </div>
+
+                {/* Engine Type, Curb Weight & Seating */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="col-span-1">
+                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Seating</label>
+                    <input
+                      type="number"
+                      className="glass-input text-xs"
+                      value={seating}
+                      onChange={(e) => setSeating(e.target.value)}
+                      placeholder="e.g. 5"
+                      min="1"
+                      max="12"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Curb Weight</label>
+                    <input
+                      className="glass-input text-xs"
+                      value={curbWeight}
+                      onChange={(e) => setCurbWeight(e.target.value)}
+                      placeholder="e.g. 3,880 lbs"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Engine / Motor Architecture</label>
+                  <input
+                    className="glass-input text-xs"
+                    value={engine}
+                    onChange={(e) => setEngine(e.target.value)}
+                    placeholder="e.g. 3.0L Twin-Turbo Flat-6 / Dual Permanent Magnet"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 pt-3 border-t border-slate-800">

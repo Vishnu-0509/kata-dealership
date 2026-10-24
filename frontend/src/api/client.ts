@@ -53,6 +53,16 @@ export interface Vehicle {
   imageUrl?: string | null;
   exhaustAudioUrl?: string | null;
   year?: number | null;
+  bhp?: number | null;
+  zeroToSixty?: number | null;
+  topSpeed?: number | null;
+  mileage?: string | null;
+  fuelCapacity?: string | null;
+  transmission?: string | null;
+  drivetrain?: string | null;
+  seating?: number | null;
+  engine?: string | null;
+  curbWeight?: string | null;
   createdAt: string;
   updatedAt: string;
 }

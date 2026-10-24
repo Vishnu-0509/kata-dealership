@@ -15,6 +15,8 @@ interface Props {
   onOpenCreate: () => void;
   showCreate: boolean;
   onCloseCreate: () => void;
+  comparedIds?: string[];
+  onToggleCompare?: (vehicle: Vehicle) => void;
 }
 
 export function VehicleList({
@@ -23,6 +25,8 @@ export function VehicleList({
   viewMode,
   showCreate,
   onCloseCreate,
+  comparedIds = [],
+  onToggleCompare,
 }: Props) {
   const { showToast } = useToast();
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null);
@@ -148,6 +152,8 @@ export function VehicleList({
               onInspect={setInspectVehicle}
               onPurchaseRequest={setPurchaseTarget}
               isPurchasing={purchaseMutation.isPending && purchaseTarget?.id === v.id}
+              isCompared={comparedIds.includes(v.id)}
+              onToggleCompare={onToggleCompare}
             />
           ))}
         </div>
@@ -160,6 +166,8 @@ export function VehicleList({
           onRestock={setRestockVehicle}
           onInspect={setInspectVehicle}
           onPurchaseRequest={setPurchaseTarget}
+          comparedIds={comparedIds}
+          onToggleCompare={onToggleCompare}
         />
       )}
 
