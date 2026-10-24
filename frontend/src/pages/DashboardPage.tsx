@@ -112,7 +112,7 @@ export function DashboardPage() {
                     href="tel:+18005552739"
                     className="badge-glass bg-white/5 hover:bg-cyan-500/10 text-cyan-300 border-white/10 transition-colors"
                   >
-                    📞 Call Sales: +1 (800) 555-APEX
+                    📞 Call Sales: +1 (800) 555-KATA
                   </a>
                   <button
                     type="button"

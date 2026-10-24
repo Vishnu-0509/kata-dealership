@@ -146,7 +146,7 @@ export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing
           <div className="text-xs text-slate-400 flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
             <span>Need assistance or financing guidance?</span>
             <a href="tel:+18005552739" className="text-cyan-400 hover:underline font-semibold">
-              📞 +1 (800) 555-APEX
+              📞 +1 (800) 555-KATA
             </a>
           </div>
 

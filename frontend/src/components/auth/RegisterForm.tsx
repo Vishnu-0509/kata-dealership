@@ -46,7 +46,7 @@ export function RegisterForm() {
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-2xl mx-auto shadow-lg shadow-cyan-500/30">
             🏎️
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-white">APEX MOTORS</h1>
+          <h1 className="text-2xl font-black tracking-tight text-white">KATA MOTORS</h1>
           <p className="text-xs text-slate-400">Create your client portal account</p>
         </div>
 

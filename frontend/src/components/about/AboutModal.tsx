@@ -17,7 +17,7 @@ export function AboutModal({ onClose, onOpenContact }: Props) {
               🏎️
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">About APEX MOTORS</h2>
+              <h2 className="text-xl font-bold text-white">About KATA MOTORS</h2>
               <p className="text-xs text-slate-400">Pioneering the Next Generation of Automotive Acquisition</p>
             </div>
           </div>
@@ -34,7 +34,7 @@ export function AboutModal({ onClose, onOpenContact }: Props) {
               Engineered for Drivers. Curated for Enthusiasts.
             </h3>
             <p className="text-xs text-slate-300">
-              APEX MOTORS is a modern digital dealership that bridges high-performance sports heritage, zero-emission electric hypercars, and family luxury vehicles. We offer an uncompromising, transparent automotive purchasing experience backed by real-time inventory tracking and digital certification.
+              KATA MOTORS is a modern digital dealership that bridges high-performance sports heritage, zero-emission electric hypercars, and family luxury vehicles. We offer an uncompromising, transparent automotive purchasing experience backed by real-time inventory tracking and digital certification.
             </p>
           </div>
 

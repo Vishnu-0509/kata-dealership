@@ -35,10 +35,10 @@ export function Navbar({ onOpenAbout, onOpenContact }: Props) {
             </div>
             <div>
               <span className="font-black text-xl tracking-tight text-white flex items-center gap-1.5">
-                APEX <span className="text-cyan-400 font-light text-base">MOTORS</span>
+                KATA <span className="text-cyan-400 font-light text-base">MOTORS</span>
               </span>
               <p className="text-[10px] text-slate-400 tracking-wider uppercase font-semibold">
-                Dealership Inventory Portal
+                Car Dealership Inventory System
               </p>
             </div>
           </div>
@@ -64,7 +64,7 @@ export function Navbar({ onOpenAbout, onOpenContact }: Props) {
               className="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1"
               title="Direct Toll-Free Line"
             >
-              <span>📱</span> +1 (800) 555-APEX
+              <span>📱</span> +1 (800) 555-KATA
             </a>
           </div>
 

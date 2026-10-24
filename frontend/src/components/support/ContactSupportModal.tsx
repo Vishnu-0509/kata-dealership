@@ -58,20 +58,20 @@ export function ContactSupportModal({ onClose }: Props) {
               <span className="text-2xl mb-1 block">📱</span>
               <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Toll-Free Phone</p>
               <p className="text-sm font-bold text-white group-hover:text-cyan-400 mt-0.5">
-                +1 (800) 555-APEX
+                +1 (800) 555-KATA
               </p>
               <p className="text-[10px] text-slate-500 mt-1">Direct Sales & Support Line</p>
             </a>
 
             {/* Email */}
             <a
-              href="mailto:support@apexmotors.com"
+              href="mailto:support@katamotors.com"
               className="glass-card p-4 hover:border-cyan-500/50 block group transition-all"
             >
               <span className="text-2xl mb-1 block">✉️</span>
               <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Email Desk</p>
               <p className="text-sm font-bold text-white group-hover:text-cyan-400 mt-0.5 truncate">
-                support@apexmotors.com
+                support@katamotors.com
               </p>
               <p className="text-[10px] text-slate-500 mt-1">Average response &lt; 15 mins</p>
             </a>
@@ -80,7 +80,7 @@ export function ContactSupportModal({ onClose }: Props) {
             <div className="glass-card p-4">
               <span className="text-2xl mb-1 block">🏛️</span>
               <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Main Showroom</p>
-              <p className="text-sm font-bold text-white mt-0.5">100 Apex Boulevard</p>
+              <p className="text-sm font-bold text-white mt-0.5">100 Kata Boulevard</p>
               <p className="text-[10px] text-slate-500 mt-1">Beverly Hills, CA 90210</p>
             </div>
           </div>

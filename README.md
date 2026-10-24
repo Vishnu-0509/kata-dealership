@@ -1,4 +1,4 @@
-# 🏎️ APEX MOTORS — Car Dealership Inventory System
+# 🏎️ KATA MOTORS — Car Dealership Inventory System
 
 A luxury, full-stack Car Dealership Inventory Management System built following strict **Test-Driven Development (TDD)** discipline (Red → Green → Refactor). Featuring real-time fleet valuation metrics, high-resolution automotive imagery, an interactive Web Audio API exhaust note simulator tailored to each car model, and a glassmorphic transparent UI with complete customer support and dealership terms.
 
@@ -31,9 +31,9 @@ A luxury, full-stack Car Dealership Inventory Management System built following 
     - **Volkswagen ID. Buzz:** Ambient acoustic electric cruiser space chime.
   - Also supports custom `exhaustAudioUrl` on vehicles to play actual real recorded exhaust clips!
 - **📞 Complete Customer Care & Concierge Desk:**
-  - Direct toll-free phone number (`+1 (800) 555-APEX`) with click-to-call.
-  - Official support desk email (`support@apexmotors.com`) with click-to-email.
-  - Physical showroom address (`100 Apex Boulevard, Beverly Hills, CA 90210`).
+  - Direct toll-free phone number (`+1 (800) 555-KATA`) with click-to-call.
+  - Official support desk email (`support@katamotors.com`) with click-to-email.
+  - Physical showroom address (`100 Kata Boulevard, Beverly Hills, CA 90210`).
   - Operating hours & interactive test drive dispatch inquiry form with instant toast confirmation.
 - **🛡️ About Heritage & Transparent Sales Terms:**
   - Dealership history, 150-Point Certified Inspection guarantee, 4-Yr/50k-Mi CPO warranty, and transparent sales policies.
@@ -54,10 +54,10 @@ A luxury, full-stack Car Dealership Inventory Management System built following 
 
 ## 📞 Customer Support & Dealership Contact
 
-- **Toll-Free Hotline:** `+1 (800) 555-APEX` (`+1 800-555-2739`)
-- **Customer Care Email:** `support@apexmotors.com`
-- **Concierge Desk:** `concierge@apexmotors.com`
-- **Main Showroom:** `100 Apex Boulevard, Performance District, Beverly Hills, CA 90210`
+- **Toll-Free Hotline:** `+1 (800) 555-KATA` (`+1 800-555-5282`)
+- **Customer Care Email:** `support@katamotors.com`
+- **Concierge Desk:** `concierge@katamotors.com`
+- **Main Showroom:** `100 Kata Boulevard, Performance District, Beverly Hills, CA 90210`
 - **Showroom Hours:**
   - Monday – Friday: 8:00 AM – 8:00 PM EST
   - Saturday: 9:00 AM – 7:00 PM EST

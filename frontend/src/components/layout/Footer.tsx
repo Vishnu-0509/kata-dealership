@@ -15,18 +15,18 @@ export function Footer({ onOpenAbout, onOpenContact }: Props) {
                 🏎️
               </div>
               <span className="font-black text-lg tracking-tight text-white">
-                APEX <span className="text-cyan-400 font-light">MOTORS</span>
+                KATA <span className="text-cyan-400 font-light">MOTORS</span>
               </span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Premier digital automotive dealership specializing in luxury sports, electric, and performance vehicles.
+              Full-Stack TDD Car Dealership Inventory System. Featuring modern REST API, real-time vehicle management, and specifications comparison.
             </p>
             <div className="flex items-center gap-2 pt-1">
               <span className="badge-glass bg-cyan-500/10 text-cyan-400 border-cyan-500/30 text-[10px]">
-                ISO 9001 Certified
+                TDD Kata Certified
               </span>
               <span className="badge-glass bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]">
-                100% Verified Titles
+                100% Verified Inventory
               </span>
             </div>
           </div>
@@ -40,25 +40,25 @@ export function Footer({ onOpenAbout, onOpenContact }: Props) {
               <li className="flex items-center gap-2">
                 <span>📞</span>
                 <a
-                  href="tel:+18005552739"
+                  href="tel:+18005555282"
                   className="hover:text-cyan-400 transition-colors font-medium text-slate-300"
                 >
-                  +1 (800) 555-APEX
+                  +1 (800) 555-KATA
                 </a>
               </li>
               <li className="flex items-center gap-2">
                 <span>✉️</span>
                 <a
-                  href="mailto:support@apexmotors.com"
+                  href="mailto:support@katamotors.com"
                   className="hover:text-cyan-400 transition-colors font-medium text-slate-300"
                 >
-                  support@apexmotors.com
+                  support@katamotors.com
                 </a>
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-0.5">🏛️</span>
                 <span className="text-slate-400">
-                  100 Apex Boulevard, Performance District, Beverly Hills, CA 90210
+                  100 KATA Boulevard, Automotive Innovation Center, CA 90210
                 </span>
               </li>
             </ul>
@@ -67,7 +67,7 @@ export function Footer({ onOpenAbout, onOpenContact }: Props) {
           {/* Operating Hours */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">
-              Showroom Hours
+              Dealership Hours
             </h4>
             <div className="space-y-1.5 text-xs">
               <div className="flex justify-between">
@@ -83,7 +83,7 @@ export function Footer({ onOpenAbout, onOpenContact }: Props) {
                 <span className="text-slate-200 font-medium">10:00 AM – 5:00 PM EST</span>
               </div>
               <p className="text-[11px] text-cyan-400/90 pt-1">
-                24/7 Digital Purchase & Inventory Reservation Online
+                24/7 Digital Inventory Reservation Online
               </p>
             </div>
           </div>
@@ -91,7 +91,7 @@ export function Footer({ onOpenAbout, onOpenContact }: Props) {
           {/* Quick Links & Terms */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">
-              Company & Terms
+              System & Terms
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
@@ -100,7 +100,7 @@ export function Footer({ onOpenAbout, onOpenContact }: Props) {
                   onClick={onOpenAbout}
                   className="hover:text-cyan-400 transition-colors text-left"
                 >
-                  About APEX MOTORS & Heritage
+                  About KATA Car Dealership
                 </button>
               </li>
               <li>
@@ -109,7 +109,7 @@ export function Footer({ onOpenAbout, onOpenContact }: Props) {
                   onClick={onOpenContact}
                   className="hover:text-cyan-400 transition-colors text-left"
                 >
-                  Contact Concierge & VIP Test Drive
+                  Contact Concierge Support
                 </button>
               </li>
               <li>
@@ -118,7 +118,7 @@ export function Footer({ onOpenAbout, onOpenContact }: Props) {
                   onClick={onOpenAbout}
                   className="hover:text-cyan-400 transition-colors text-left"
                 >
-                  150-Point Inspection & Warranty Terms
+                  Inspection & Warranty Standards
                 </button>
               </li>
               <li>
@@ -136,7 +136,7 @@ export function Footer({ onOpenAbout, onOpenContact }: Props) {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-          <p>© {new Date().getFullYear()} APEX MOTORS Inc. All rights reserved. Full-stack TDD inventory system.</p>
+          <p>© {new Date().getFullYear()} KATA Car Dealership Inventory System. Built with Test-Driven Development.</p>
           <div className="flex items-center gap-4 text-slate-500">
             <button onClick={onOpenAbout} className="hover:text-slate-300">Privacy Policy</button>
             <span>•</span>
