@@ -2,9 +2,6 @@ import { useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
-/**
- * RegisterForm component — handles new user registration.
- */
 export function RegisterForm() {
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -40,26 +37,31 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 to-blue-700">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <span className="text-5xl">🚗</span>
-          <h1 className="text-2xl font-bold mt-3 text-gray-900">Car Dealership</h1>
-          <p className="text-gray-500 mt-1">Create your account</p>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-950 relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="ambient-glow" />
+
+      <div className="glass-panel max-w-md w-full p-8 border border-cyan-500/30 shadow-2xl relative z-10 space-y-6">
+        <div className="text-center space-y-2">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-2xl mx-auto shadow-lg shadow-cyan-500/30">
+            🏎️
+          </div>
+          <h1 className="text-2xl font-black tracking-tight text-white">APEX MOTORS</h1>
+          <p className="text-xs text-slate-400">Create your client portal account</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
-              {error}
-            </div>
-          )}
+        {error && (
+          <div className="bg-rose-500/10 border border-rose-500/30 text-rose-300 p-3 rounded-xl text-xs flex items-center gap-2">
+            <span>⚠️</span> {error}
+          </div>
+        )}
 
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
             <input
               type="email"
-              className="input-field"
+              className="glass-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
@@ -68,10 +70,10 @@ export function RegisterForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-xs font-semibold text-slate-300 mb-1">Password</label>
             <input
               type="password"
-              className="input-field"
+              className="glass-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="At least 6 characters"
@@ -80,10 +82,10 @@ export function RegisterForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <label className="block text-xs font-semibold text-slate-300 mb-1">Confirm Password</label>
             <input
               type="password"
-              className="input-field"
+              className="glass-input"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               placeholder="Repeat your password"
@@ -91,15 +93,15 @@ export function RegisterForm() {
             />
           </div>
 
-          <button type="submit" className="btn-primary w-full mt-2" disabled={loading}>
-            {loading ? 'Creating account…' : 'Create Account'}
+          <button type="submit" className="btn-primary w-full py-3 font-bold text-sm mt-2" disabled={loading}>
+            {loading ? 'Creating Account…' : 'Complete Registration'}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-xs text-slate-400 pt-2 border-t border-slate-800">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 font-medium hover:underline">
-            Sign in
+          <Link to="/login" className="text-cyan-400 font-semibold hover:underline">
+            Sign in here
           </Link>
         </p>
       </div>

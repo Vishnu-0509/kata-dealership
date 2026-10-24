@@ -18,8 +18,10 @@ const mockVehicle = {
   make: 'Toyota',
   model: 'Corolla',
   category: 'Sedan',
+  year: 2024,
   price: 25000,
   quantity: 3,
+  imageUrl: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=800&q=80',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
@@ -32,9 +34,9 @@ describe('VehicleCard', () => {
   it('renders vehicle details correctly', () => {
     render(<VehicleCard vehicle={mockVehicle} isAdmin={false} />, { wrapper });
     expect(screen.getByText('Toyota Corolla')).toBeInTheDocument();
-    expect(screen.getByText('Sedan')).toBeInTheDocument();
+    expect(screen.getByText(/Sedan/i)).toBeInTheDocument();
     expect(screen.getByText('$25,000')).toBeInTheDocument();
-    expect(screen.getByText('3 in stock')).toBeInTheDocument();
+    expect(screen.getByText(/3 in stock/i)).toBeInTheDocument();
   });
 
   it('shows purchase button when in stock', () => {
@@ -55,7 +57,7 @@ describe('VehicleCard', () => {
   it('shows admin controls for admin users', () => {
     render(<VehicleCard vehicle={mockVehicle} isAdmin={true} />, { wrapper });
     expect(screen.getByRole('button', { name: /edit/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /restock/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /\+stock/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
   });
 

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Vehicle" ADD COLUMN "imageUrl" TEXT;
+ALTER TABLE "Vehicle" ADD COLUMN "year" INTEGER DEFAULT 2024;

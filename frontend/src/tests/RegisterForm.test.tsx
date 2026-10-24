@@ -23,7 +23,7 @@ describe('RegisterForm', () => {
     expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('At least 6 characters')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Repeat your password')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /registration|create account/i })).toBeInTheDocument();
   });
 
   it('shows error if passwords do not match', async () => {
@@ -39,7 +39,7 @@ describe('RegisterForm', () => {
       target: { value: 'mismatch123' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /create account/i }));
+    fireEvent.click(screen.getByRole('button', { name: /registration|create account/i }));
 
     expect(await screen.findByText(/passwords do not match/i)).toBeInTheDocument();
     expect(mockRegister).not.toHaveBeenCalled();
@@ -59,7 +59,7 @@ describe('RegisterForm', () => {
       target: { value: 'password123' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /create account/i }));
+    fireEvent.click(screen.getByRole('button', { name: /registration|create account/i }));
 
     await waitFor(() => {
       expect(mockRegister).toHaveBeenCalledWith('valid@test.com', 'password123');

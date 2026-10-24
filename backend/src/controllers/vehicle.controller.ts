@@ -8,6 +8,8 @@ const createVehicleSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   price: z.number().positive('Price must be positive'),
   quantity: z.number().int().min(0, 'Quantity must be non-negative'),
+  imageUrl: z.string().url('Invalid image URL').optional().or(z.literal('')).nullable(),
+  year: z.number().int().min(1900).max(2100).optional().nullable(),
 });
 
 const updateVehicleSchema = createVehicleSchema.partial();

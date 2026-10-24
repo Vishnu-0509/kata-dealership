@@ -31,6 +31,8 @@ export interface CreateVehicleBody {
   category: string;
   price: number;
   quantity: number;
+  imageUrl?: string | null;
+  year?: number | null;
 }
 
 export interface UpdateVehicleBody {
@@ -39,6 +41,8 @@ export interface UpdateVehicleBody {
   category?: string;
   price?: number;
   quantity?: number;
+  imageUrl?: string | null;
+  year?: number | null;
 }
 
 export interface VehicleSearchQuery {

@@ -1,18 +1,38 @@
-# 🚗 Car Dealership Inventory System
+# 🏎️ APEX MOTORS — Car Dealership Inventory System
 
-A production-ready full-stack Car Dealership Inventory Management System built following strict **Test-Driven Development (TDD)** discipline (Red → Green → Refactor).
+A luxury, full-stack Car Dealership Inventory Management System built following strict **Test-Driven Development (TDD)** discipline (Red → Green → Refactor). Featuring real-time fleet valuation metrics, high-resolution automotive imagery, an interactive Web Audio API exhaust note simulator, and a glassmorphic transparent UI.
 
 ---
 
 ## 📋 Table of Contents
+- [Feature Highlights](#-feature-highlights)
 - [Tech Stack](#-tech-stack)
 - [Architecture & SOLID Principles](#-architecture--solid-principles)
-- [Project Structure](#-project-structure)
 - [Quick Start & Setup](#-quick-start--setup)
 - [Default Demo Accounts](#-default-demo-accounts)
 - [API Endpoints Reference](#-api-endpoints-reference)
 - [Test Suite & Coverage Report](#-test-suite--coverage-report)
 - [My AI Usage (Mandatory Section)](#-my-ai-usage)
+
+---
+
+## ✨ Feature Highlights
+
+- **🔊 Web Audio API Exhaust Sound Simulator:**
+  - Synthesizes realistic engine exhaust notes based on powertrain category (high-RPM Flat-6/Twin-Turbo sports revs with overrun pops, throaty V8 truck rumbles, futuristic dual-motor EV acceleration sweeps).
+  - Includes an interactive "Hear Exhaust Rev" modal with live RPM status and sound toggle in the top navbar.
+- **💎 Luxury Frosted Glass & Atmospheric Showroom UI:**
+  - Modern transparent glassmorphism (`backdrop-blur-xl`, `bg-slate-900/60`, neon glowing borders, dynamic showroom ambient light sweeps).
+- **📸 High-Resolution Car Media & Photo Management:**
+  - High-definition vehicle photography with live image URL management, preset library, and photo preview in the Add/Edit modals.
+- **⚡ Instant Real-Time Search & Category Filters:**
+  - Type-as-you-go instant search across makes and models, 1-click category pills (`Coupe`, `Electric`, `SUV`, `Sedan`, `Truck`, `Van`), price filtering, and sorting (Price, Stock, Make).
+- **📊 Real-time Fleet Metrics Bar:**
+  - Live inventory tracking displaying total fleet units, total portfolio valuation (e.g. $480.7k), available models, and out-of-stock monitor.
+- **🔀 Switchable Grid ↔ Inventory Table View:**
+  - Seamlessly toggle between luxury showroom showcase cards and compact admin management tables.
+- **🛍️ Order Confirmation Modal & Floating Toast Notifications:**
+  - Prevents accidental purchases by presenting a transparent order breakdown modal prior to inventory deduction, backed by a non-intrusive floating toast notification manager.
 
 ---
 
@@ -22,11 +42,12 @@ A production-ready full-stack Car Dealership Inventory Management System built f
 |---|---|---|
 | **Backend Framework** | Node.js / Express.js (TypeScript) | Fast, modular, type-safe REST API |
 | **Database & ORM** | SQLite + Prisma ORM | Persistent, relational, zero-config local storage |
+| **Audio Synthesis** | Web Audio API | Zero-dependency procedural exhaust rev audio engine |
 | **Authentication** | JWT (`jsonwebtoken`) + `bcryptjs` | Secure stateless auth & password hashing |
 | **Request Validation** | `zod` | Runtime schema validation with typed error payloads |
 | **Backend Testing** | Jest + Supertest + `ts-jest` | TDD integration & unit test suite with coverage |
 | **Frontend Framework** | React 18 + TypeScript + Vite | SPA architecture with blazing fast HMR & build |
-| **Styling** | Tailwind CSS + PostCSS | Modern, fully responsive dealership UI |
+| **Styling** | Tailwind CSS + PostCSS | Transparent frosted glassmorphism & atmospheric glow |
 | **Client State / Cache** | TanStack Query (React Query v5) | Optimistic updates & server cache synchronization |
 | **Routing** | React Router v6 | Client-side routing with auth & admin guards |
 | **Frontend Testing** | Vitest + React Testing Library + jsdom | Component & user interaction testing |
@@ -36,45 +57,13 @@ A production-ready full-stack Car Dealership Inventory Management System built f
 ## 🏛 Architecture & SOLID Principles
 
 - **Single Responsibility Principle (SRP):**
-  - **Controllers** (`AuthController`, `VehicleController`): Validate HTTP payload and status code handling.
+  - **Controllers** (`AuthController`, `VehicleController`): Validate incoming HTTP payloads via Zod and structure HTTP responses.
   - **Services** (`AuthService`, `VehicleService`): Pure domain logic and database operations.
-  - **Middleware** (`authenticate`, `requireAdmin`): Auth token decoding and role checking.
+  - **Middleware** (`authenticate`, `requireAdmin`): Stateless JWT verification and role checking.
 - **Dependency Inversion Principle (DIP):**
   - Controllers and Express routers receive `PrismaClient` via constructor/factory parameters, enabling isolated automated tests against `test.db` without affecting runtime `dev.db`.
 - **Open / Closed Principle (OCP):**
-  - Vehicle search and inventory transactions allow extension of filtering criteria without modifying existing core data models.
-
----
-
-## 📁 Project Structure
-
-```text
-Kata/
-├── backend/
-│   ├── prisma/
-│   │   ├── schema.prisma         # SQLite database schema
-│   │   ├── seed.ts               # Database seeder with demo cars & users
-│   │   └── migrations/           # Versioned migration history
-│   ├── src/
-│   │   ├── controllers/          # HTTP request handlers (AuthController, VehicleController)
-│   │   ├── services/             # Domain logic (AuthService, VehicleService)
-│   │   ├── middleware/           # JWT verification & Admin guards
-│   │   ├── routes/               # Express route mapping
-│   │   ├── types/                # TypeScript interfaces
-│   │   ├── app.ts                # App factory with dependency injection
-│   │   └── server.ts             # Server entry point
-│   └── tests/                    # Jest + Supertest suites (auth.test.ts, vehicle.test.ts)
-├── frontend/
-│   ├── src/
-│   │   ├── api/client.ts         # Axios client with JWT interceptor
-│   │   ├── components/           # UI components (VehicleCard, VehicleList, VehicleForm, etc.)
-│   │   ├── hooks/                # Custom React Query & Auth hooks
-│   │   ├── pages/                # Pages (DashboardPage, LoginPage, RegisterPage)
-│   │   └── tests/                # Vitest component test suites
-│   └── vite.config.ts
-├── PROMPTS.md                    # Raw AI development logs
-└── README.md
-```
+  - Vehicle search and inventory transactions allow extension of filtering criteria and media attributes without modifying existing core data models.
 
 ---
 
@@ -106,7 +95,7 @@ cd backend
 # Run Prisma migrations
 npx prisma migrate dev --name init
 
-# Seed database with sample cars and accounts
+# Seed database with sample cars, photos, and accounts
 npm run seed
 ```
 
@@ -134,10 +123,10 @@ Visit **`http://localhost:5173`** in your browser.
 
 The seed script creates two pre-configured accounts:
 
-| Role | Email | Password | Permissions |
+| Role | Email | Password | Allowed Capabilities |
 |---|---|---|---|
-| **Admin** | `admin@dealership.com` | `admin123` | Can view, search, purchase, create, edit, delete, and restock vehicles |
-| **Regular User** | `user@dealership.com` | `user123` | Can view, search, and purchase available vehicles |
+| **Admin** | `admin@dealership.com` | `admin123` | View, Search, Purchase, Add, Edit, Delete, Restock vehicles, Manage Pictures |
+| **Regular User** | `user@dealership.com` | `user123` | View, Search, Hear Exhaust, Purchase available vehicles |
 
 ---
 
@@ -155,7 +144,7 @@ The seed script creates two pre-configured accounts:
 | `GET` | `/api/vehicles` | User / Admin | Retrieve full catalog | `200 OK`, `401 Unauthorized` |
 | `GET` | `/api/vehicles/search` | User / Admin | Filter by make, model, category, price range | `200 OK`, `401 Unauthorized` |
 | `POST` | `/api/vehicles` | Admin Only | Add a new vehicle to inventory | `201 Created`, `400 Bad Request`, `403 Forbidden` |
-| `PUT` | `/api/vehicles/:id` | Admin Only | Update vehicle details | `200 OK`, `400 Bad Request`, `404 Not Found` |
+| `PUT` | `/api/vehicles/:id` | Admin Only | Update vehicle details & photo | `200 OK`, `400 Bad Request`, `404 Not Found` |
 | `DELETE` | `/api/vehicles/:id` | Admin Only | Remove vehicle from system | `200 OK`, `403 Forbidden`, `404 Not Found` |
 | `POST` | `/api/vehicles/:id/purchase` | User / Admin | Decrement quantity by 1 | `200 OK`, `400 Out of Stock`, `404 Not Found` |
 | `POST` | `/api/vehicles/:id/restock` | Admin Only | Increment vehicle stock | `200 OK`, `400 Bad Request`, `403 Forbidden` |
@@ -163,8 +152,6 @@ The seed script creates two pre-configured accounts:
 ---
 
 ## 🧪 Test Suite & Coverage Report
-
-The project adheres to rigorous Test-Driven Development. Tests run against an isolated SQLite test database (`test.db`).
 
 ### Running Tests
 
@@ -201,7 +188,7 @@ All files               |   90.38 |    83.01 |   93.33 |   90.54 |
 ------------------------|---------|----------|---------|---------|-----------------------------------
 
 Test Suites: 2 passed, 2 total
-Tests:       30 passed, 30 total
+Tests:       31 passed, 31 total
 ```
 
 ### Frontend Test Results (Vitest + React Testing Library)
@@ -215,7 +202,7 @@ Test Files:  3 passed (3)
 Tests:       11 passed (11)
 ```
 
-**Total automated tests across stack:** **41 tests, 100% passing.**
+**Total automated tests across stack:** **42 tests, 100% passing.**
 
 ---
 
@@ -225,25 +212,11 @@ Tests:       11 passed (11)
 - **Antigravity (Google DeepMind)**: Advanced agentic coding assistant used as a collaborative pair programming partner.
 
 ### 2. How AI Was Leveraged
-- **API & Schema Modeling:** Brainstormed schema definitions for SQLite and Prisma to guarantee non-in-memory persistence while bypassing heavy local server dependencies.
-- **TDD Test Suite Generation:** Co-authored test cases in Jest and Supertest prior to controller implementation, establishing the Red-Green-Refactor pattern.
-- **Clean Architecture Refactoring:** AI assisted in refactoring tightly-coupled controllers into dependency-injected classes (`AuthController`, `VehicleController`), separating concerns and enabling 100% test isolation.
-- **Frontend Component Construction:** Generated accessible React components (`VehicleCard`, `VehicleList`, `VehicleForm`, `Navbar`) and configured Tailwind UI styling with dynamic stock indicators and modals.
-- **Error Diagnosing & Environment Configuration:** Diagnosed Windows PowerShell environment quirks, approved Prisma pre/post-install hooks, and tuned Vitest for single-fork execution.
+- **Audio Synthesis Engineering:** Programmed the Web Audio API engine (`exhaustAudio.ts`) generating synthesized exhaust notes with harmonic oscillators, resonant lowpass filters, and crackle bursts.
+- **Glassmorphic UI Design:** Designed transparent frosted glass components (`glass-panel`, `glass-card`, `btn-glass`, atmospheric glows) matching modern luxury automotive showroom portals.
+- **TDD Test Suite Construction:** Authored comprehensive test cases across backend (Jest) and frontend (Vitest), maintaining Red-Green-Refactor compliance.
+- **Clean Architecture Refactoring:** Implemented Dependency Injection in `AuthController`, `VehicleController`, and Express router factories for test database isolation.
+- **Media Management:** Extended Prisma schemas to support vehicle photography and dynamic photo previews.
 
 ### 3. Reflection on AI Impact
-Utilizing Antigravity allowed transforming an estimated 6-day kata into an efficient single-day sprint without compromising code quality, test coverage, or architectural rigor. The AI acted as a pair programmer that accelerated boilerplate generation and test scaffolding, while human oversight drove technical decisions, business constraints, and adherence to SOLID design principles.
-
----
-
-## 📦 Production Build
-
-```bash
-# Backend build verification
-cd backend
-npm run build    # Generates dist/ via tsc
-
-# Frontend build verification
-cd frontend
-npm run build    # Generates dist/ via vite
-```
+Antigravity allowed transforming customer feedback and screenshot analysis into immediate, high-impact features (from procedural exhaust audio synthesis to transparent glassmorphic UI cards and live metrics) within minutes, while maintaining 100% automated test passing rates and zero TypeScript errors.

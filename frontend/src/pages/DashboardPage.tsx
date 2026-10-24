@@ -1,137 +1,284 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Navbar } from '../components/layout/Navbar';
 import { VehicleList } from '../components/vehicles/VehicleList';
-import { useVehicles, useVehicleSearch } from '../hooks/useVehicles';
+import { useVehicles } from '../hooks/useVehicles';
 import { useAuth } from '../hooks/useAuth';
-import { VehicleFilters } from '../api/client';
 
-/**
- * DashboardPage — main inventory view with search/filter controls.
- */
 export function DashboardPage() {
   const { isAdmin } = useAuth();
-  const [filters, setFilters] = useState<VehicleFilters>({});
-  const [searchInput, setSearchInput] = useState({ make: '', model: '', category: '', minPrice: '', maxPrice: '' });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [minPrice, setMinPrice] = useState<string>('');
+  const [maxPrice, setMaxPrice] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('featured');
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const hasFilters = Object.values(filters).some((v) => v && v.trim() !== '');
+  const { data: allVehicles = [], isLoading, isError, refetch } = useVehicles();
 
-  const allVehicles = useVehicles();
-  const searchResults = useVehicleSearch(filters);
+  const categories = ['All', 'Coupe', 'Electric', 'SUV', 'Sedan', 'Truck', 'Van'];
 
-  const vehicles = hasFilters ? (searchResults.data ?? []) : (allVehicles.data ?? []);
-  const isLoading = hasFilters ? searchResults.isLoading : allVehicles.isLoading;
-  const isError = hasFilters ? searchResults.isError : allVehicles.isError;
+  // Calculate live fleet metrics
+  const metrics = useMemo(() => {
+    const totalVehicles = allVehicles.reduce((acc, v) => acc + v.quantity, 0);
+    const totalValue = allVehicles.reduce((acc, v) => acc + v.price * v.quantity, 0);
+    const outOfStockCount = allVehicles.filter((v) => v.quantity === 0).length;
+    const modelCount = allVehicles.length;
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const active: VehicleFilters = {};
-    if (searchInput.make) active.make = searchInput.make;
-    if (searchInput.model) active.model = searchInput.model;
-    if (searchInput.category) active.category = searchInput.category;
-    if (searchInput.minPrice) active.minPrice = searchInput.minPrice;
-    if (searchInput.maxPrice) active.maxPrice = searchInput.maxPrice;
-    setFilters(active);
+    return { totalVehicles, totalValue, outOfStockCount, modelCount };
+  }, [allVehicles]);
+
+  // Instant client-side filtering and sorting
+  const filteredVehicles = useMemo(() => {
+    return allVehicles
+      .filter((v) => {
+        // Search term (Make or Model)
+        if (searchTerm.trim()) {
+          const q = searchTerm.toLowerCase();
+          const matchMake = v.make.toLowerCase().includes(q);
+          const matchModel = v.model.toLowerCase().includes(q);
+          if (!matchMake && !matchModel) return false;
+        }
+
+        // Category pill
+        if (selectedCategory !== 'All' && v.category !== selectedCategory) {
+          return false;
+        }
+
+        // Price boundaries
+        if (minPrice && v.price < parseFloat(minPrice)) return false;
+        if (maxPrice && v.price > parseFloat(maxPrice)) return false;
+
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'price-asc') return a.price - b.price;
+        if (sortBy === 'price-desc') return b.price - a.price;
+        if (sortBy === 'stock-desc') return b.quantity - a.quantity;
+        if (sortBy === 'make-asc') return a.make.localeCompare(b.make);
+        return 0; // featured (default)
+      });
+  }, [allVehicles, searchTerm, selectedCategory, minPrice, maxPrice, sortBy]);
+
+  const hasActiveFilters =
+    searchTerm !== '' ||
+    selectedCategory !== 'All' ||
+    minPrice !== '' ||
+    maxPrice !== '' ||
+    sortBy !== 'featured';
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('All');
+    setMinPrice('');
+    setMaxPrice('');
+    setSortBy('featured');
   };
-
-  const handleClear = () => {
-    setSearchInput({ make: '', model: '', category: '', minPrice: '', maxPrice: '' });
-    setFilters({});
-  };
-
-  const categories = ['', 'Sedan', 'SUV', 'Truck', 'Coupe', 'Hatchback', 'Van', 'Convertible', 'Electric'];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-950 text-slate-100 relative">
+      {/* Ambient Lighting & Glow */}
+      <div className="ambient-glow" />
+
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Vehicle Inventory</h1>
-          <p className="text-gray-500 mt-1">Browse and purchase available vehicles</p>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 space-y-8">
+        {/* Hero Section with Live Backdrop Vibe */}
+        <div className="glass-panel p-6 sm:p-8 relative overflow-hidden border border-cyan-500/20 shadow-2xl">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="max-w-xl space-y-2">
+              <span className="badge-glass bg-cyan-500/10 text-cyan-400 border-cyan-500/30 text-xs font-bold tracking-wider uppercase">
+                ✦ Precision Engineering Showcase
+              </span>
+              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                Curated Automotive Inventory
+              </h1>
+              <p className="text-sm text-slate-400 leading-relaxed">
+                Explore high-performance sports cars, luxury electric vehicles, and rugged SUVs. Listen to realistic exhaust acoustics and complete transparent purchases online.
+              </p>
+            </div>
+
+            {/* Quick Action Button for Admin */}
+            {isAdmin && (
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="btn-primary py-3 px-6 text-sm font-bold flex items-center justify-center gap-2 shadow-cyan-500/30"
+                >
+                  <span>✨</span> Add New Vehicle
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Real-time Fleet Metrics Bar */}
+          <div className="mt-8 pt-6 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="glass-card p-4 border-white/5 bg-slate-950/40">
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Fleet Units</p>
+              <p className="text-2xl font-black text-white mt-1">{metrics.totalVehicles}</p>
+            </div>
+            <div className="glass-card p-4 border-white/5 bg-slate-950/40">
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Portfolio Value</p>
+              <p className="text-2xl font-black text-cyan-400 mt-1">${(metrics.totalValue / 1000).toFixed(1)}k</p>
+            </div>
+            <div className="glass-card p-4 border-white/5 bg-slate-950/40">
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Available Models</p>
+              <p className="text-2xl font-black text-slate-200 mt-1">{metrics.modelCount}</p>
+            </div>
+            <div className="glass-card p-4 border-white/5 bg-slate-950/40">
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Out of Stock</p>
+              <p className={`text-2xl font-black mt-1 ${metrics.outOfStockCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                {metrics.outOfStockCount}
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Search & Filter Panel */}
-        <div className="card mb-8">
-          <form onSubmit={handleSearch} className="flex flex-wrap gap-3 items-end">
-            <div className="flex-1 min-w-[140px]">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Make</label>
-              <input
-                className="input-field"
-                placeholder="Toyota…"
-                value={searchInput.make}
-                onChange={(e) => setSearchInput((s) => ({ ...s, make: e.target.value }))}
-              />
-            </div>
-            <div className="flex-1 min-w-[140px]">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Model</label>
-              <input
-                className="input-field"
-                placeholder="Corolla…"
-                value={searchInput.model}
-                onChange={(e) => setSearchInput((s) => ({ ...s, model: e.target.value }))}
-              />
-            </div>
-            <div className="flex-1 min-w-[140px]">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
-              <select
-                className="input-field"
-                value={searchInput.category}
-                onChange={(e) => setSearchInput((s) => ({ ...s, category: e.target.value }))}
+        {/* Category Pills Navigation */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          {categories.map((cat) => {
+            const isActive = selectedCategory === cat;
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 backdrop-blur-md border ${
+                  isActive
+                    ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-md shadow-cyan-500/20'
+                    : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200 hover:bg-white/10'
+                }`}
               >
-                {categories.map((c) => (
-                  <option key={c} value={c}>{c || 'All categories'}</option>
-                ))}
+                {cat === 'All' ? '🚘 All Fleet' : cat}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Comprehensive Filter & Controls Bar */}
+        <div className="glass-panel p-5 border border-white/10 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Live Search Input */}
+            <div className="relative">
+              <span className="absolute left-3.5 top-3 text-slate-500 text-xs">🔍</span>
+              <input
+                className="glass-input pl-9"
+                placeholder="Search make or model (e.g. Porsche, Tesla)..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            {/* Min Price */}
+            <div>
+              <input
+                type="number"
+                className="glass-input"
+                placeholder="Min Price ($ USD)"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                min="0"
+              />
+            </div>
+
+            {/* Max Price */}
+            <div>
+              <input
+                type="number"
+                className="glass-input"
+                placeholder="Max Price ($ USD)"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                min="0"
+              />
+            </div>
+
+            {/* Sorting Dropdown */}
+            <div>
+              <select
+                className="glass-input bg-slate-950 text-slate-200"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="featured" className="bg-slate-900">Sort: Featured</option>
+                <option value="price-asc" className="bg-slate-900">Price: Low to High</option>
+                <option value="price-desc" className="bg-slate-900">Price: High to Low</option>
+                <option value="stock-desc" className="bg-slate-900">Stock: Most Available</option>
+                <option value="make-asc" className="bg-slate-900">Make: A to Z</option>
               </select>
             </div>
-            <div className="flex-1 min-w-[120px]">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Min Price</label>
-              <input
-                type="number"
-                className="input-field"
-                placeholder="0"
-                value={searchInput.minPrice}
-                onChange={(e) => setSearchInput((s) => ({ ...s, minPrice: e.target.value }))}
-              />
-            </div>
-            <div className="flex-1 min-w-[120px]">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Max Price</label>
-              <input
-                type="number"
-                className="input-field"
-                placeholder="∞"
-                value={searchInput.maxPrice}
-                onChange={(e) => setSearchInput((s) => ({ ...s, maxPrice: e.target.value }))}
-              />
-            </div>
-            <div className="flex gap-2">
-              <button type="submit" className="btn-primary">🔍 Search</button>
-              {hasFilters && (
-                <button type="button" className="btn-secondary" onClick={handleClear}>✕ Clear</button>
+          </div>
+
+          {/* View Mode & Filter Meta Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-800/60 text-xs text-slate-400">
+            <div className="flex items-center gap-3">
+              <span>
+                Showing <strong className="text-white font-bold">{filteredVehicles.length}</strong> of{' '}
+                {allVehicles.length} models
+              </span>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="text-cyan-400 hover:text-cyan-300 underline font-medium"
+                >
+                  Clear all filters
+                </button>
               )}
             </div>
-          </form>
 
-          {hasFilters && (
-            <p className="text-sm text-gray-500 mt-3">
-              Showing {vehicles.length} result{vehicles.length !== 1 ? 's' : ''} for active filters
-            </p>
-          )}
+            {/* View Mode Switcher */}
+            <div className="flex items-center gap-1.5 bg-slate-950/70 p-1 rounded-xl border border-white/10">
+              <button
+                type="button"
+                onClick={() => setViewMode('grid')}
+                className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-colors ${
+                  viewMode === 'grid'
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <span>▦</span> Grid
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('table')}
+                className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-colors ${
+                  viewMode === 'table'
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <span>☰</span> Table
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Vehicle Grid */}
+        {/* Content Area */}
         {isLoading ? (
-          <div className="text-center py-16 text-gray-400">
-            <div className="text-4xl mb-3 animate-spin">⚙️</div>
-            <p>Loading vehicles…</p>
+          <div className="glass-card py-24 text-center">
+            <div className="w-12 h-12 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-sm text-slate-400">Connecting to showroom inventory...</p>
           </div>
         ) : isError ? (
-          <div className="text-center py-16 text-red-400">
-            <div className="text-4xl mb-3">⚠️</div>
-            <p>Failed to load vehicles. Please try again.</p>
+          <div className="glass-card py-16 text-center border-rose-500/30">
+            <div className="text-5xl mb-3">⚠️</div>
+            <h3 className="text-lg font-bold text-white">Connection Error</h3>
+            <p className="text-sm text-slate-400 mt-1 mb-4">Could not retrieve live inventory from backend.</p>
+            <button onClick={() => refetch()} className="btn-primary py-2 px-5 text-xs">
+              Retry Connection
+            </button>
           </div>
         ) : (
-          <VehicleList vehicles={vehicles} isAdmin={isAdmin} />
+          <VehicleList
+            vehicles={filteredVehicles}
+            isAdmin={isAdmin}
+            viewMode={viewMode}
+            onOpenCreate={() => setShowCreateModal(true)}
+            showCreate={showCreateModal}
+            onCloseCreate={() => setShowCreateModal(false)}
+          />
         )}
       </main>
     </div>

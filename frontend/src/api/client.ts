@@ -50,6 +50,8 @@ export interface Vehicle {
   category: string;
   price: number;
   quantity: number;
+  imageUrl?: string | null;
+  year?: number | null;
   createdAt: string;
   updatedAt: string;
 }

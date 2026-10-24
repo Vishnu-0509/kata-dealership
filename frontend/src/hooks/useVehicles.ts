@@ -43,7 +43,8 @@ export function usePurchaseVehicle() {
 export function useCreateVehicle() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: vehicleApi.create,
+    mutationFn: (data: Parameters<typeof vehicleApi.create>[0]) =>
+      vehicleApi.create(data).then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
     },

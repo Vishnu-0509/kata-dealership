@@ -173,6 +173,21 @@ describe('POST /api/vehicles', () => {
     expect(res.body.model).toBe(sampleVehicle.model);
   });
 
+  it('should allow admin to create a vehicle with imageUrl and year', async () => {
+    const res = await request(app)
+      .post('/api/vehicles')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        ...sampleVehicle,
+        imageUrl: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e',
+        year: 2024,
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.imageUrl).toBe('https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e');
+    expect(res.body.year).toBe(2024);
+  });
+
   it('should return 400 for missing required fields', async () => {
     const res = await request(app)
       .post('/api/vehicles')
