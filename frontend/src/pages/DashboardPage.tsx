@@ -174,20 +174,22 @@ export function DashboardPage() {
                 </div>
               </div>
 
-              {/* Action Buttons: Specifications & Admin Add */}
+              {/* Action Buttons: Specifications (Users Only) & Admin Add (Admin Only) */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowCompareModal(true)}
-                  className="btn-glass py-3 px-5 text-sm font-bold flex items-center justify-center gap-2 border-cyan-500/40 text-cyan-300 hover:text-white"
-                >
-                  <span>⚖️</span> Specifications & Compare
-                  {comparedVehicleIds.length > 0 && (
-                    <span className="w-5 h-5 rounded-full bg-cyan-500 text-slate-950 text-xs font-black flex items-center justify-center">
-                      {comparedVehicleIds.length}
-                    </span>
-                  )}
-                </button>
+                {!isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => setShowCompareModal(true)}
+                    className="btn-glass py-3 px-5 text-sm font-bold flex items-center justify-center gap-2 border-cyan-500/40 text-cyan-300 hover:text-white"
+                  >
+                    <span>⚖️</span> Specifications & Compare
+                    {comparedVehicleIds.length > 0 && (
+                      <span className="w-5 h-5 rounded-full bg-cyan-500 text-slate-950 text-xs font-black flex items-center justify-center">
+                        {comparedVehicleIds.length}
+                      </span>
+                    )}
+                  </button>
+                )}
 
                 {isAdmin && (
                   <button
@@ -201,22 +203,22 @@ export function DashboardPage() {
             </div>
 
             {/* Real-time Fleet Metrics Bar */}
-            <div className="mt-8 pt-6 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="glass-card p-4 border-white/5 bg-slate-950/40">
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Fleet Units</p>
-                <p className="text-2xl font-black text-white mt-1">{metrics.totalVehicles}</p>
+            <div className="mt-8 pt-6 border-t border-white/15 grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="glass-card p-4 border-white/20 bg-white/[0.08]">
+                <p className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Fleet Units</p>
+                <p className="text-2xl font-black text-white mt-1 drop-shadow">{metrics.totalVehicles}</p>
               </div>
-              <div className="glass-card p-4 border-white/5 bg-slate-950/40">
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Portfolio Value</p>
-                <p className="text-2xl font-black text-cyan-400 mt-1">${(metrics.totalValue / 1000).toFixed(1)}k</p>
+              <div className="glass-card p-4 border-white/20 bg-white/[0.08]">
+                <p className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Portfolio Value</p>
+                <p className="text-2xl font-black text-cyan-300 mt-1 drop-shadow">${(metrics.totalValue / 1000).toFixed(1)}k</p>
               </div>
-              <div className="glass-card p-4 border-white/5 bg-slate-950/40">
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Available Models</p>
-                <p className="text-2xl font-black text-slate-200 mt-1">{metrics.modelCount}</p>
+              <div className="glass-card p-4 border-white/20 bg-white/[0.08]">
+                <p className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Available Models</p>
+                <p className="text-2xl font-black text-slate-100 mt-1 drop-shadow">{metrics.modelCount}</p>
               </div>
-              <div className="glass-card p-4 border-white/5 bg-slate-950/40">
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Out of Stock</p>
-                <p className={`text-2xl font-black mt-1 ${metrics.outOfStockCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+              <div className="glass-card p-4 border-white/20 bg-white/[0.08]">
+                <p className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Out of Stock</p>
+                <p className={`text-2xl font-black mt-1 drop-shadow ${metrics.outOfStockCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
                   {metrics.outOfStockCount}
                 </p>
               </div>
@@ -234,8 +236,8 @@ export function DashboardPage() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 backdrop-blur-md border ${
                     isActive
-                      ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-md shadow-cyan-500/20'
-                      : 'bg-white/5 border-white/10 text-slate-400 hover:text-slate-200 hover:bg-white/10'
+                      ? 'bg-white/25 border-cyan-400 text-cyan-300 shadow-md shadow-cyan-500/20'
+                      : 'bg-white/10 border-white/20 text-slate-300 hover:text-white hover:bg-white/15'
                   }`}
                 >
                   {cat === 'All' ? '🚘 All Fleet' : cat}
@@ -245,11 +247,11 @@ export function DashboardPage() {
           </div>
 
           {/* Comprehensive Filter & Controls Bar */}
-          <div className="glass-panel p-5 border border-white/10 space-y-4">
+          <div className="glass-panel p-5 border border-white/25 space-y-4 shadow-xl">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Live Search Input */}
               <div className="relative">
-                <span className="absolute left-3.5 top-3 text-slate-500 text-xs">🔍</span>
+                <span className="absolute left-3.5 top-3 text-slate-400 text-xs">🔍</span>
                 <input
                   className="glass-input pl-9"
                   placeholder="Search make or model (e.g. Porsche, Tesla)..."
@@ -285,21 +287,21 @@ export function DashboardPage() {
               {/* Sorting Dropdown */}
               <div>
                 <select
-                  className="glass-input bg-slate-950 text-slate-200"
+                  className="glass-input text-white"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
-                  <option value="featured" className="bg-slate-900">Sort: Featured</option>
-                  <option value="price-asc" className="bg-slate-900">Price: Low to High</option>
-                  <option value="price-desc" className="bg-slate-900">Price: High to Low</option>
-                  <option value="stock-desc" className="bg-slate-900">Stock: Most Available</option>
-                  <option value="make-asc" className="bg-slate-900">Make: A to Z</option>
+                  <option value="featured" className="bg-slate-900 text-white">Sort: Featured</option>
+                  <option value="price-asc" className="bg-slate-900 text-white">Price: Low to High</option>
+                  <option value="price-desc" className="bg-slate-900 text-white">Price: High to Low</option>
+                  <option value="stock-desc" className="bg-slate-900 text-white">Stock: Most Available</option>
+                  <option value="make-asc" className="bg-slate-900 text-white">Make: A to Z</option>
                 </select>
               </div>
             </div>
 
             {/* View Mode & Filter Meta Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-800/60 text-xs text-slate-400">
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-white/15 text-xs text-slate-300">
               <div className="flex items-center gap-3">
                 <span>
                   Showing <strong className="text-white font-bold">{filteredVehicles.length}</strong> of{' '}
@@ -309,7 +311,7 @@ export function DashboardPage() {
                   <button
                     type="button"
                     onClick={clearFilters}
-                    className="text-cyan-400 hover:text-cyan-300 underline font-medium"
+                    className="text-cyan-300 hover:text-cyan-200 underline font-semibold"
                   >
                     Clear all filters
                   </button>
@@ -317,14 +319,14 @@ export function DashboardPage() {
               </div>
 
               {/* View Mode Switcher */}
-              <div className="flex items-center gap-1.5 bg-slate-950/70 p-1 rounded-xl border border-white/10">
+              <div className="flex items-center gap-1.5 bg-white/10 p-1 rounded-xl border border-white/20">
                 <button
                   type="button"
                   onClick={() => setViewMode('grid')}
                   className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-colors ${
                     viewMode === 'grid'
-                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400'
+                      : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   <span>▦</span> Grid
@@ -334,8 +336,8 @@ export function DashboardPage() {
                   onClick={() => setViewMode('table')}
                   className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-colors ${
                     viewMode === 'table'
-                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400'
+                      : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   <span>☰</span> Table
@@ -374,8 +376,8 @@ export function DashboardPage() {
         </main>
       </div>
 
-      {/* Floating Bottom Comparison Drawer Dock */}
-      {comparedVehicleIds.length > 0 && (
+      {/* Floating Bottom Comparison Drawer Dock (Users Only) */}
+      {!isAdmin && comparedVehicleIds.length > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-xl px-4 animate-slide-up">
           <div className="glass-panel p-3.5 border border-cyan-500/50 shadow-2xl flex items-center justify-between gap-3 bg-slate-950/95 backdrop-blur-2xl">
             <div className="flex items-center gap-2">
@@ -424,8 +426,8 @@ export function DashboardPage() {
         />
       )}
 
-      {/* Vehicle Comparison & Specifications Modal */}
-      {showCompareModal && (
+      {/* Vehicle Comparison & Specifications Modal (Users Only) */}
+      {!isAdmin && showCompareModal && (
         <VehicleComparisonModal
           allVehicles={allVehicles}
           initialSelectedIds={comparedVehicleIds}

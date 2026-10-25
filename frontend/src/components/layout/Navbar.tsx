@@ -27,7 +27,7 @@ export function Navbar({ onOpenAbout, onOpenContact, onOpenCompare, comparisonCo
   };
 
   return (
-    <nav className="sticky top-0 z-40 backdrop-blur-xl bg-slate-950/85 border-b border-white/10">
+    <nav className="sticky top-0 z-40 backdrop-blur-2xl bg-white/10 border-b border-white/20 shadow-lg shadow-black/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-18 py-3">
           {/* Logo & Dealership Brand */}
@@ -36,10 +36,10 @@ export function Navbar({ onOpenAbout, onOpenContact, onOpenCompare, comparisonCo
               🏎️
             </div>
             <div>
-              <span className="font-black text-xl tracking-tight text-white flex items-center gap-1.5">
+              <span className="font-black text-xl tracking-tight text-white flex items-center gap-1.5 drop-shadow">
                 KATA <span className="text-cyan-400 font-light text-base">MOTORS</span>
               </span>
-              <p className="text-[10px] text-slate-400 tracking-wider uppercase font-semibold">
+              <p className="text-[10px] text-slate-300 tracking-wider uppercase font-semibold">
                 Car Dealership Inventory System
               </p>
             </div>
@@ -47,39 +47,41 @@ export function Navbar({ onOpenAbout, onOpenContact, onOpenCompare, comparisonCo
 
           {/* Center Navigation Links (About, Contact, Hotline) */}
           <div className="hidden md:flex items-center gap-6 text-xs font-semibold">
-            <button
-              type="button"
-              onClick={onOpenCompare}
-              className={`transition-colors flex items-center gap-1.5 ${
-                comparisonCount > 0
-                  ? 'text-cyan-400 font-bold'
-                  : 'text-slate-300 hover:text-cyan-400'
-              }`}
-            >
-              <span>⚖️</span> Specifications
-              {comparisonCount > 0 && (
-                <span className="w-5 h-5 rounded-full bg-cyan-500 text-slate-950 text-[10px] font-black flex items-center justify-center">
-                  {comparisonCount}
-                </span>
-              )}
-            </button>
+            {!isAdmin && (
+              <button
+                type="button"
+                onClick={onOpenCompare}
+                className={`transition-colors flex items-center gap-1.5 ${
+                  comparisonCount > 0
+                    ? 'text-cyan-400 font-bold'
+                    : 'text-slate-200 hover:text-cyan-300'
+                }`}
+              >
+                <span>⚖️</span> Specifications
+                {comparisonCount > 0 && (
+                  <span className="w-5 h-5 rounded-full bg-cyan-400 text-slate-950 text-[10px] font-black flex items-center justify-center">
+                    {comparisonCount}
+                  </span>
+                )}
+              </button>
+            )}
             <button
               type="button"
               onClick={onOpenAbout}
-              className="text-slate-300 hover:text-cyan-400 transition-colors"
+              className="text-slate-200 hover:text-cyan-300 transition-colors"
             >
               About Heritage
             </button>
             <button
               type="button"
               onClick={onOpenContact}
-              className="text-slate-300 hover:text-cyan-400 transition-colors flex items-center gap-1.5"
+              className="text-slate-200 hover:text-cyan-300 transition-colors flex items-center gap-1.5"
             >
               <span>📞</span> Contact & Support
             </button>
             <a
               href="tel:+18005552739"
-              className="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1"
+              className="text-cyan-300 hover:text-cyan-200 font-bold flex items-center gap-1"
               title="Direct Toll-Free Line"
             >
               <span>📱</span> +1 (800) 555-KATA

@@ -5,7 +5,7 @@ interface Props {
 
 export function Footer({ onOpenAbout, onOpenContact }: Props) {
   return (
-    <footer className="relative z-10 border-t border-white/10 bg-slate-950/90 backdrop-blur-2xl text-slate-400 mt-16">
+    <footer className="relative z-10 border-t border-white/20 bg-white/10 backdrop-blur-3xl text-slate-300 mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
           {/* Brand Col */}

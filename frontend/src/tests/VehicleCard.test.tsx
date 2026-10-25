@@ -66,4 +66,18 @@ describe('VehicleCard', () => {
     expect(screen.queryByRole('button', { name: /edit/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /delete/i })).not.toBeInTheDocument();
   });
+
+  it('shows compare button for regular users only and hides it for admin users', () => {
+    // Regular user
+    const { rerender } = render(<VehicleCard vehicle={mockVehicle} isAdmin={false} />, { wrapper });
+    expect(screen.getByRole('button', { name: /compare/i })).toBeInTheDocument();
+
+    // Admin user
+    rerender(
+      <QueryClientProvider client={new QueryClient()}>
+        <VehicleCard vehicle={mockVehicle} isAdmin={true} />
+      </QueryClientProvider>
+    );
+    expect(screen.queryByRole('button', { name: /compare/i })).not.toBeInTheDocument();
+  });
 });

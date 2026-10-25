@@ -107,18 +107,20 @@ export function VehicleTable({
                     className="py-3 px-4 text-right space-x-2"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button
-                      type="button"
-                      onClick={() => onToggleCompare?.(v)}
-                      className={`py-1 px-2.5 rounded-lg text-xs font-semibold border transition-all ${
-                        comparedIds.includes(v.id)
-                          ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200'
-                          : 'bg-white/5 hover:bg-white/10 border-white/10 text-slate-300'
-                      }`}
-                      title="Toggle Compare"
-                    >
-                      {comparedIds.includes(v.id) ? '✓ Comparing' : '⚖️ Compare'}
-                    </button>
+                    {!isAdmin && (
+                      <button
+                        type="button"
+                        onClick={() => onToggleCompare?.(v)}
+                        className={`py-1 px-2.5 rounded-lg text-xs font-semibold border transition-all ${
+                          comparedIds.includes(v.id)
+                            ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200'
+                            : 'bg-white/5 hover:bg-white/10 border-white/10 text-slate-300'
+                        }`}
+                        title="Toggle Compare"
+                      >
+                        {comparedIds.includes(v.id) ? '✓ Comparing' : '⚖️ Compare'}
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => onPurchaseRequest(v)}

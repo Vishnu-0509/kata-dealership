@@ -134,23 +134,25 @@ export function VehicleCard({
             )}
           </button>
 
-          {/* Compare & Inspect Secondary Bar */}
+          {/* Compare & Inspect Secondary Bar (Compare available for regular users only) */}
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleCompare?.(vehicle);
-              }}
-              className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                isCompared
-                  ? 'bg-cyan-500/25 border border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
-                  : 'bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300'
-              }`}
-            >
-              <span>{isCompared ? '✓' : '⚖️'}</span>
-              <span>{isCompared ? 'Comparing' : 'Compare'}</span>
-            </button>
+            {!isAdmin && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleCompare?.(vehicle);
+                }}
+                className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                  isCompared
+                    ? 'bg-cyan-500/25 border border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
+                    : 'bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300'
+                }`}
+              >
+                <span>{isCompared ? '✓' : '⚖️'}</span>
+                <span>{isCompared ? 'Comparing' : 'Compare'}</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={(e) => {
