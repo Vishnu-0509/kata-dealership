@@ -196,12 +196,13 @@ npm run preview
 
 ## 👥 Default Demo Accounts
 
-The seed script creates two pre-configured accounts:
+The seed script creates pre-configured accounts:
 
-| Role | Email | Password | Allowed Capabilities |
-|---|---|---|---|
-| **Admin** | `admin@dealership.com` | `admin123` | Full inventory CRUD, Restocking, Edit Details, Add Vehicles, Image/Audio Management |
-| **Regular User** | `user@dealership.com` | `user123` | Browse catalog, Filter, Hear Exhaust, Compare Specifications, Purchase Available Stock |
+| Role | Email | Password | Access Method | Allowed Capabilities |
+|---|---|---|---|---|
+| **Admin** | `admin@dealership.com` | `admin123` | Manual form login (Admin Demo button removed) | Full inventory CRUD, Restocking, Edit Details, Add Vehicles, Image/Audio Management |
+| **Registered Customer** | `user@dealership.com` | `user123` | Manual form login or Registration | Browse catalog, Filter, Hear Exhaust, Compare Specifications, **Purchase Available Stock** |
+| **Demo Client** | `demo@dealership.com` | `demo123` | Click **`[👤 Explore as Client Demo]`** button | **View-Only Mode**: Browse catalog, hear exhaust acoustics, and compare specs. **Cannot purchase or make changes without logging in.** |
 
 ---
 
@@ -286,10 +287,10 @@ Tests:       48 passed, 48 total
  ✓ src/tests/VehicleListEmptyModal.test.tsx          (2 tests passed)
 
 Test Files:  6 passed, 6 total
-Tests:       20 passed, 20 total
+Tests:       21 passed, 21 total
 ```
 
-**Total automated tests across stack:** **68 passed of 68 tests (100% passing).**
+**Total automated tests across stack:** **71 passed of 71 tests (100% passing).**
 
 ---
 

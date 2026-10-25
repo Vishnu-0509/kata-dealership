@@ -13,6 +13,7 @@ interface Props {
   isPurchasing?: boolean;
   isCompared?: boolean;
   onToggleCompare?: (vehicle: Vehicle) => void;
+  isDemo?: boolean;
 }
 
 export function VehicleCard({
@@ -26,6 +27,7 @@ export function VehicleCard({
   isPurchasing,
   isCompared,
   onToggleCompare,
+  isDemo,
 }: Props) {
   const [isRevving, setIsRevving] = useState(false);
 
@@ -129,6 +131,8 @@ export function VehicleCard({
               'Processing…'
             ) : isOutOfStock ? (
               'Unavailable'
+            ) : isDemo ? (
+              <>🛒 Purchase (Login Required)</>
             ) : (
               <>🛒 Purchase Now</>
             )}

@@ -30,7 +30,16 @@ async function main() {
     },
   });
 
-  console.log(`👤 Created users: Admin (${admin.email}), User (${user.email})`);
+  const demoPassword = await bcrypt.hash('demo123', 10);
+  const demoUser = await prisma.user.create({
+    data: {
+      email: 'demo@dealership.com',
+      password: demoPassword,
+      role: 'DEMO',
+    },
+  });
+
+  console.log(`👤 Created users: Admin (${admin.email}), User (${user.email}), Demo Client (${demoUser.email})`);
 
   // Seed Vehicles with High-Res Photos, Specs and Years
   const vehicles = [

@@ -11,7 +11,7 @@ interface Props {
 }
 
 export function Navbar({ onOpenAbout, onOpenContact, onOpenCompare, comparisonCount = 0 }: Props) {
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isAdmin, isDemo, logout } = useAuth();
   const navigate = useNavigate();
   const [isMuted, setIsMuted] = useState(exhaustSound.getIsMuted());
 
@@ -118,14 +118,32 @@ export function Navbar({ onOpenAbout, onOpenContact, onOpenCompare, comparisonCo
 
             {/* User Capsule */}
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className={`w-2 h-2 rounded-full ${isDemo ? 'bg-cyan-400' : 'bg-emerald-400'} animate-pulse`}></span>
               <span className="text-slate-300 font-medium">{user?.email}</span>
               {isAdmin && (
                 <span className="badge-glass bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px] py-0 px-1.5">
                   ADMIN
                 </span>
               )}
+              {isDemo && (
+                <span className="badge-glass bg-cyan-500/20 text-cyan-300 border-cyan-500/40 text-[10px] py-0.5 px-2 font-bold">
+                  DEMO (VIEW-ONLY)
+                </span>
+              )}
             </div>
+
+            {isDemo && (
+              <button
+                type="button"
+                onClick={() => {
+                  handleLogout();
+                  navigate('/login');
+                }}
+                className="btn-primary text-xs py-1.5 px-3 font-semibold shadow-cyan-500/20"
+              >
+                Log In
+              </button>
+            )}
 
             {/* Logout */}
             <button

@@ -17,8 +17,9 @@ export class AuthService {
    * @throws Error if email already exists
    */
   async register(data: RegisterBody) {
+    const email = data.email.trim().toLowerCase();
     const existing = await this.prisma.user.findUnique({
-      where: { email: data.email },
+      where: { email },
     });
 
     if (existing) {
@@ -29,7 +30,7 @@ export class AuthService {
 
     const user = await this.prisma.user.create({
       data: {
-        email: data.email,
+        email,
         password: hashedPassword,
         role: 'USER',
       },
@@ -44,8 +45,9 @@ export class AuthService {
    * @throws Error if credentials are invalid
    */
   async login(data: LoginBody) {
+    const email = data.email.trim().toLowerCase();
     const user = await this.prisma.user.findUnique({
-      where: { email: data.email },
+      where: { email },
     });
 
     if (!user) {

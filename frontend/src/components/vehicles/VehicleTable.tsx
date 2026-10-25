@@ -11,6 +11,7 @@ interface Props {
   onPurchaseRequest: (vehicle: Vehicle) => void;
   comparedIds?: string[];
   onToggleCompare?: (vehicle: Vehicle) => void;
+  isDemo?: boolean;
 }
 
 export function VehicleTable({
@@ -23,6 +24,7 @@ export function VehicleTable({
   onPurchaseRequest,
   comparedIds = [],
   onToggleCompare,
+  isDemo,
 }: Props) {
   const defaultCarPhoto =
     'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80';
@@ -127,7 +129,7 @@ export function VehicleTable({
                       disabled={isOutOfStock}
                       className="btn-primary py-1 px-3 text-xs"
                     >
-                      {isOutOfStock ? 'Sold Out' : '🛒 Buy'}
+                      {isOutOfStock ? 'Sold Out' : isDemo ? '🛒 Buy (Sign In)' : '🛒 Buy'}
                     </button>
 
                     {isAdmin && (

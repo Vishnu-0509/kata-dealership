@@ -15,18 +15,44 @@ export function LoginForm() {
     setError('');
     setLoading(true);
     try {
-      await login(email, password);
+      await login(email.trim().toLowerCase(), password);
       navigate('/');
-    } catch {
-      setError('Invalid email or password. Please try again.');
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { status?: number; data?: { message?: string } }; message?: string };
+      if (axiosErr.response?.data?.message) {
+        setError(axiosErr.response.data.message);
+      } else if (axiosErr.response?.status === 401 || axiosErr.message === 'Unauthorized' || axiosErr.message?.toLowerCase().includes('invalid')) {
+        setError('Invalid email or password. Please try again.');
+      } else if (!axiosErr.response) {
+        setError('Cannot connect to backend API server. Please ensure the backend server is running on port 3001.');
+      } else {
+        setError('Invalid email or password. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const fillQuickAccount = (demoEmail: string, demoPass: string) => {
-    setEmail(demoEmail);
-    setPassword(demoPass);
+  const handleClientDemo = async () => {
+    setEmail('demo@dealership.com');
+    setPassword('demo123');
+    setError('');
+    setLoading(true);
+    try {
+      await login('demo@dealership.com', 'demo123');
+      navigate('/');
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { status?: number; data?: { message?: string } } };
+      if (axiosErr.response?.data?.message) {
+        setError(axiosErr.response.data.message);
+      } else if (!axiosErr.response) {
+        setError('Cannot connect to backend server. Please verify backend is running on port 3001.');
+      } else {
+        setError('Could not sign into Client Demo. Please verify backend is seeded.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -79,25 +105,20 @@ export function LoginForm() {
           </button>
         </form>
 
-        {/* Demo Credentials Quick-Fill Bar */}
+        {/* Demo Client Access */}
         <div className="pt-2 border-t border-slate-800 text-center">
-          <p className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold mb-2">Quick Demo Access</p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => fillQuickAccount('admin@dealership.com', 'admin123')}
-              className="btn-glass flex-1 py-1 text-xs text-amber-300 border-amber-500/30 hover:border-amber-500/60"
-            >
-              👑 Admin Demo
-            </button>
-            <button
-              type="button"
-              onClick={() => fillQuickAccount('user@dealership.com', 'user123')}
-              className="btn-glass flex-1 py-1 text-xs text-cyan-300 border-cyan-500/30 hover:border-cyan-500/60"
-            >
-              👤 Client Demo
-            </button>
-          </div>
+          <p className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold mb-2">Instant Exploration</p>
+          <button
+            type="button"
+            onClick={handleClientDemo}
+            disabled={loading}
+            className="btn-glass w-full py-2.5 text-xs text-cyan-300 border-cyan-500/30 hover:border-cyan-500/60 flex items-center justify-center gap-2 font-semibold"
+          >
+            <span>👤</span> Explore as Client Demo
+          </button>
+          <p className="text-[10px] text-slate-400 mt-2">
+            Demo client access is view-only. To purchase vehicles or manage inventory, sign in with your account.
+          </p>
         </div>
 
         <p className="text-center text-xs text-slate-400 pt-1">

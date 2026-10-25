@@ -39,6 +39,7 @@ export function useAuth() {
   }, []);
 
   const isAdmin = user?.role === 'ADMIN';
+  const isDemo = user?.role === 'DEMO';
 
-  return { user, isAdmin, login, register, logout };
+  return { user, isAdmin, isDemo, login, register, logout };
 }

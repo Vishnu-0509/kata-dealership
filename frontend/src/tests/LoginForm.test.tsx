@@ -60,4 +60,10 @@ describe('LoginForm', () => {
       expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument();
     });
   });
+
+  it('renders only Client Demo button and excludes Admin Demo button', () => {
+    renderWithRouter(<LoginForm />);
+    expect(screen.getByRole('button', { name: /client demo/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /admin demo/i })).not.toBeInTheDocument();
+  });
 });

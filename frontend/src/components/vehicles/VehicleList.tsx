@@ -11,6 +11,7 @@ import { useToast } from '../common/Toast';
 interface Props {
   vehicles: Vehicle[];
   isAdmin: boolean;
+  isDemo?: boolean;
   viewMode: 'grid' | 'table';
   onOpenCreate: () => void;
   showCreate: boolean;
@@ -22,6 +23,7 @@ interface Props {
 export function VehicleList({
   vehicles,
   isAdmin,
+  isDemo,
   viewMode,
   onOpenCreate,
   showCreate,
@@ -35,6 +37,7 @@ export function VehicleList({
   const [inspectVehicle, setInspectVehicle] = useState<Vehicle | null>(null);
   const [purchaseTarget, setPurchaseTarget] = useState<Vehicle | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [showDemoAuthModal, setShowDemoAuthModal] = useState(false);
   const [restockQty, setRestockQty] = useState('5');
 
   const deleteVehicle = useDeleteVehicle();
@@ -112,6 +115,11 @@ export function VehicleList({
   // Handle Purchase Confirm
   const handleConfirmPurchase = () => {
     if (!purchaseTarget) return;
+    if (isDemo) {
+      setPurchaseTarget(null);
+      setShowDemoAuthModal(true);
+      return;
+    }
     purchaseMutation.mutate(purchaseTarget.id, {
       onSuccess: (res) => {
         showToast('success', 'Purchase Complete!', `Order confirmed for ${res.vehicle.make} ${res.vehicle.model}. Remaining stock: ${res.vehicle.quantity}.`);
@@ -154,6 +162,7 @@ export function VehicleList({
               key={v.id}
               vehicle={v}
               isAdmin={isAdmin}
+              isDemo={isDemo}
               onEdit={setEditVehicle}
               onDelete={setDeleteTargetId}
               onRestock={setRestockVehicle}
@@ -169,6 +178,7 @@ export function VehicleList({
         <VehicleTable
           vehicles={vehicles}
           isAdmin={isAdmin}
+          isDemo={isDemo}
           onEdit={setEditVehicle}
           onDelete={setDeleteTargetId}
           onRestock={setRestockVehicle}
@@ -312,6 +322,44 @@ export function VehicleList({
                 disabled={deleteVehicle.isPending}
               >
                 {deleteVehicle.isPending ? 'Deleting...' : 'Yes, Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Demo Client Purchase View-Only Modal */}
+      {showDemoAuthModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center z-50 p-4 animate-slide-up">
+          <div
+            className="glass-panel w-full max-w-md p-6 border border-cyan-500/40 shadow-2xl space-y-4 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-3xl flex items-center justify-center mx-auto">
+              🔒
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-white">Sign In Required to Make Changes</h3>
+              <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                You are currently exploring the showroom in <strong>Client Demo mode (view-only)</strong>. To purchase vehicles, reserve inventory, or perform account actions, please sign in with your customer account or create one.
+              </p>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                type="button"
+                className="btn-glass flex-1 py-2.5 text-xs font-semibold"
+                onClick={() => setShowDemoAuthModal(false)}
+              >
+                Continue Demo
+              </button>
+              <button
+                type="button"
+                className="btn-primary flex-1 py-2.5 text-xs font-bold"
+                onClick={() => {
+                  window.location.href = '/login';
+                }}
+              >
+                Sign In to Account
               </button>
             </div>
           </div>

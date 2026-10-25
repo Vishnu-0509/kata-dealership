@@ -13,7 +13,7 @@ import { Vehicle } from '../api/client';
 import { VEHICLE_CATEGORIES } from '../constants/categories';
 
 export function DashboardPage() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, isDemo } = useAuth();
   const { showToast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -45,6 +45,10 @@ export function DashboardPage() {
   };
 
   const handleComparisonPurchase = (vehicle: Vehicle) => {
+    if (isDemo) {
+      showToast('warning', 'Demo View-Only Mode', 'Demo clients cannot make changes or purchase vehicles. Please sign in to buy.');
+      return;
+    }
     purchaseMutation.mutate(vehicle.id, {
       onSuccess: () => {
         showToast(
@@ -141,6 +145,21 @@ export function DashboardPage() {
           onOpenCompare={() => setShowCompareModal(true)}
           comparisonCount={comparedVehicleIds.length}
         />
+
+        {isDemo && (
+          <div className="bg-cyan-500/15 border-b border-cyan-500/30 py-2.5 px-4 text-center text-xs text-cyan-200 flex items-center justify-center gap-2 backdrop-blur-md relative z-20">
+            <span>🔒</span>
+            <span>
+              <strong>Client Demo Mode (View-Only):</strong> You are exploring in demo mode. To purchase vehicles or make changes, please
+            </span>
+            <a
+              href="/login"
+              className="underline font-bold text-white hover:text-cyan-300 ml-1"
+            >
+              sign in to your customer account
+            </a>.
+          </div>
+        )}
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 space-y-8">
           {/* Hero Section with Live Backdrop Vibe */}
@@ -373,6 +392,7 @@ export function DashboardPage() {
             <VehicleList
               vehicles={filteredVehicles}
               isAdmin={isAdmin}
+              isDemo={isDemo}
               viewMode={viewMode}
               onOpenCreate={() => setShowCreateModal(true)}
               showCreate={showCreateModal}

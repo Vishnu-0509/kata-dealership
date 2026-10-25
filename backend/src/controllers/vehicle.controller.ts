@@ -164,6 +164,13 @@ export class VehicleController {
    * Purchases a vehicle, decrementing its quantity by 1.
    */
   purchaseVehicle = async (req: Request, res: Response): Promise<void> => {
+    if (req.user?.role === 'DEMO') {
+      res.status(403).json({
+        message: 'Demo mode is view-only. Please log in or register a customer account to purchase vehicles.',
+      });
+      return;
+    }
+
     try {
       const vehicle = await this.vehicleService.purchase(req.params.id);
       res.status(200).json({ message: 'Vehicle purchased successfully', vehicle });
