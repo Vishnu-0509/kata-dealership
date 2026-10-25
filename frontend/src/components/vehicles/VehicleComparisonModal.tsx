@@ -91,33 +91,33 @@ export function VehicleComparisonModal({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-xl animate-slide-up">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-md animate-slide-up">
       <div
-        className="glass-panel w-full max-w-6xl border border-cyan-500/30 shadow-2xl overflow-hidden max-h-[94vh] flex flex-col"
+        className="glass-panel w-full max-w-6xl border border-slate-200 shadow-2xl overflow-hidden max-h-[94vh] flex flex-col bg-white text-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-xl text-cyan-400 shadow-md">
+            <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-xl text-teal-600 shadow-sm">
               ⚖️
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-white tracking-tight">
+                <h2 className="text-xl font-bold text-slate-900 tracking-tight">
                   Vehicle Specifications & Comparison Matrix
                 </h2>
                 <span
-                  className={`badge-glass text-[11px] ${
+                  className={`badge-glass text-[11px] font-semibold ${
                     selectedVehicles.length >= 2
-                      ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                      : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                      ? 'bg-teal-50 text-teal-700 border-teal-200'
+                      : 'bg-amber-50 text-amber-700 border-amber-200'
                   }`}
                 >
                   {selectedVehicles.length} of 4 Manually Selected
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 Manually select 2 to 4 vehicles from inventory to compare engineering telemetry side-by-side
               </p>
             </div>

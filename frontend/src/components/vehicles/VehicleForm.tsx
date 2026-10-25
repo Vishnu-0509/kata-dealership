@@ -107,22 +107,22 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center z-50 p-4 animate-slide-up">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-slide-up">
       <div 
-        className="glass-panel w-full max-w-lg border border-cyan-500/30 shadow-2xl overflow-hidden max-h-[92vh] flex flex-col"
+        className="glass-panel w-full max-w-lg border border-slate-200 shadow-2xl overflow-hidden max-h-[92vh] flex flex-col bg-white text-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-6 border-b border-slate-800 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+        <div className="p-6 border-b border-slate-200 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
             <span>🚘</span> {title}
           </h2>
-          <button onClick={onCancel} className="text-slate-400 hover:text-white p-1 rounded-lg">✕</button>
+          <button onClick={onCancel} className="text-slate-400 hover:text-slate-700 p-1 rounded-lg">✕</button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Make</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Make</label>
               <input
                 className="glass-input"
                 value={make}
@@ -132,7 +132,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Model</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Model</label>
               <input
                 className="glass-input"
                 value={model}
@@ -145,20 +145,20 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Category</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Category</label>
               <select
-                className="glass-input bg-slate-950 text-slate-100"
+                className="glass-input bg-white text-slate-900"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
               >
                 {categories.map((c) => (
-                  <option key={c} value={c} className="bg-slate-900 text-slate-100">{c}</option>
+                  <option key={c} value={c} className="bg-white text-slate-900">{c}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Year</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Year</label>
               <input
                 type="number"
                 className="glass-input"
@@ -174,7 +174,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Price ($ USD)</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Price ($ USD)</label>
               <input
                 type="number"
                 className="glass-input"
@@ -187,7 +187,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Stock Quantity</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Stock Quantity</label>
               <input
                 type="number"
                 className="glass-input"
@@ -522,7 +522,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
             )}
           </div>
 
-          <div className="flex gap-3 pt-3 border-t border-slate-800">
+          <div className="flex gap-3 pt-3 border-t border-slate-200">
             <button type="button" className="btn-glass flex-1 py-2.5" onClick={onCancel}>
               Cancel
             </button>

@@ -34,10 +34,10 @@ export function VehicleCard({
   const isOutOfStock = vehicle.quantity === 0;
 
   const stockBadge = isOutOfStock
-    ? 'bg-rose-500/10 text-rose-300 border-rose-500/30'
+    ? 'bg-rose-50 text-rose-700 border-rose-200'
     : vehicle.quantity < 3
-    ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-    : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30';
+    ? 'bg-amber-50 text-amber-700 border-amber-200'
+    : 'bg-emerald-50 text-emerald-700 border-emerald-200';
 
   const handleQuickRev = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -57,10 +57,10 @@ export function VehicleCard({
   return (
     <div
       onClick={() => onInspect?.(vehicle)}
-      className="glass-card glass-card-hover group cursor-pointer flex flex-col overflow-hidden relative"
+      className="glass-card glass-card-hover group cursor-pointer flex flex-col overflow-hidden relative border border-slate-200/90 bg-white"
     >
       {/* Top Visual Image Banner */}
-      <div className="relative h-48 w-full overflow-hidden bg-slate-950">
+      <div className="relative h-48 w-full overflow-hidden bg-slate-900">
         <img
           src={vehicle.imageUrl || defaultCarPhoto}
           alt={`${vehicle.make} ${vehicle.model}`}
@@ -69,14 +69,14 @@ export function VehicleCard({
             (e.target as HTMLImageElement).src = defaultCarPhoto;
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
 
         {/* Top Badges */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-          <span className="badge-glass bg-slate-950/70 text-cyan-300 border-white/10 text-[11px]">
+          <span className="badge-glass bg-slate-900/80 text-white border-white/20 text-[11px] backdrop-blur-md">
             {vehicle.year || 2024} · {vehicle.category}
           </span>
-          <span className={`badge-glass text-[11px] ${stockBadge}`}>
+          <span className={`badge-glass text-[11px] backdrop-blur-md font-semibold ${stockBadge}`}>
             {isOutOfStock ? '● Out of Stock' : `● ${vehicle.quantity} in stock`}
           </span>
         </div>
@@ -89,7 +89,7 @@ export function VehicleCard({
           className={`absolute bottom-3 right-3 z-10 p-2 rounded-xl backdrop-blur-xl border border-white/20 text-sm transition-all shadow-lg ${
             isRevving
               ? 'bg-gradient-to-r from-amber-500 to-rose-600 text-white scale-110 shadow-rose-500/50'
-              : 'bg-black/60 hover:bg-cyan-500/30 text-white hover:text-cyan-200'
+              : 'bg-black/60 hover:bg-teal-500/80 text-white'
           }`}
         >
           {isRevving ? '🔥' : '🔊'}
@@ -99,17 +99,17 @@ export function VehicleCard({
       {/* Card Content */}
       <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
         <div>
-          <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">
+          <h3 className="text-lg font-bold text-slate-900 group-hover:text-teal-600 transition-colors">
             {vehicle.make} {vehicle.model}
           </h3>
-          <p className="text-2xl font-black text-cyan-400 mt-1">
+          <p className="text-2xl font-black text-teal-600 mt-1">
             ${vehicle.price.toLocaleString()}
           </p>
 
           {/* Quick Specifications Pill */}
           {(vehicle.bhp || vehicle.zeroToSixty || vehicle.drivetrain) && (
-            <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium pt-1.5">
-              {vehicle.bhp && <span className="text-slate-300">⚡ {vehicle.bhp} HP</span>}
+            <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium pt-1.5">
+              {vehicle.bhp && <span className="text-slate-700">⚡ {vehicle.bhp} HP</span>}
               {vehicle.zeroToSixty && <span>• 🚀 {vehicle.zeroToSixty}s (0-60)</span>}
               {vehicle.drivetrain && <span>• {vehicle.drivetrain.split(' ')[0]}</span>}
             </div>
@@ -117,7 +117,7 @@ export function VehicleCard({
         </div>
 
         {/* Actions Container */}
-        <div className="space-y-2 pt-2 border-t border-slate-800/80">
+        <div className="space-y-2 pt-2 border-t border-slate-200">
           <button
             type="button"
             className="btn-primary w-full py-2.5 text-sm font-semibold flex items-center justify-center gap-2"
@@ -149,8 +149,8 @@ export function VehicleCard({
                 }}
                 className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
                   isCompared
-                    ? 'bg-cyan-500/25 border border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
-                    : 'bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300'
+                    ? 'bg-teal-50 border border-teal-300 text-teal-800 shadow-sm'
+                    : 'bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700'
                 }`}
               >
                 <span>{isCompared ? '✓' : '⚖️'}</span>
@@ -163,7 +163,7 @@ export function VehicleCard({
                 e.stopPropagation();
                 onInspect?.(vehicle);
               }}
-              className="btn-glass flex-1 py-1.5 text-xs text-slate-300"
+              className="btn-glass flex-1 py-1.5 text-xs text-slate-700"
             >
               🔍 Full Specs
             </button>

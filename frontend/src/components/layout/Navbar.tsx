@@ -27,19 +27,19 @@ export function Navbar({ onOpenAbout, onOpenContact, onOpenCompare, comparisonCo
   };
 
   return (
-    <nav className="sticky top-0 z-40 backdrop-blur-2xl bg-white/10 border-b border-white/20 shadow-lg shadow-black/20">
+    <nav className="sticky top-0 z-40 backdrop-blur-2xl bg-white/90 border-b border-slate-200/80 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-18 py-3">
           {/* Logo & Dealership Brand */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-xl shadow-lg shadow-cyan-500/25">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-600 to-blue-600 flex items-center justify-center text-xl shadow-md shadow-teal-500/20">
               🏎️
             </div>
             <div>
-              <span className="font-black text-xl tracking-tight text-white flex items-center gap-1.5 drop-shadow">
-                KATA <span className="text-cyan-400 font-light text-base">MOTORS</span>
+              <span className="font-black text-xl tracking-tight text-slate-900 flex items-center gap-1.5">
+                KATA <span className="text-teal-600 font-bold text-base">MOTORS</span>
               </span>
-              <p className="text-[10px] text-slate-300 tracking-wider uppercase font-semibold">
+              <p className="text-[10px] text-slate-500 tracking-wider uppercase font-semibold">
                 Car Dealership Inventory System
               </p>
             </div>
@@ -53,13 +53,13 @@ export function Navbar({ onOpenAbout, onOpenContact, onOpenCompare, comparisonCo
                 onClick={onOpenCompare}
                 className={`transition-colors flex items-center gap-1.5 ${
                   comparisonCount > 0
-                    ? 'text-cyan-400 font-bold'
-                    : 'text-slate-200 hover:text-cyan-300'
+                    ? 'text-teal-600 font-bold'
+                    : 'text-slate-600 hover:text-teal-600'
                 }`}
               >
                 <span>⚖️</span> Specifications
                 {comparisonCount > 0 && (
-                  <span className="w-5 h-5 rounded-full bg-cyan-400 text-slate-950 text-[10px] font-black flex items-center justify-center">
+                  <span className="w-5 h-5 rounded-full bg-teal-600 text-white text-[10px] font-black flex items-center justify-center">
                     {comparisonCount}
                   </span>
                 )}
@@ -68,20 +68,20 @@ export function Navbar({ onOpenAbout, onOpenContact, onOpenCompare, comparisonCo
             <button
               type="button"
               onClick={onOpenAbout}
-              className="text-slate-200 hover:text-cyan-300 transition-colors"
+              className="text-slate-600 hover:text-teal-600 transition-colors"
             >
               About Heritage
             </button>
             <button
               type="button"
               onClick={onOpenContact}
-              className="text-slate-200 hover:text-cyan-300 transition-colors flex items-center gap-1.5"
+              className="text-slate-600 hover:text-teal-600 transition-colors flex items-center gap-1.5"
             >
               <span>📞</span> Contact & Support
             </button>
             <a
               href="tel:+18005552739"
-              className="text-cyan-300 hover:text-cyan-200 font-bold flex items-center gap-1"
+              className="text-teal-600 hover:text-teal-700 font-bold flex items-center gap-1"
               title="Direct Toll-Free Line"
             >
               <span>📱</span> +1 (800) 555-KATA
@@ -95,8 +95,8 @@ export function Navbar({ onOpenAbout, onOpenContact, onOpenCompare, comparisonCo
               onClick={toggleSound}
               className={`p-2 rounded-xl text-xs border backdrop-blur-md transition-all flex items-center gap-1.5 ${
                 isMuted
-                  ? 'bg-slate-900/60 border-slate-700/60 text-slate-400 hover:text-white'
-                  : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300 shadow-sm shadow-cyan-500/20'
+                  ? 'bg-slate-100 border-slate-200 text-slate-500 hover:text-slate-800'
+                  : 'bg-teal-50 border-teal-200 text-teal-700 shadow-sm'
               }`}
               title={isMuted ? 'Unmute Exhaust Audio' : 'Mute Exhaust Audio'}
             >
@@ -110,23 +110,23 @@ export function Navbar({ onOpenAbout, onOpenContact, onOpenCompare, comparisonCo
             <button
               type="button"
               onClick={onOpenContact}
-              className="md:hidden p-2 rounded-xl text-xs border border-white/10 bg-white/5 text-slate-300"
+              className="md:hidden p-2 rounded-xl text-xs border border-slate-200 bg-slate-100 text-slate-600"
               title="Contact Support"
             >
               📞
             </button>
 
             {/* User Capsule */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs">
-              <span className={`w-2 h-2 rounded-full ${isDemo ? 'bg-cyan-400' : 'bg-emerald-400'} animate-pulse`}></span>
-              <span className="text-slate-300 font-medium">{user?.email}</span>
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs">
+              <span className={`w-2 h-2 rounded-full ${isDemo ? 'bg-cyan-500' : 'bg-emerald-500'} animate-pulse`}></span>
+              <span className="text-slate-700 font-medium">{user?.username || user?.email}</span>
               {isAdmin && (
-                <span className="badge-glass bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px] py-0 px-1.5">
+                <span className="badge-glass bg-amber-100 text-amber-800 border-amber-300 text-[10px] py-0 px-1.5 font-bold">
                   ADMIN
                 </span>
               )}
               {isDemo && (
-                <span className="badge-glass bg-cyan-500/20 text-cyan-300 border-cyan-500/40 text-[10px] py-0.5 px-2 font-bold">
+                <span className="badge-glass bg-cyan-100 text-cyan-800 border-cyan-300 text-[10px] py-0.5 px-2 font-bold">
                   DEMO (VIEW-ONLY)
                 </span>
               )}
@@ -139,7 +139,7 @@ export function Navbar({ onOpenAbout, onOpenContact, onOpenCompare, comparisonCo
                   handleLogout();
                   navigate('/login');
                 }}
-                className="btn-primary text-xs py-1.5 px-3 font-semibold shadow-cyan-500/20"
+                className="btn-primary text-xs py-1.5 px-3 font-semibold shadow-teal-500/20"
               >
                 Log In
               </button>
@@ -148,7 +148,7 @@ export function Navbar({ onOpenAbout, onOpenContact, onOpenCompare, comparisonCo
             {/* Logout */}
             <button
               onClick={handleLogout}
-              className="btn-glass text-xs hover:border-rose-500/40 hover:text-rose-300 py-2 px-3.5"
+              className="btn-glass text-xs hover:border-rose-300 hover:text-rose-600 py-2 px-3.5"
             >
               Sign out
             </button>

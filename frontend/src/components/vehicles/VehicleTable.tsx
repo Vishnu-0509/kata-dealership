@@ -30,10 +30,10 @@ export function VehicleTable({
     'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80';
 
   return (
-    <div className="glass-panel overflow-hidden border border-white/10 shadow-2xl">
+    <div className="glass-panel overflow-hidden border border-slate-200 shadow-md bg-white">
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm text-slate-200">
-          <thead className="bg-slate-950/80 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+        <table className="w-full text-left text-sm text-slate-800">
+          <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500 border-b border-slate-200">
             <tr>
               <th className="py-4 px-4">Vehicle</th>
               <th className="py-4 px-4">Category</th>
@@ -44,34 +44,34 @@ export function VehicleTable({
               <th className="py-4 px-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60">
+          <tbody className="divide-y divide-slate-100">
             {vehicles.map((v) => {
               const isOutOfStock = v.quantity === 0;
               return (
                 <tr
                   key={v.id}
                   onClick={() => onInspect(v)}
-                  className="hover:bg-cyan-500/5 transition-colors cursor-pointer group"
+                  className="hover:bg-slate-50 transition-colors cursor-pointer group"
                 >
                   <td className="py-3 px-4 flex items-center gap-3">
                     <img
                       src={v.imageUrl || defaultCarPhoto}
                       alt={v.model}
-                      className="w-12 h-10 rounded-lg object-cover border border-white/10"
+                      className="w-12 h-10 rounded-lg object-cover border border-slate-200"
                     />
                     <div>
-                      <span className="font-bold text-white group-hover:text-cyan-400">
+                      <span className="font-bold text-slate-900 group-hover:text-teal-600">
                         {v.make} {v.model}
                       </span>
                     </div>
                   </td>
                   <td className="py-3 px-4">
-                    <span className="badge-glass bg-slate-900 text-cyan-300 border-white/10">
+                    <span className="badge-glass bg-slate-100 text-slate-800 border-slate-200">
                       {v.category}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-slate-400">{v.year || 2024}</td>
-                  <td className="py-3 px-4 font-extrabold text-cyan-400">
+                  <td className="py-3 px-4 text-slate-600">{v.year || 2024}</td>
+                  <td className="py-3 px-4 font-extrabold text-teal-600">
                     ${v.price.toLocaleString()}
                   </td>
                   <td className="py-3 px-4">

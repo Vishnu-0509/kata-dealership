@@ -137,10 +137,10 @@ export function VehicleList({
     <div>
       {/* Empty State vs Inventory Content */}
       {vehicles.length === 0 ? (
-        <div className="glass-card py-20 text-center border-dashed border-slate-700">
+        <div className="glass-card py-20 text-center border-dashed border-slate-300 bg-white">
           <div className="text-6xl mb-4 animate-pulse-subtle">🚘</div>
-          <h3 className="text-xl font-bold text-white">No vehicles found</h3>
-          <p className="text-slate-400 text-sm mt-1 max-w-sm mx-auto">
+          <h3 className="text-xl font-bold text-slate-900">No vehicles found</h3>
+          <p className="text-slate-600 text-sm mt-1 max-w-sm mx-auto">
             No inventory items matched your active search filters. Try clearing criteria or adding new inventory.
           </p>
           {isAdmin && (
@@ -148,7 +148,7 @@ export function VehicleList({
               <button
                 type="button"
                 onClick={onOpenCreate}
-                className="btn-primary text-xs font-semibold px-4 py-2 inline-flex items-center gap-1.5 shadow-lg shadow-cyan-500/20"
+                className="btn-primary text-xs font-semibold px-4 py-2 inline-flex items-center gap-1.5 shadow-md shadow-teal-500/20"
               >
                 <span>+</span> Add New Vehicle
               </button>

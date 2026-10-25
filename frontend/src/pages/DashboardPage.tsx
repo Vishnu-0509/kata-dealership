@@ -131,7 +131,7 @@ export function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 relative flex flex-col justify-between">
+    <div className="min-h-screen bg-slate-50 text-slate-900 relative flex flex-col justify-between">
       {/* Live Cinematic Automotive Video & Photo Backdrop */}
       <CarLiveBackground />
 
@@ -147,14 +147,14 @@ export function DashboardPage() {
         />
 
         {isDemo && (
-          <div className="bg-cyan-500/15 border-b border-cyan-500/30 py-2.5 px-4 text-center text-xs text-cyan-200 flex items-center justify-center gap-2 backdrop-blur-md relative z-20">
+          <div className="bg-teal-50 border-b border-teal-200 py-2.5 px-4 text-center text-xs text-teal-900 flex items-center justify-center gap-2 backdrop-blur-md relative z-20">
             <span>🔒</span>
             <span>
               <strong>Client Demo Mode (View-Only):</strong> You are exploring in demo mode. To purchase vehicles or make changes, please
             </span>
             <a
               href="/login"
-              className="underline font-bold text-white hover:text-cyan-300 ml-1"
+              className="underline font-bold text-teal-700 hover:text-teal-900 ml-1"
             >
               sign in to your customer account
             </a>.
@@ -163,16 +163,16 @@ export function DashboardPage() {
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 space-y-8">
           {/* Hero Section with Live Backdrop Vibe */}
-          <div className="glass-panel p-6 sm:p-8 relative overflow-hidden border border-cyan-500/20 shadow-2xl">
+          <div className="glass-panel p-6 sm:p-8 relative overflow-hidden border border-slate-200/90 shadow-lg bg-white/90">
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="max-w-xl space-y-2">
-                <span className="badge-glass bg-cyan-500/10 text-cyan-400 border-cyan-500/30 text-xs font-bold tracking-wider uppercase">
+                <span className="badge-glass bg-teal-50 text-teal-700 border-teal-200 text-xs font-bold tracking-wider uppercase">
                   ✦ Precision Engineering Showcase
                 </span>
-                <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
                   Curated Automotive Inventory
                 </h1>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <p className="text-sm text-slate-600 leading-relaxed">
                   Explore high-performance sports cars, luxury electric vehicles, and rugged SUVs. Listen to realistic exhaust acoustics and complete transparent purchases online.
                 </p>
 
@@ -180,21 +180,21 @@ export function DashboardPage() {
                 <div className="flex flex-wrap items-center gap-3 pt-2 text-xs">
                   <a
                     href="tel:+18005552739"
-                    className="badge-glass bg-white/5 hover:bg-cyan-500/10 text-cyan-300 border-white/10 transition-colors"
+                    className="badge-glass bg-white hover:bg-slate-50 text-teal-700 border-slate-200 transition-colors shadow-sm"
                   >
                     📞 Call Sales: +1 (800) 555-KATA
                   </a>
                   <button
                     type="button"
                     onClick={() => setShowContactModal(true)}
-                    className="badge-glass bg-white/5 hover:bg-cyan-500/10 text-slate-300 border-white/10 transition-colors"
+                    className="badge-glass bg-white hover:bg-slate-50 text-slate-700 border-slate-200 transition-colors shadow-sm"
                   >
                     ✉️ Concierge Support Desk
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowAboutModal(true)}
-                    className="badge-glass bg-white/5 hover:bg-cyan-500/10 text-slate-300 border-white/10 transition-colors"
+                    className="badge-glass bg-white hover:bg-slate-50 text-slate-700 border-slate-200 transition-colors shadow-sm"
                   >
                     🛡️ 150-Point Inspection Warranty
                   </button>
@@ -207,11 +207,11 @@ export function DashboardPage() {
                   <button
                     type="button"
                     onClick={() => setShowCompareModal(true)}
-                    className="btn-glass py-3 px-5 text-sm font-bold flex items-center justify-center gap-2 border-cyan-500/40 text-cyan-300 hover:text-white"
+                    className="btn-glass py-3 px-5 text-sm font-bold flex items-center justify-center gap-2 border-slate-300 text-slate-800 hover:text-teal-700"
                   >
                     <span>⚖️</span> Specifications & Compare
                     {comparedVehicleIds.length > 0 && (
-                      <span className="w-5 h-5 rounded-full bg-cyan-500 text-slate-950 text-xs font-black flex items-center justify-center">
+                      <span className="w-5 h-5 rounded-full bg-teal-600 text-white text-xs font-black flex items-center justify-center">
                         {comparedVehicleIds.length}
                       </span>
                     )}
@@ -221,7 +221,7 @@ export function DashboardPage() {
                 {isAdmin && (
                   <button
                     onClick={() => setShowCreateModal(true)}
-                    className="btn-primary py-3 px-6 text-sm font-bold flex items-center justify-center gap-2 shadow-cyan-500/30"
+                    className="btn-primary py-3 px-6 text-sm font-bold flex items-center justify-center gap-2 shadow-teal-500/20"
                   >
                     <span>✨</span> Add New Vehicle
                   </button>
@@ -230,24 +230,24 @@ export function DashboardPage() {
             </div>
 
             {/* Real-time Fleet Metrics Bar */}
-            <div className={`mt-8 pt-6 border-t border-white/15 grid grid-cols-2 ${isAdmin ? 'sm:grid-cols-4' : 'sm:grid-cols-3'} gap-4`}>
-              <div className="glass-card p-4 border-white/20 bg-white/[0.08]">
-                <p className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Fleet Units</p>
-                <p className="text-2xl font-black text-white mt-1 drop-shadow">{metrics.totalVehicles}</p>
+            <div className={`mt-8 pt-6 border-t border-slate-200 grid grid-cols-2 ${isAdmin ? 'sm:grid-cols-4' : 'sm:grid-cols-3'} gap-4`}>
+              <div className="glass-card p-4 border-slate-200 bg-white">
+                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Fleet Units</p>
+                <p className="text-2xl font-black text-slate-900 mt-1">{metrics.totalVehicles}</p>
               </div>
               {isAdmin && (
-                <div className="glass-card p-4 border-white/20 bg-white/[0.08]">
-                  <p className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Portfolio Value</p>
-                  <p className="text-2xl font-black text-cyan-300 mt-1 drop-shadow">${(metrics.totalValue / 1000).toFixed(1)}k</p>
+                <div className="glass-card p-4 border-slate-200 bg-white">
+                  <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Portfolio Value</p>
+                  <p className="text-2xl font-black text-teal-600 mt-1">${(metrics.totalValue / 1000).toFixed(1)}k</p>
                 </div>
               )}
-              <div className="glass-card p-4 border-white/20 bg-white/[0.08]">
-                <p className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Available Models</p>
-                <p className="text-2xl font-black text-slate-100 mt-1 drop-shadow">{metrics.modelCount}</p>
+              <div className="glass-card p-4 border-slate-200 bg-white">
+                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Available Models</p>
+                <p className="text-2xl font-black text-slate-800 mt-1">{metrics.modelCount}</p>
               </div>
-              <div className="glass-card p-4 border-white/20 bg-white/[0.08]">
-                <p className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Out of Stock</p>
-                <p className={`text-2xl font-black mt-1 drop-shadow ${metrics.outOfStockCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+              <div className="glass-card p-4 border-slate-200 bg-white">
+                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Out of Stock</p>
+                <p className={`text-2xl font-black mt-1 ${metrics.outOfStockCount > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
                   {metrics.outOfStockCount}
                 </p>
               </div>
@@ -265,8 +265,8 @@ export function DashboardPage() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 backdrop-blur-md border ${
                     isActive
-                      ? 'bg-white/25 border-cyan-400 text-cyan-300 shadow-md shadow-cyan-500/20'
-                      : 'bg-white/10 border-white/20 text-slate-300 hover:text-white hover:bg-white/15'
+                      ? 'bg-teal-600 border-teal-600 text-white shadow-sm'
+                      : 'bg-white border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50'
                   }`}
                 >
                   {cat === 'All' ? '🚘 All Fleet' : cat}
@@ -276,7 +276,7 @@ export function DashboardPage() {
           </div>
 
           {/* Comprehensive Filter & Controls Bar */}
-          <div className="glass-panel p-5 border border-white/25 space-y-4 shadow-xl">
+          <div className="glass-panel p-5 border border-slate-200/90 space-y-4 shadow-sm bg-white">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Live Search Input */}
               <div className="relative">
@@ -316,31 +316,31 @@ export function DashboardPage() {
               {/* Sorting Dropdown */}
               <div>
                 <select
-                  className="glass-input text-white"
+                  className="glass-input text-slate-800"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
-                  <option value="featured" className="bg-slate-900 text-white">Sort: Featured</option>
-                  <option value="price-asc" className="bg-slate-900 text-white">Price: Low to High</option>
-                  <option value="price-desc" className="bg-slate-900 text-white">Price: High to Low</option>
-                  <option value="stock-desc" className="bg-slate-900 text-white">Stock: Most Available</option>
-                  <option value="make-asc" className="bg-slate-900 text-white">Make: A to Z</option>
+                  <option value="featured" className="bg-white text-slate-800">Sort: Featured</option>
+                  <option value="price-asc" className="bg-white text-slate-800">Price: Low to High</option>
+                  <option value="price-desc" className="bg-white text-slate-800">Price: High to Low</option>
+                  <option value="stock-desc" className="bg-white text-slate-800">Stock: Most Available</option>
+                  <option value="make-asc" className="bg-white text-slate-800">Make: A to Z</option>
                 </select>
               </div>
             </div>
 
             {/* View Mode & Filter Meta Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-white/15 text-xs text-slate-300">
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-200 text-xs text-slate-600">
               <div className="flex items-center gap-3">
                 <span>
-                  Showing <strong className="text-white font-bold">{filteredVehicles.length}</strong> of{' '}
+                  Showing <strong className="text-slate-900 font-bold">{filteredVehicles.length}</strong> of{' '}
                   {allVehicles.length} models
                 </span>
                 {hasActiveFilters && (
                   <button
                     type="button"
                     onClick={clearFilters}
-                    className="text-cyan-300 hover:text-cyan-200 underline font-semibold"
+                    className="text-teal-600 hover:text-teal-700 underline font-semibold"
                   >
                     Clear all filters
                   </button>
@@ -348,14 +348,14 @@ export function DashboardPage() {
               </div>
 
               {/* View Mode Switcher */}
-              <div className="flex items-center gap-1.5 bg-white/10 p-1 rounded-xl border border-white/20">
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
                 <button
                   type="button"
                   onClick={() => setViewMode('grid')}
                   className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-colors ${
                     viewMode === 'grid'
-                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400'
-                      : 'text-slate-300 hover:text-white'
+                      ? 'bg-teal-600 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <span>▦</span> Grid
@@ -365,8 +365,8 @@ export function DashboardPage() {
                   onClick={() => setViewMode('table')}
                   className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-colors ${
                     viewMode === 'table'
-                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400'
-                      : 'text-slate-300 hover:text-white'
+                      ? 'bg-teal-600 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <span>☰</span> Table

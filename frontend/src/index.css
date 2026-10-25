@@ -4,49 +4,49 @@
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 antialiased selection:bg-cyan-500/30 selection:text-cyan-200 min-h-screen overflow-x-hidden;
+    @apply bg-slate-50 text-slate-900 antialiased selection:bg-teal-500/20 selection:text-teal-900 min-h-screen overflow-x-hidden;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
 
 @layer components {
-  /* Frosted Transparent White Glassmorphic Cards & Panels */
+  /* Modern Light Showroom Glassmorphic Cards & Panels */
   .glass-card {
-    @apply bg-white/[0.12] hover:bg-white/[0.18] backdrop-blur-2xl border border-white/25 rounded-2xl shadow-2xl shadow-black/30 transition-all duration-300 ring-1 ring-white/10;
+    @apply bg-white/90 hover:bg-white backdrop-blur-xl border border-slate-200/90 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 ring-1 ring-slate-900/5;
   }
   
   .glass-card-hover {
-    @apply hover:border-cyan-400/50 hover:shadow-cyan-500/20 hover:-translate-y-1 hover:shadow-2xl;
+    @apply hover:border-teal-500/40 hover:shadow-teal-500/10 hover:-translate-y-0.5 hover:shadow-lg;
   }
 
   .glass-panel {
-    @apply bg-white/[0.10] backdrop-blur-3xl border border-white/25 rounded-2xl shadow-2xl shadow-black/25 ring-1 ring-white/10;
+    @apply bg-white/95 backdrop-blur-2xl border border-slate-200/90 rounded-2xl shadow-xl ring-1 ring-slate-900/5;
   }
 
   .glass-input {
-    @apply w-full bg-white/[0.12] border border-white/25 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-slate-300 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 focus:bg-white/[0.18] transition-all;
+    @apply w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 transition-all shadow-sm;
   }
 
-  /* Transparent White & Glowing Buttons */
+  /* Consistent Blue/Teal Showroom Action Buttons */
   .btn-primary {
-    @apply relative overflow-hidden bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2.5 rounded-xl font-bold tracking-wide shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/50 hover:from-cyan-400 hover:to-blue-500 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none transition-all duration-200;
+    @apply relative overflow-hidden bg-gradient-to-r from-teal-600 to-blue-600 text-white px-5 py-2.5 rounded-xl font-bold tracking-wide shadow-md shadow-teal-600/20 hover:shadow-lg hover:shadow-teal-600/35 hover:from-teal-500 hover:to-blue-500 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none transition-all duration-200;
   }
 
   .btn-glass {
-    @apply bg-white/[0.15] hover:bg-white/[0.25] border border-white/30 hover:border-white/50 text-white px-4 py-2 rounded-xl text-sm font-semibold backdrop-blur-xl active:scale-[0.98] transition-all duration-200 shadow-sm;
+    @apply bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-800 px-4 py-2 rounded-xl text-sm font-semibold active:scale-[0.98] transition-all duration-200 shadow-sm;
   }
 
   .btn-danger-glass {
-    @apply bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/40 hover:border-rose-400/60 text-rose-200 px-3.5 py-1.5 rounded-xl text-xs font-semibold backdrop-blur-xl transition-all duration-200 shadow-sm;
+    @apply bg-rose-50 hover:bg-rose-100 border border-rose-200 hover:border-rose-300 text-rose-700 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 shadow-sm;
   }
 
   .btn-success-glass {
-    @apply bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 hover:border-emerald-400/60 text-emerald-200 px-3.5 py-1.5 rounded-xl text-xs font-semibold backdrop-blur-xl transition-all duration-200 shadow-sm;
+    @apply bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 hover:border-emerald-300 text-emerald-700 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 shadow-sm;
   }
 
   /* Badge styling */
   .badge-glass {
-    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold backdrop-blur-xl border border-white/25 bg-white/[0.12] text-white;
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border border-slate-200 bg-slate-100 text-slate-800;
   }
 }
 
@@ -60,10 +60,9 @@
   pointer-events: none;
   z-index: 0;
   background: 
-    radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
-    radial-gradient(circle at 85% 25%, rgba(59, 130, 246, 0.14) 0%, transparent 50%),
-    radial-gradient(circle at 50% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 55%),
-    radial-gradient(circle at 80% 85%, rgba(14, 165, 233, 0.08) 0%, transparent 40%);
+    radial-gradient(circle at 12% 15%, rgba(20, 184, 166, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 85%, rgba(241, 245, 249, 0.8) 0%, transparent 60%);
 }
 
 @keyframes slideUp {

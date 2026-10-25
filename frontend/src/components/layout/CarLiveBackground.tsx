@@ -74,7 +74,7 @@ export function CarLiveBackground({ className = '' }: Props) {
     <div className={`fixed inset-0 pointer-events-none overflow-hidden z-0 ${className}`}>
       {/* 1. Live Video Mode */}
       {backdropMode === 'video' && (
-        <div className="absolute inset-0 transition-opacity duration-1000 opacity-50">
+        <div className="absolute inset-0 transition-opacity duration-1000 opacity-25">
           <video
             ref={videoRef}
             key={currentFeed.videoUrl}
@@ -84,7 +84,7 @@ export function CarLiveBackground({ className = '' }: Props) {
             loop
             muted
             playsInline
-            className="w-full h-full object-cover filter brightness-90 contrast-110 saturate-110"
+            className="w-full h-full object-cover filter brightness-95 contrast-105 saturate-105"
             onLoadedData={() => {
               if (isPlaying) videoRef.current?.play().catch(() => {});
             }}
@@ -95,29 +95,29 @@ export function CarLiveBackground({ className = '' }: Props) {
       {/* 2. Rotating Live Car Photography Mode */}
       {backdropMode === 'photo' && (
         <div
-          className="absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-40 filter brightness-90 scale-105"
+          className="absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-20 filter brightness-95 scale-105"
           style={{ backgroundImage: `url(${PHOTO_ROTATION[activePhotoIndex]})` }}
         />
       )}
 
       {/* 3. Luminous Frosted White Glass Overlay Veil */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/30 via-slate-900/25 to-slate-950/50 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-100/80 via-slate-50/75 to-slate-100/90 pointer-events-none" />
       <div className="absolute inset-0 backdrop-blur-[1px] pointer-events-none" />
 
       {/* Interactive Floating Backdrop Controls Pill (Bottom Right) */}
       <div className="absolute bottom-5 right-5 pointer-events-auto z-30">
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-white/15 backdrop-blur-2xl border border-white/25 shadow-2xl text-xs text-white">
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-white/90 backdrop-blur-xl border border-slate-200 shadow-lg text-xs text-slate-800">
           <button
             type="button"
             onClick={() => setIsControlsOpen(!isControlsOpen)}
-            className="px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1.5 text-white hover:bg-white/10 transition-colors"
+            className="px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1.5 text-slate-800 hover:bg-slate-100 transition-colors"
             title="Adjust Backdrop Settings"
           >
             <span>{backdropMode === 'video' ? '🎬' : backdropMode === 'photo' ? '📸' : '🌌'}</span>
             <span className="hidden sm:inline">
               {backdropMode === 'video' ? 'Live Video' : backdropMode === 'photo' ? 'Live Photos' : 'Minimal'}
             </span>
-            <span className="text-[10px] text-slate-300">{isControlsOpen ? '▲' : '▼'}</span>
+            <span className="text-[10px] text-slate-500">{isControlsOpen ? '▲' : '▼'}</span>
           </button>
 
           {backdropMode === 'video' && (
@@ -125,7 +125,7 @@ export function CarLiveBackground({ className = '' }: Props) {
               <button
                 type="button"
                 onClick={togglePlayPause}
-                className="p-1.5 rounded-lg hover:bg-white/20 text-white transition-colors"
+                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-700 transition-colors"
                 title={isPlaying ? 'Pause Car Video' : 'Play Car Video'}
               >
                 {isPlaying ? '⏸' : '▶'}
@@ -133,7 +133,7 @@ export function CarLiveBackground({ className = '' }: Props) {
               <button
                 type="button"
                 onClick={nextFeed}
-                className="p-1.5 rounded-lg hover:bg-white/20 text-white transition-colors"
+                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-700 transition-colors"
                 title="Next Cinematic Angle"
               >
                 ⏭
@@ -144,8 +144,8 @@ export function CarLiveBackground({ className = '' }: Props) {
 
         {/* Dropdown Menu */}
         {isControlsOpen && (
-          <div className="absolute bottom-12 right-0 w-56 rounded-2xl bg-slate-950/90 backdrop-blur-3xl border border-white/25 p-2 shadow-2xl space-y-1 text-xs animate-slide-up text-white">
-            <p className="px-2 py-1 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+          <div className="absolute bottom-12 right-0 w-56 rounded-2xl bg-white/95 backdrop-blur-xl border border-slate-200 p-2 shadow-2xl space-y-1 text-xs animate-slide-up text-slate-800">
+            <p className="px-2 py-1 text-[10px] uppercase font-bold text-slate-500 tracking-wider">
               Showroom Atmosphere
             </p>
             <button
