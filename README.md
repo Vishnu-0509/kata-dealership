@@ -33,7 +33,7 @@ All screenshots were captured from the running application using automated headl
 - [API Endpoints Reference](#-api-endpoints-reference)
 - [Test Suite & Coverage Report](#-test-suite--coverage-report)
 - [TDD Narrative & Remediation Audit](#-tdd-narrative--remediation-audit)
-- [Publishing & Git Remote Instructions](#-publishing--git-remote-instructions)
+- [Public Repository & Git Remote](#-public-repository--git-remote)
 - [My AI Usage](#my-ai-usage)
 
 ---
@@ -456,20 +456,22 @@ In the initial project setup, the baseline commit bundled initial implementation
 
 ---
 
-## 🌐 Publishing & Git Remote Instructions
+## 🌐 Public Repository & Git Remote
 
-Currently, no Git remote is configured on this repository (`git remote -v` returns empty).
+This project is published on GitHub at the following public repository:
+- **Repository URL:** [https://github.com/Vishnu-0509/kata-dealership](https://github.com/Vishnu-0509/kata-dealership)
+- **Git Remote:** `origin https://github.com/Vishnu-0509/kata-dealership.git`
+- **Default Branch:** `master`
 
-To publish this repository to your GitHub account:
+### Cloning and Synchronizing
 
 ```bash
-# 1. Create a new repository on GitHub (e.g. named 'kata-dealership')
-# 2. Add the remote URL:
-git remote add origin https://github.com/<your-username>/kata-dealership.git
+# Clone the repository
+git clone https://github.com/Vishnu-0509/kata-dealership.git
+cd kata-dealership
 
-# 3. Rename branch to master/main (if desired) and push:
-git branch -M master
-git push -u origin master
+# Synchronize with master
+git pull origin master
 ```
 
 ---
