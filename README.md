@@ -464,7 +464,7 @@ In the initial project setup, the baseline commit bundled initial implementation
 
 ## 🌐 Public Repository & Live Deployment
 
-- **Verified Live Website URL:** [https://alabama-looked-plugins-ana.trycloudflare.com](https://alabama-looked-plugins-ana.trycloudflare.com)
+- **Verified Live Website URL:** [https://garbage-third-high-some.trycloudflare.com](https://garbage-third-high-some.trycloudflare.com)
 - **GitHub Repository URL:** [https://github.com/Vishnu-0509/kata-dealership](https://github.com/Vishnu-0509/kata-dealership)
 - **1-Click Render Cloud Deploy:** [Deploy to Render](https://render.com/deploy?repo=https://github.com/Vishnu-0509/kata-dealership)
 - **Git Remote:** `origin https://github.com/Vishnu-0509/kata-dealership.git`
