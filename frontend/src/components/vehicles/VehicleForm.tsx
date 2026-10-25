@@ -19,6 +19,20 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
   const [quantity, setQuantity] = useState(String(initial?.quantity ?? ''));
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl || '');
   const [exhaustAudioUrl, setExhaustAudioUrl] = useState(initial?.exhaustAudioUrl || '');
+
+  // 360 Interactive Viewer Angle Sequence
+  const [angleImages, setAngleImages] = useState<string[]>(() => {
+    if (initial?.images360) {
+      try {
+        const parsed = JSON.parse(initial.images360);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  });
+  const [newAngleUrl, setNewAngleUrl] = useState('');
   
   // Engineering Specifications
   const [bhp, setBhp] = useState(initial?.bhp ? String(initial.bhp) : '');
@@ -33,6 +47,31 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
   const [curbWeight, setCurbWeight] = useState(initial?.curbWeight || '');
   const [showSpecsSection, setShowSpecsSection] = useState(Boolean(initial?.bhp || initial?.zeroToSixty || initial?.transmission));
 
+  const addAngleImage = () => {
+    if (!newAngleUrl.trim()) return;
+    setAngleImages([...angleImages, newAngleUrl.trim()]);
+    setNewAngleUrl('');
+  };
+
+  const removeAngleImage = (index: number) => {
+    setAngleImages(angleImages.filter((_, i) => i !== index));
+  };
+
+  const moveAngleImage = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= angleImages.length) return;
+    const nextList = [...angleImages];
+    const [moved] = nextList.splice(index, 1);
+    nextList.splice(targetIndex, 0, moved);
+    setAngleImages(nextList);
+  };
+
+  const updateAngleUrl = (index: number, url: string) => {
+    const nextList = [...angleImages];
+    nextList[index] = url;
+    setAngleImages(nextList);
+  };
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     onSubmit({
@@ -43,6 +82,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
       price: parseFloat(price),
       quantity: parseInt(quantity, 10),
       imageUrl: imageUrl.trim() || null,
+      images360: angleImages.length > 0 ? JSON.stringify(angleImages) : null,
       exhaustAudioUrl: exhaustAudioUrl.trim() || null,
       bhp: bhp ? parseInt(bhp, 10) : null,
       zeroToSixty: zeroToSixty ? parseFloat(zeroToSixty) : null,
@@ -212,6 +252,113 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                   Image Preview
                 </span>
               </div>
+            )}
+          </div>
+
+          {/* Interactive 360° Studio Photography Angles (Ordered Sequence) */}
+          <div className="glass-card p-4 bg-slate-900/60 border border-cyan-500/20 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <span>🔄</span> 360° Interactive Angle Sequence ({angleImages.length} angles)
+                </label>
+                <p className="text-[11px] text-slate-400">
+                  Sequential photographs of this vehicle from surrounding angles.
+                </p>
+              </div>
+              {angleImages.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setAngleImages([])}
+                  className="text-[11px] text-rose-400 hover:text-rose-300 underline"
+                >
+                  Clear All Angles
+                </button>
+              )}
+            </div>
+
+            {/* Input to add angle */}
+            <div className="flex gap-2">
+              <input
+                type="url"
+                className="glass-input flex-1 text-xs"
+                value={newAngleUrl}
+                onChange={(e) => setNewAngleUrl(e.target.value)}
+                placeholder="https://.../angle_01.jpg"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addAngleImage();
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={addAngleImage}
+                disabled={!newAngleUrl.trim()}
+                className="btn-glass px-3 py-1.5 text-xs text-cyan-300 border-cyan-500/40 hover:bg-cyan-500/20 disabled:opacity-40"
+              >
+                + Add Angle
+              </button>
+            </div>
+
+            {/* List of Ordered Angles */}
+            {angleImages.length > 0 ? (
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                {angleImages.map((url, idx) => (
+                  <div
+                    key={`${url}-${idx}`}
+                    className="flex items-center gap-2 bg-slate-950/80 p-2 rounded-lg border border-white/5 text-xs"
+                  >
+                    <span className="w-6 text-center font-bold text-cyan-400 text-[11px]">
+                      #{idx + 1}
+                    </span>
+                    <img
+                      src={url}
+                      alt={`Angle ${idx + 1}`}
+                      className="w-10 h-8 object-cover rounded bg-slate-900 border border-white/10"
+                    />
+                    <input
+                      type="url"
+                      value={url}
+                      onChange={(e) => updateAngleUrl(idx, e.target.value)}
+                      className="glass-input flex-1 py-1 px-2 text-[11px]"
+                    />
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => moveAngleImage(idx, 'up')}
+                        title="Move Up"
+                        className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30"
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        disabled={idx === angleImages.length - 1}
+                        onClick={() => moveAngleImage(idx, 'down')}
+                        title="Move Down"
+                        className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30"
+                      >
+                        ↓
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeAngleImage(idx)}
+                        title="Remove"
+                        className="px-1.5 py-0.5 rounded bg-rose-500/20 hover:bg-rose-500/40 text-rose-300"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[11px] text-slate-500 italic">
+                No 360° angle photos configured. The vehicle details will show &ldquo;360° view unavailable&rdquo; and display the primary photograph.
+              </p>
             )}
           </div>
 

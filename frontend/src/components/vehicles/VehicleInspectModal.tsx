@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Vehicle } from '../../api/client';
 import { exhaustSound } from '../../utils/exhaustAudio';
+import { Vehicle360Viewer } from './Vehicle360Viewer';
 
 interface Props {
   vehicle: Vehicle;
@@ -11,6 +12,18 @@ interface Props {
 
 export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing }: Props) {
   const [isRevving, setIsRevving] = useState(false);
+
+  let parsedAngles: string[] = [];
+  if (vehicle.images360) {
+    try {
+      parsedAngles = JSON.parse(vehicle.images360);
+      if (!Array.isArray(parsedAngles)) parsedAngles = [];
+    } catch {
+      parsedAngles = [];
+    }
+  }
+
+  const [activeTab, setActiveTab] = useState<'360' | 'photo'>(parsedAngles.length > 0 ? '360' : 'photo');
 
   const handleRev = () => {
     setIsRevving(true);
@@ -45,39 +58,79 @@ export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing
         className="glass-panel max-w-2xl w-full overflow-hidden shadow-2xl border border-cyan-500/30 flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header Image with Gradient Overlay */}
-        <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-slate-950">
-          <img
-            src={
-              vehicle.imageUrl ||
-              'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80'
-            }
-            alt={`${vehicle.make} ${vehicle.model}`}
-            className="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+        {/* Media Header with Tab Switcher */}
+        <div className="relative w-full bg-slate-950 flex flex-col">
+          {/* Media Mode Pill Selector */}
+          <div className="absolute top-4 left-4 z-20 flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-md p-1 rounded-xl border border-white/10 shadow-lg">
+            <button
+              type="button"
+              onClick={() => setActiveTab('360')}
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                activeTab === '360'
+                  ? 'bg-cyan-500 text-white shadow-md'
+                  : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              🔄 360° Studio
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('photo')}
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                activeTab === 'photo'
+                  ? 'bg-cyan-500 text-white shadow-md'
+                  : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              📷 Static Photo
+            </button>
+          </div>
 
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 bg-slate-900/70 hover:bg-slate-800 text-slate-300 hover:text-white p-2 rounded-full backdrop-blur-md border border-white/10 transition-colors"
+            aria-label="Close modal"
+            className="absolute top-4 right-4 z-20 bg-slate-900/70 hover:bg-slate-800 text-slate-300 hover:text-white p-2 rounded-full backdrop-blur-md border border-white/10 transition-colors"
           >
             ✕
           </button>
 
-          {/* Floating Badges */}
-          <div className="absolute bottom-4 left-6 right-6 flex items-end justify-between">
+          {/* Media Display Area */}
+          <div className="relative h-64 sm:h-80 w-full overflow-hidden bg-slate-950">
+            {activeTab === '360' ? (
+              <Vehicle360Viewer
+                images={parsedAngles}
+                fallbackImageUrl={vehicle.imageUrl}
+                vehicleName={`${vehicle.make} ${vehicle.model}`}
+              />
+            ) : (
+              <div className="relative w-full h-full">
+                <img
+                  src={
+                    vehicle.imageUrl ||
+                    'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80'
+                  }
+                  alt={`${vehicle.make} ${vehicle.model}`}
+                  className="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+              </div>
+            )}
+          </div>
+
+          {/* Vehicle Identity Header Banner */}
+          <div className="px-6 py-3 bg-slate-900/90 border-t border-b border-white/10 flex items-center justify-between">
             <div>
-              <span className="badge-glass bg-cyan-500/20 text-cyan-300 border-cyan-500/40 mb-2">
+              <span className="badge-glass bg-cyan-500/20 text-cyan-300 border-cyan-500/40 mb-1 inline-block">
                 {vehicle.year || 2024} · {vehicle.category}
               </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                 {vehicle.make} {vehicle.model}
               </h2>
             </div>
             <div className="text-right">
-              <p className="text-xs text-slate-400">Starting MSRP</p>
-              <p className="text-2xl sm:text-3xl font-black text-cyan-400">
+              <p className="text-[11px] text-slate-400">Starting MSRP</p>
+              <p className="text-xl sm:text-2xl font-black text-cyan-400">
                 ${vehicle.price.toLocaleString()}
               </p>
             </div>
