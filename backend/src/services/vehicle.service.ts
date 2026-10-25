@@ -61,19 +61,30 @@ export class VehicleService {
   }
 
   /**
-   * Purchases (decrements quantity by 1) for a vehicle.
+   * Purchases (decrements quantity by 1) for a vehicle atomically.
+   * Decrements only when quantity is greater than zero to prevent race conditions.
    * @throws Error('OUT_OF_STOCK') if quantity is 0
    * @throws Error('NOT_FOUND') if vehicle not found
    */
   async purchase(id: string) {
-    const vehicle = await this.getById(id);
-    if (!vehicle) throw new Error('NOT_FOUND');
-    if (vehicle.quantity <= 0) throw new Error('OUT_OF_STOCK');
-
-    return this.prisma.vehicle.update({
-      where: { id },
-      data: { quantity: { decrement: 1 } },
+    // Atomic conditional decrement: only decrement if quantity > 0
+    const result = await this.prisma.vehicle.updateMany({
+      where: {
+        id,
+        quantity: { gt: 0 },
+      },
+      data: {
+        quantity: { decrement: 1 },
+      },
     });
+
+    if (result.count === 0) {
+      const vehicle = await this.getById(id);
+      if (!vehicle) throw new Error('NOT_FOUND');
+      throw new Error('OUT_OF_STOCK');
+    }
+
+    return this.getById(id);
   }
 
   /**
