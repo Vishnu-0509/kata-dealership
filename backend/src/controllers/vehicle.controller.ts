@@ -2,6 +2,35 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import { VehicleService } from '../services/vehicle.service';
 
+const images360Schema = z
+  .string()
+  .optional()
+  .nullable()
+  .refine(
+    (val) => {
+      if (val === undefined || val === null || val.trim() === '') return true;
+      try {
+        const parsed = JSON.parse(val);
+        if (!Array.isArray(parsed)) return false;
+        return parsed.every((item) => {
+          if (typeof item !== 'string' || item.trim().length === 0) return false;
+          try {
+            const url = new URL(item);
+            return url.protocol === 'http:' || url.protocol === 'https:';
+          } catch {
+            return false;
+          }
+        });
+      } catch {
+        return false;
+      }
+    },
+    {
+      message:
+        'images360 must be a valid JSON array of HTTP or HTTPS image URLs, or null to clear the sequence',
+    }
+  );
+
 const createVehicleSchema = z.object({
   make: z.string().trim().min(1, 'Make is required'),
   model: z.string().trim().min(1, 'Model is required'),
@@ -9,7 +38,7 @@ const createVehicleSchema = z.object({
   price: z.number().positive('Price must be positive'),
   quantity: z.number().int().min(0, 'Quantity must be non-negative'),
   imageUrl: z.string().url('Invalid image URL').optional().or(z.literal('')).nullable(),
-  images360: z.string().optional().nullable(),
+  images360: images360Schema,
   exhaustAudioUrl: z.string().url('Invalid audio URL').optional().or(z.literal('')).nullable(),
   year: z.number().int().min(1900).max(2100).optional().nullable(),
   bhp: z.number().int().positive().optional().nullable(),
@@ -122,7 +151,11 @@ export class VehicleController {
   createVehicle = async (req: Request, res: Response): Promise<void> => {
     const parsed = createVehicleSchema.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ message: 'Validation error', errors: parsed.error.flatten().fieldErrors });
+      const firstError = parsed.error.errors[0]?.message;
+      res.status(400).json({
+        message: firstError ? `Validation error: ${firstError}` : 'Validation error',
+        errors: parsed.error.flatten().fieldErrors,
+      });
       return;
     }
 
@@ -141,7 +174,11 @@ export class VehicleController {
   updateVehicle = async (req: Request, res: Response): Promise<void> => {
     const parsed = updateVehicleSchema.safeParse(req.body);
     if (!parsed.success) {
-      res.status(400).json({ message: 'Validation error', errors: parsed.error.flatten().fieldErrors });
+      const firstError = parsed.error.errors[0]?.message;
+      res.status(400).json({
+        message: firstError ? `Validation error: ${firstError}` : 'Validation error',
+        errors: parsed.error.flatten().fieldErrors,
+      });
       return;
     }
 

@@ -186,7 +186,7 @@ async function main() {
       year: 2024,
       price: 59995,
       quantity: 5,
-      imageUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1760044275059-c837e2a3a5da?auto=format&fit=crop&w=800&q=80',
       bhp: 282,
       zeroToSixty: 7.9,
       topSpeed: 99,
