@@ -22,8 +22,8 @@ async function run() {
     stdio: 'ignore',
   });
 
-  console.log('🚀 Starting Frontend Vite Preview on port 5173...');
-  const frontendProc = spawn('npm', ['run', 'preview', '--', '--port', '5173'], {
+  console.log('🚀 Starting Frontend Vite Preview on port 4173...');
+  const frontendProc = spawn('npm', ['run', 'preview'], {
     cwd: path.resolve('frontend'),
     shell: true,
     stdio: 'ignore',
@@ -104,7 +104,7 @@ async function run() {
 
     // 1. Login Page
     console.log('1. Navigating to Login Page...');
-    await send('Page.navigate', { url: 'http://localhost:5173/login' });
+    await send('Page.navigate', { url: 'http://localhost:4173/login' });
     await sleep(2000);
     console.log('Page URL:', await evaluate('window.location.href'));
     await captureScreenshot('01-login-desktop.png');
@@ -137,7 +137,7 @@ async function run() {
     await evaluate(`
       (() => {
         const btns = Array.from(document.querySelectorAll('button'));
-        const compareBtn = btns.find(b => b.textContent.includes('Specifications & Compare'));
+        const compareBtn = btns.find(b => b.textContent.includes('Specifications & Compare') || b.textContent.includes('Specifications'));
         if (compareBtn) compareBtn.click();
       })()
     `);
@@ -159,7 +159,7 @@ async function run() {
     await evaluate(`
       (() => {
         const btns = Array.from(document.querySelectorAll('button'));
-        const inspectBtn = btns.find(b => b.textContent.includes('Sound & Specs'));
+        const inspectBtn = btns.find(b => b.textContent.includes('Full Specs') || b.textContent.includes('Sound & Specs'));
         if (inspectBtn) inspectBtn.click();
       })()
     `);
@@ -201,12 +201,18 @@ async function run() {
     `);
     await sleep(2000);
 
-    console.log('Clicking Admin Demo quick fill and signing in...');
+    console.log('Entering admin credentials and signing in...');
     await evaluate(`
       (() => {
-        const btns = Array.from(document.querySelectorAll('button'));
-        const adminBtn = btns.find(b => b.textContent.includes('Admin Demo'));
-        if (adminBtn) adminBtn.click();
+        const idInput = document.querySelector('#usernameOrEmail') || document.querySelector('input[placeholder*="username"]');
+        const passInput = document.querySelector('#password') || document.querySelector('input[type="password"]');
+        if (idInput && passInput) {
+          const idSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+          idSetter.call(idInput, 'admin');
+          idInput.dispatchEvent(new Event('input', { bubbles: true }));
+          idSetter.call(passInput, 'admin123');
+          passInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
       })()
     `);
     await sleep(500);
@@ -238,7 +244,7 @@ async function run() {
     await evaluate(`
       (() => {
         const btns = Array.from(document.querySelectorAll('button'));
-        const cancelBtn = btns.find(b => b.textContent.includes('Cancel'));
+        const cancelBtn = btns.find(b => b.textContent.includes('Cancel') || b.textContent.includes('✕'));
         if (cancelBtn) cancelBtn.click();
       })()
     `);

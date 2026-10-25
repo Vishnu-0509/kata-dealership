@@ -1,6 +1,6 @@
 # 🏎️ KATA MOTORS — Car Dealership Inventory System
 
-A luxury full-stack Car Dealership Inventory Management System built with **TypeScript, Node.js, Express, Prisma ORM, SQLite, React 18, and Tailwind CSS**. Designed with an authentic frosted transparent glassmorphic aesthetic, real-time fleet valuation metrics, high-resolution automotive imagery, an interactive Web Audio API acoustic engine simulator, multi-vehicle side-by-side specification comparison, and atomic stock concurrency protection.
+A luxury full-stack Car Dealership Inventory Management System built with **TypeScript, Node.js, Express, Prisma ORM, SQLite, React 18, and Tailwind CSS**. Designed with an authentic modern light automotive showroom aesthetic, role-gated dealership financial metrics, high-resolution automotive imagery, an interactive Web Audio API acoustic engine simulator, a genuine interactive 360-degree vehicle viewer with admin frame sequencing, multi-vehicle side-by-side specification comparison, dual username/email authentication, and atomic stock concurrency protection.
 
 ---
 
@@ -25,6 +25,7 @@ All screenshots were captured from the running application using automated headl
 
 - [Feature Highlights](#-feature-highlights)
 - [Simulated vs Persistent Features](#-simulated-vs-persistent-features)
+- [360° Viewer Implementation & Asset Status](#-360-viewer-implementation--asset-status)
 - [Tech Stack](#-tech-stack)
 - [Architecture & SOLID Principles](#-architecture--solid-principles)
 - [Setup & Reproducible Run Guide](#-setup--reproducible-run-guide)
@@ -43,14 +44,27 @@ All screenshots were captured from the running application using automated headl
   - Secure stateless JWT authentication with strict mandatory environment configuration. Startup immediately aborts if `JWT_SECRET` is unset or blank.
   - Zero hardcoded fallback secrets. No forged tokens accepted.
   - Granular role-based authorization guards on all admin endpoints (`POST`, `PUT`, `DELETE`, `restock`).
+- **👤 Username or Email Authentication with Accessible Forms:**
+  - Clear visible labels and standard empty-field placeholders: `"Enter username or email"` and `"Enter password"`.
+  - Accessible Show/Hide password toggle button; no decorative dots as placeholders.
+  - Unique username selection during registration, with support for logging in via either username or email (case-insensitive and trimmed), preserving existing email accounts.
+- **💼 Dealership Portfolio Privacy:**
+  - Total Portfolio Value and financial metrics are displayed strictly to `ADMIN` users.
+  - Customer (`USER`) and demo (`DEMO`) views remain cleanly focused on browsing vehicles, filtering, specifications comparison, acoustics, and purchasing.
 - **🛡️ Race Condition Stock Protection (Zero-Stock Floor):**
   - High-concurrency atomic purchase protection using Prisma conditional update operations (`quantity: { gt: 0 }`).
   - Guaranteed stock consistency: simultaneous purchases decrement stock sequentially and safely reject concurrent buyers once stock reaches 0. Negative inventory is physically impossible.
+- **🔄 Genuine Interactive 360-Degree Vehicle Viewer:**
+  - Dedicated multi-angle viewer supporting continuous sequential photography from real-world exterior angles.
+  - Interactive mouse drag and touch swipe rotation, previous/next controls, and keyboard navigation (`ArrowLeft`, `ArrowRight`, `Home`).
+  - Fullscreen viewing toggle, frame degree indicator, lazy loading, loading spinners, and network retry states.
+  - Full Admin sequence management: administrators can add angle image URLs, reorder frames with up/down controls, replace URLs, and remove angles.
+  - Safe fallback: vehicles without multi-angle photography cleanly display `"360° view unavailable"` and retain their standard photograph without inventing synthetic fake rotations.
 - **⚖️ Side-by-Side Specifications Comparison Matrix:**
   - Dedicated comparison matrix allowing buyers to select and evaluate up to 4 vehicles simultaneously.
   - Factory telemetry & engineering metrics: Horsepower (`BHP`), 0–60 mph acceleration, top speed (`V-Max`), showroom price, city/hwy MPG or EV range, fuel/battery capacity, transmission, drivetrain, powertrain architecture, seating, and curb weight.
   - Dynamic class leader badges: `★ Best Value`, `⚡ Highest Power`, `🚀 Quickest`, and `🏁 Highest V-Max`.
-  - Feature access restricted to regular customers (hidden for administrators).
+  - Available exclusively to regular customers (hidden for administrators).
 - **📦 Empty Inventory Modal Availability:**
   - Decoupled modal rendering in `VehicleList.tsx` ensuring administrators can add vehicles when inventory is empty, after deleting the last vehicle, or when active search criteria return zero matches.
   - Includes an inline "+ Add New Vehicle" button directly within the empty state container.
@@ -58,10 +72,11 @@ All screenshots were captured from the running application using automated headl
   - Distinct acoustic signatures engineered specifically for individual vehicles (Flat-6 boxer scream, Twin-Turbo Straight-6 rasp, Coyote V8 roar, VTEC turbo blow-off hiss, dual-stator EV sweeps).
   - Supports optional custom `exhaustAudioUrl` on vehicles to play actual recorded audio files.
 - **🛡️ Robust Input Validation & Sanitization:**
-  - Strict query validation using Zod: enforces finite numeric non-negative price bounds, rejects malformed strings (`minPrice=10junk`), rejects array parameters (`make[]=Audit`), and ensures `minPrice <= maxPrice`.
+  - Strict query validation using Zod: enforces finite numeric non-negative price bounds, rejects `Infinity` and `1e309`, rejects malformed strings (`minPrice=10junk`), rejects array parameters (`make[]=Audit`), and ensures `minPrice <= maxPrice`.
   - Required text inputs (`make`, `model`, `category`) are trimmed to reject whitespace-only submissions with descriptive 400 responses.
-- **💎 Transparent White Glass Aesthetic:**
-  - Luxury crystalline showroom design with frosted glassmorphism tokens (`bg-white/[0.12]`, `backdrop-blur-3xl`, `border-white/25`), real-time fleet valuation metrics, and live automotive background video/photo atmosphere.
+- **🏛️ Modern Light Automotive Showroom Design:**
+  - Clean, bright aesthetic with soft light-grey backgrounds (`bg-slate-50`), light glass panels (`bg-white/85`, `backdrop-blur-xl`, `border-slate-200`), dark high-contrast typography (`text-slate-900`), and consistent teal accents (`text-teal-600`, `bg-teal-600`).
+  - Subtle shadows, comfortable spacing, and live automotive background video/photo atmosphere that supports without obscuring text.
 
 ---
 
@@ -71,12 +86,42 @@ To maintain transparency, here is the exact operational status of all applicatio
 
 | Feature | Status | Implementation Details |
 |---|---|---|
-| **User Authentication & Passwords** | **Fully Persistent** | Stored in SQLite database with `bcryptjs` 10-round salted password hashing and signed JWT sessions. |
+| **User Authentication & Passwords** | **Fully Persistent** | Stored in SQLite database with `bcryptjs` 10-round salted password hashing, unique usernames, and signed JWT sessions. |
 | **Vehicle Inventory CRUD & Stock** | **Fully Persistent** | Stored in SQLite database via Prisma ORM with relational integrity and atomic stock updates. |
+| **360° Angle Photo Sequences** | **Fully Persistent** | Persisted in SQLite `Vehicle.images360` column as serialized JSON arrays of validated image URLs with admin ordering controls. |
 | **Race-Condition Protection** | **Fully Persistent** | Executed directly on SQLite with atomic SQL conditional decrements (`WHERE quantity > 0`). |
 | **Specifications Comparison** | **Interactive Client State** | Dynamic selection stored in client state; specs data persisted in vehicle database records. |
 | **Vehicle Acoustics Engine** | **Simulated & Audio Fallback** | Procedurally synthesized via Web Audio API oscillators/filters; plays custom MP3/WAV if `exhaustAudioUrl` is provided. |
 | **Concierge Support Inquiries** | **Local Demo Persistence** | Form submissions are persisted to browser `localStorage` (`kata_demo_inquiries`) for evaluation. Clearly labeled as a demonstration form; no external emails are dispatched. |
+
+---
+
+## 🔄 360° Viewer Implementation & Asset Status
+
+### Authentic Sequential Photography Architecture
+The 360° vehicle viewer in `frontend/src/components/vehicles/Vehicle360Viewer.tsx` is built for genuine sequential photography:
+1. **Interactive Controls:** Supports pointer dragging, touch gestures, angle buttons, and keyboard navigation (`ArrowLeft` / `ArrowRight` to rotate, `Home` to reset to frame 0).
+2. **Performance & States:** Images are loaded lazily; active frames display loading spinners and handle network failures with retry buttons.
+3. **Fullscreen Mode:** Users can expand the studio to fullscreen mode for high-resolution inspection.
+4. **Admin Sequence Editor:** In `VehicleForm.tsx`, dealership administrators can add image URLs, reorder frames with "Move Up" / "Move Down", replace URLs, or remove individual angle frames.
+
+### Genuine Multi-Angle Photography Policy
+Per project guidelines, we strictly avoid simulating 360° views by rotating a flat photograph with CSS 2D/3D transforms, stretching single images, or fabricating unseen perspectives. When genuine sequential angle photography is not yet uploaded, the viewer displays:
+> **⚠️ 360° view unavailable** (retaining the vehicle's high-resolution hero photograph).
+
+### Current Dealership Inventory 360° Asset Status
+| Vehicle | Primary Hero Photo | 360° Multi-Angle Sequence | Status |
+|---|---|---|---|
+| **Porsche 911 Carrera** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
+| **BMW M4 Competition** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
+| **Tesla Model 3 Performance** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
+| **Ford F-150 Lightning** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
+| **Toyota RAV4 Hybrid** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
+| **Honda Civic Sport** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
+| **Rivian R1T Launch Edition** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
+| **Volkswagen ID. Buzz** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
+
+*Administrators can upload and arrange sequential angle sets for any vehicle at any time using the "Add Angle Image" sequence builder in the Admin Edit modal.*
 
 ---
 
@@ -90,7 +135,7 @@ To maintain transparency, here is the exact operational status of all applicatio
 | **Validation** | Zod (v3.23) | Schema validation for query parameters and request bodies |
 | **Backend Testing** | Jest + Supertest + `ts-jest` | TDD integration & concurrency test suite |
 | **Frontend Framework** | React 18 + TypeScript + Vite | Single Page Application with optimized production bundling |
-| **Styling** | Tailwind CSS + PostCSS | Transparent frosted glassmorphism |
+| **Styling** | Tailwind CSS + PostCSS | Modern light automotive showroom glass design |
 | **State Management** | TanStack Query (React Query v5) | Optimistic updates & server cache synchronization |
 | **Routing** | React Router v6 | Client-side routing with authentication guards |
 | **Frontend Testing** | Vitest + React Testing Library + jsdom | Component & DOM interaction testing |
@@ -133,12 +178,16 @@ Copy-Item backend/.env.example backend/.env
 cp backend/.env.example backend/.env
 ```
 
-`backend/.env.example` documents all required variables:
-- `DATABASE_URL="file:./dev.db"`
-- `JWT_SECRET="kata-dealership-secure-jwt-secret-key-32chars"`
-- `PORT=3001`
-- `FRONTEND_URL="http://localhost:5173"`
-- `NODE_ENV="development"`
+`backend/.env.example` documents all required variables with safe setup instructions:
+```env
+DATABASE_URL="file:./dev.db"
+# Generate a cryptographically strong 64-character secret using:
+# node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+JWT_SECRET="<generate-and-paste-your-secure-random-jwt-secret-here>"
+PORT=3001
+FRONTEND_URL="http://localhost:5173"
+NODE_ENV="development"
+```
 
 ### 3. Dependency Installation & Database Initialization
 
@@ -189,20 +238,22 @@ npm start
 cd ../frontend
 npm run build
 npm run preview
-# Serves compiled production bundle on port 5173
+# Serves compiled production bundle on port 4173 (configured preview port)
 ```
+
+Visit **`http://localhost:4173`** to access the production preview.
 
 ---
 
 ## 👥 Default Demo Accounts
 
-The seed script creates pre-configured accounts:
+The seed script creates pre-configured accounts supporting login via username or email:
 
-| Role | Email | Password | Access Method | Allowed Capabilities |
-|---|---|---|---|---|
-| **Admin** | `admin@dealership.com` | `admin123` | Manual form login (Admin Demo button removed) | Full inventory CRUD, Restocking, Edit Details, Add Vehicles, Image/Audio Management |
-| **Registered Customer** | `user@dealership.com` | `user123` | Manual form login or Registration | Browse catalog, Filter, Hear Exhaust, Compare Specifications, **Purchase Available Stock** |
-| **Demo Client** | `demo@dealership.com` | `demo123` | Click **`[👤 Explore as Client Demo]`** button | **View-Only Mode**: Browse catalog, hear exhaust acoustics, and compare specs. **Cannot purchase or make changes without logging in.** |
+| Role | Username | Email | Password | Access Method | Allowed Capabilities |
+|---|---|---|---|---|---|
+| **Admin** | `admin` | `admin@dealership.com` | `admin123` | Manual form login | Full inventory CRUD, Restocking, Edit Details, Add Vehicles, Image/Audio/360 Management, Dealership Portfolio Metrics |
+| **Registered Customer** | `user` | `user@dealership.com` | `user123` | Manual form login or Registration | Browse catalog, Filter, Hear Exhaust, Compare Specifications, **Purchase Available Stock** |
+| **Demo Client** | `demo` | `demo@dealership.com` | `demo123` | Click **`[👤 Explore as Client Demo]`** button | **View-Only Mode**: Browse catalog, hear exhaust acoustics, and compare specs. **Cannot purchase or make changes without logging in.** |
 
 ---
 
@@ -211,16 +262,16 @@ The seed script creates pre-configured accounts:
 ### Authentication (Public)
 | Method | Endpoint | Description | Status Codes |
 |---|---|---|---|
-| `POST` | `/api/auth/register` | Register a new user | `201 Created`, `400 Bad Request`, `409 Conflict` |
-| `POST` | `/api/auth/login` | Login and receive signed JWT | `200 OK`, `400 Bad Request`, `401 Unauthorized` |
+| `POST` | `/api/auth/register` | Register a new user (supports optional unique username) | `201 Created`, `400 Bad Request`, `409 Conflict` |
+| `POST` | `/api/auth/login` | Login with username or email and receive signed JWT | `200 OK`, `400 Bad Request`, `401 Unauthorized` |
 
 ### Vehicles & Inventory (Protected — JWT Required)
 | Method | Endpoint | Access Level | Description | Status Codes |
 |---|---|---|---|---|
 | `GET` | `/api/vehicles` | User / Admin | Retrieve full inventory catalog | `200 OK`, `401 Unauthorized` |
 | `GET` | `/api/vehicles/search` | User / Admin | Filter by make, model, category, price range | `200 OK`, `400 Bad Request`, `401 Unauthorized` |
-| `POST` | `/api/vehicles` | Admin Only | Add a new vehicle to inventory | `201 Created`, `400 Bad Request`, `403 Forbidden` |
-| `PUT` | `/api/vehicles/:id` | Admin Only | Update vehicle details, photo & audio | `200 OK`, `400 Bad Request`, `404 Not Found` |
+| `POST` | `/api/vehicles` | Admin Only | Add a new vehicle to inventory (including 360 angles) | `201 Created`, `400 Bad Request`, `403 Forbidden` |
+| `PUT` | `/api/vehicles/:id` | Admin Only | Update vehicle details, photo, audio & 360 sequence | `200 OK`, `400 Bad Request`, `404 Not Found` |
 | `DELETE` | `/api/vehicles/:id` | Admin Only | Remove vehicle from inventory | `200 OK`, `403 Forbidden`, `404 Not Found` |
 | `POST` | `/api/vehicles/:id/purchase` | User / Admin | Atomically decrement quantity by 1 | `200 OK`, `400 Out of Stock`, `404 Not Found` |
 | `POST` | `/api/vehicles/:id/restock` | Admin Only | Increment vehicle stock | `200 OK`, `400 Bad Request`, `403 Forbidden` |
@@ -241,56 +292,66 @@ npm run test:coverage
 # Run all frontend component & integration tests
 cd ../frontend
 npm test
+
+# Run end-to-end acceptance check script
+node scripts/final_acceptance_check.mjs
 ```
 
 ### Actual Backend Coverage Report (Jest + Supertest)
 
 ```text
 PASS tests/vehicle.test.ts
+PASS tests/auth_username.test.ts
 PASS tests/auth.test.ts
 PASS tests/validation.test.ts
-PASS tests/concurrency.test.ts
 PASS tests/security.test.ts
-------------------------|---------|----------|---------|---------|---------------------------------------
-File                    | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                     
-------------------------|---------|----------|---------|---------|---------------------------------------
-All files               |   87.70 |    69.76 |    82.50 |   87.81 |                                       
- src                    |   88.88 |   100.00 |    33.33 |   88.88 |                                       
-  app.ts                |   88.88 |   100.00 |    33.33 |   88.88 | 21,30                                 
- src/config             |   52.17 |     5.26 |    28.57 |   52.17 |                                       
-  env.ts                |   52.17 |     5.26 |    28.57 |   52.17 | 27-32,48,56-68                        
- src/controllers        |   85.18 |    78.26 |   100.00 |   85.18 |                                       
-  auth.controller.ts    |   86.20 |    87.50 |   100.00 |   86.20 | 40,51-52,63                           
-  vehicle.controller.ts |   84.81 |    73.33 |   100.00 |   84.81 | 76,99,118,129-130,141,158,181,200-204 
- src/middleware         |  100.00 |   100.00 |   100.00 |  100.00 |                                       
-  auth.middleware.ts    |  100.00 |   100.00 |   100.00 |  100.00 |                                       
- src/routes             |  100.00 |   100.00 |   100.00 |  100.00 |                                       
-  auth.routes.ts        |  100.00 |   100.00 |   100.00 |  100.00 |                                       
-  vehicle.routes.ts     |  100.00 |   100.00 |   100.00 |  100.00 |                                       
- src/services           |   97.91 |    91.66 |   100.00 |  100.00 |                                       
-  auth.service.ts       |  100.00 |   100.00 |   100.00 |  100.00 |                                       
-  vehicle.service.ts    |   96.42 |    90.90 |   100.00 |  100.00 | 21,28,110                             
-------------------------|---------|----------|---------|---------|---------------------------------------
+PASS tests/concurrency.test.ts
+------------------------|---------|----------|---------|---------|----------------------------------------
+File                    | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                      
+------------------------|---------|----------|---------|---------|----------------------------------------
+All files               |   88.51 |    71.42 |   83.72 |   88.54 |                                        
+ src                    |   88.88 |      100 |   33.33 |   88.88 |                                        
+  app.ts                |   88.88 |      100 |   33.33 |   88.88 | 21,30                                  
+ src/config             |   52.17 |     5.26 |   28.57 |   52.17 |                                        
+  env.ts                |   52.17 |     5.26 |   28.57 |   52.17 | 27-32,48,56-68                         
+ src/controllers        |    87.2 |    80.48 |     100 |   86.99 |                                        
+  auth.controller.ts    |   88.57 |    73.33 |     100 |   88.57 | 61,72-73,89                            
+  vehicle.controller.ts |   86.66 |    84.61 |     100 |   86.36 | 91,114,133,144-145,156,173,203,222-226 
+ src/middleware         |     100 |      100 |     100 |     100 |                                        
+  auth.middleware.ts    |     100 |      100 |     100 |     100 |                                        
+ src/routes             |     100 |      100 |     100 |     100 |                                        
+  auth.routes.ts        |     100 |      100 |     100 |     100 |                                        
+  vehicle.routes.ts     |     100 |      100 |     100 |     100 |                                        
+ src/services           |   96.49 |    86.36 |     100 |   98.11 |                                        
+  auth.service.ts       |   96.55 |    72.72 |     100 |   96.55 | 61                                     
+  vehicle.service.ts    |   96.42 |     90.9 |     100 |     100 | 21,28,110                              
+------------------------|---------|----------|---------|---------|----------------------------------------
 
-Test Suites: 5 passed, 5 total
-Tests:       48 passed, 48 total
+Test Suites: 6 passed, 6 total
+Tests:       59 passed, 59 total
+Snapshots:   0 total
+Time:        9.746 s
 ```
 
 ### Actual Frontend Test Results (Vitest + jsdom)
 
 ```text
- ✓ src/tests/ClientInterceptorAndCategories.test.ts  (2 tests passed)
- ✓ src/tests/LoginForm.test.tsx                      (3 tests passed)
- ✓ src/tests/RegisterForm.test.tsx                   (3 tests passed)
- ✓ src/tests/VehicleComparisonModal.test.tsx         (4 tests passed)
- ✓ src/tests/VehicleCard.test.tsx                    (6 tests passed)
- ✓ src/tests/VehicleListEmptyModal.test.tsx          (2 tests passed)
+ ✓ src/tests/LoginFormClearerFields.test.tsx         (4 tests passed)
+ ✓ src/tests/RegisterForm.test.tsx                  (3 tests passed)
+ ✓ src/tests/Vehicle360Viewer.test.tsx              (7 tests passed)
+ ✓ src/tests/LoginForm.test.tsx                     (4 tests passed)
+ ✓ src/tests/VehicleComparisonModal.test.tsx        (4 tests passed)
+ ✓ src/tests/VehicleCard.test.tsx                   (6 tests passed)
+ ✓ src/tests/DashboardMetricsVisibility.test.tsx    (3 tests passed)
+ ✓ src/tests/ClientInterceptorAndCategories.test.ts (2 tests passed)
+ ✓ src/tests/VehicleListEmptyModal.test.tsx         (2 tests passed)
 
-Test Files:  6 passed, 6 total
-Tests:       21 passed, 21 total
+Test Files:  9 passed, 9 total
+Tests:       35 passed, 35 total
+Time:        7.37s
 ```
 
-**Total automated tests across stack:** **71 passed of 71 tests (100% passing).**
+**Total automated tests across stack:** **94 passed of 94 tests (100% passing).**
 
 ---
 
@@ -299,27 +360,50 @@ Tests:       21 passed, 21 total
 ### Honest Acknowledgment of Initial Development Limitation
 In the initial project setup, the baseline commit bundled initial implementations and baseline test suites together rather than committing each Red test individually. For all subsequent behavioral fixes and enhancements identified in the independent review, strict Test-Driven Development (Red → Green → Refactor) was rigorously applied and recorded in the Git history:
 
-### 1. JWT Configuration & Security Hardening
+### 1. Dealership Portfolio Metrics Visibility
+- **Problem:** Financial summaries and portfolio valuations were displayed to all users including customers and demo clients.
+- **Red Phase (Commit `c017d38`):** Authored `frontend/src/tests/DashboardMetricsVisibility.test.tsx` asserting that `Portfolio Value` is visible solely to `ADMIN` users and hidden from regular users and demo sessions.
+- **Green Phase (Commit `e7358a1`):** Wrapped dealership financial metrics in `DashboardPage.tsx` with role guards (`isAdmin`), preserving catalog browsing, filtering, and comparison for customer views.
+
+### 2. Username or Email Authentication & Accessible Form Fields
+- **Problem:** Login accepted only emails, labels were missing, password placeholder used decorative dots, and users could not log in with a username.
+- **Red Phase (Commit `b50106c`):** Authored `backend/tests/auth_username.test.ts` and `frontend/src/tests/LoginFormClearerFields.test.tsx` specifying visible labels, exact placeholders, show/hide toggle, registration with unique username, and dual identifier login.
+- **Green Phase (Commit `c3a5486`):** Updated Prisma schema with `username String? @unique`, implemented dual lookup in `auth.service.ts`, and built accessible form fields with Show/Hide toggle.
+
+### 3. Infinity Price-Filter Rejection & Acceptance Exit Code Hardening
+- **Problem:** Input values that convert to `Infinity` or non-finite numbers bypassed numeric bounds. Acceptance check script always exited with code 0 even on assertion errors.
+- **Red Phase & Green Fix (Commit `58f588b`):** Added regression tests for `minPrice=Infinity` and `1e309`, enforced `Number.isFinite` and `/infinity/i` check in Zod schema, and updated `scripts/final_acceptance_check.mjs` to track failures and terminate with `process.exit(1)`.
+
+### 4. Interactive 360-Degree Viewer & Admin Framing Workflow
+- **Problem:** No interactive 360° vehicle inspection; needed genuine multi-angle photography support with admin ordering controls without fake rotations.
+- **Red Phase (Commit `59e73d9`):** Authored `frontend/src/tests/Vehicle360Viewer.test.tsx` and backend tests in `vehicle.test.ts` specifying pointer dragging, keyboard navigation, fullscreen, unavailable badge fallback, and database persistence.
+- **Green Phase (Commit `a869e76`):** Implemented `Vehicle360Viewer.tsx`, integrated studio tabs in `VehicleInspectModal.tsx`, and added angle management workflow (add, move up/down, replace, remove) in `VehicleForm.tsx`.
+
+### 5. Modern Light Automotive Showroom Redesign
+- **Problem:** The interface used a predominantly dark theme that reduced contrast and readability.
+- **Redesign Implementation (Commit `b517464`):** Refactored global tokens, vehicle cards, tables, filters, modals, and navigation to soft light-grey backgrounds (`bg-slate-50`), high-opacity white glass cards, high-contrast dark typography (`text-slate-900`), and consistent teal action accents.
+
+### 6. JWT Configuration & Security Hardening
 - **Problem:** Missing `JWT_SECRET` fell back to `'fallback-secret'`, allowing forged tokens.
 - **Red Phase (Commit `2aaa085`):** Authored `backend/tests/security.test.ts` testing rejection of forged fallback tokens, invalid signatures, expired tokens, and missing configurations.
 - **Green Phase (Commit `7384daf`):** Centralized validation in `backend/src/config/env.ts`, removed all fallback strings, and ensured server startup fails fast if the secret is missing.
 
-### 2. Concurrent Purchase Race Conditions & Stock Underflow
+### 7. Concurrent Purchase Race Conditions & Stock Underflow
 - **Problem:** Separate stock check and decrement allowed 5 simultaneous purchases on quantity 1 to drive stock negative (-4).
 - **Red Phase (Commit `3ac27bf`):** Authored `backend/tests/concurrency.test.ts` reproducing 5 simultaneous purchases against 1 available vehicle.
 - **Green Phase (Commit `dee7a67`):** Implemented atomic conditional update in `backend/src/services/vehicle.service.ts` (`quantity: { gt: 0 }`), ensuring exactly 1 purchase succeeds and final quantity is 0.
 
-### 3. Empty Inventory Modal Rendering Bug
+### 8. Empty Inventory Modal Rendering Bug
 - **Problem:** `VehicleList.tsx` returned early when `vehicles.length === 0`, preventing the Add Vehicle modal from opening when the showroom had zero cars.
 - **Red Phase (Commit `e0a229a`):** Authored `frontend/src/tests/VehicleListEmptyModal.test.tsx` verifying modal rendering on empty inventory.
 - **Green Phase (Commit `60c65fc`):** Decoupled modal rendering from the empty state container and added an inline "+ Add New Vehicle" button.
 
-### 4. API Input Validation & Query Parameter Sanitization
-- **Problem:** Malformed query inputs (`minPrice=abc`, `minPrice=10junk`, `make[]=Audit`) caused 500 errors or accepted invalid values. Whitespace strings were accepted for required vehicle fields.
+### 9. API Input Validation & Query Parameter Sanitization
+- **Problem:** Malformed query inputs (`minPrice=abc`, `minPrice=10junk`, `make[]=Audit`) caused 500 errors. Whitespace strings were accepted for required vehicle fields.
 - **Red Phase (Commit `5c42091`):** Authored `backend/tests/validation.test.ts` asserting 400 responses for invalid numeric formats, array filters, negative prices, and whitespace strings.
 - **Green Phase (Commit `0f2a87c`):** Created `searchVehicleSchema` using Zod to enforce finite non-negative numbers, reject arrays, validate `minPrice <= maxPrice`, and trim required strings.
 
-### 5. Frontend Interceptor, Category Harmony & Support Form
+### 10. Frontend Interceptor, Category Harmony & Support Form
 - **Problem:** 401 on login immediately reloaded the page, hiding error messages. Hatchback and Convertible were omitted from filter pills. Support form claimed false dispatch.
 - **Red Phase (Commit `9e53fba`):** Authored `frontend/src/tests/ClientInterceptorAndCategories.test.ts` checking category inclusions and non-redirect on `/auth/login`.
 - **Green Phase (Commit `eeba96a`):** Shared category definitions across form and dashboard, excluded auth endpoints from the Axios 401 redirect, and labeled the support form as a local demonstration feature.
@@ -347,11 +431,13 @@ git push -u origin master
 ## 🤖 My AI Usage
 
 ### 1. AI Tools Utilized
-- **Antigravity (Google DeepMind)**: Advanced agentic coding assistant powered by **Claude Sonnet 4.6 (Thinking)** used as an active pair programming partner.
+- **Antigravity (Google DeepMind)**: Advanced agentic coding assistant powered by **Claude Sonnet 4.6 (Thinking)** used for initial architectural setup and baseline development.
+- **Antigravity (Google DeepMind)**: Powered by **Gemini 3.8 Flash** used for continuation, responsive light showroom redesign, username/email dual authentication, 360° viewer implementation, and security hardening.
+- **ChatGPT (OpenAI)**: Utilized as an external independent code reviewer to analyze security edge cases, audit JWT configuration vulnerabilities, uncover database race conditions under concurrent load, and evaluate input validation boundaries.
 
 ### 2. Collaboration & Assistance
-- **Security Audit & Hardening:** Designed fail-fast startup configuration validation and eliminated fallback secrets.
+- **Security Audit & Hardening:** Designed fail-fast startup configuration validation, eliminated fallback secrets, rotated JWT secrets locally, and sanitized test configurations.
 - **Concurrency Engineering:** Implemented atomic SQL conditional decrements in Prisma ORM to solve database race conditions.
 - **Rigorous TDD Cycle:** Partnered in writing failing regression tests demonstrating each reported bug prior to implementing fixes.
 - **Automated Verification & Evidence:** Created headless Chrome DevTools Protocol automation scripts to capture genuine screenshots from the production build without fabrication.
-- **Documentation Integrity:** Maintained verbatim prompt logs in `PROMPTS.md` and archived raw execution transcripts in `docs/transcripts/transcript.jsonl`.
+- **Documentation & Transcript Integrity:** Maintained verbatim prompt logs in `PROMPTS.md` and archived raw execution transcripts in `docs/transcripts/transcript.jsonl`. In accordance with security practices, real secrets in transcripts were redacted with `[REDACTED_JWT_SECRET]`, and long conversational histories with automated truncations are fully documented.

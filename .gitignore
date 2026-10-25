@@ -4,3 +4,5 @@ dist/
 *.db
 *.db-journal
 coverage/
+temp-chrome-profile/
+*.log
