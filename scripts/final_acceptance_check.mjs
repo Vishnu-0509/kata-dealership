@@ -1,14 +1,115 @@
 import { spawn, execSync } from 'child_process';
 import path from 'path';
+import fs from 'fs';
+import os from 'os';
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+const isWindows = os.platform() === 'win32';
+const ACCEPTANCE_PORT = '3005';
+const BASE_URL = `http://localhost:${ACCEPTANCE_PORT}`;
+const ACCEPTANCE_DB_FILE = path.resolve('backend/prisma/acceptance.db');
+const ACCEPTANCE_DB_URL = 'file:./acceptance.db';
+
+// Clean acceptance database files
+function cleanAcceptanceDb() {
+  for (const suffix of ['', '-journal', '-wal', '-shm']) {
+    const f = `${ACCEPTANCE_DB_FILE}${suffix}`;
+    if (fs.existsSync(f)) {
+      try {
+        fs.unlinkSync(f);
+      } catch {}
+    }
+  }
+}
+
+// Kill process and process tree cross-platform
+function killProc(proc) {
+  if (!proc || !proc.pid) return;
+  if (isWindows) {
+    try {
+      execSync(`taskkill /pid ${proc.pid} /T /F`, { stdio: 'ignore' });
+    } catch {}
+  } else {
+    try {
+      // Send SIGKILL to the process group if detached, otherwise direct SIGKILL
+      process.kill(-proc.pid, 'SIGKILL');
+    } catch {
+      try {
+        proc.kill('SIGKILL');
+      } catch {}
+    }
+  }
+}
+
+// Stop server and await confirmed termination
+async function stopServer(proc) {
+  if (!proc) return;
+  killProc(proc);
+
+  // Poll until server stops responding to HTTP health checks
+  const start = Date.now();
+  while (Date.now() - start < 5000) {
+    try {
+      await fetch(`${BASE_URL}/api/health`, { signal: AbortSignal.timeout(400) });
+      await sleep(150);
+    } catch {
+      // Connection refused means server process has cleanly terminated
+      return;
+    }
+  }
+}
+
+// Start server on dedicated acceptance port with isolated database
+function startServer() {
+  const proc = spawn('node', ['dist/server.js'], {
+    cwd: path.resolve('backend'),
+    env: {
+      ...process.env,
+      PORT: ACCEPTANCE_PORT,
+      DATABASE_URL: ACCEPTANCE_DB_URL,
+      NODE_ENV: 'production',
+      JWT_SECRET: process.env.JWT_SECRET || 'acceptance-test-jwt-secret-secure-32chars',
+    },
+    shell: isWindows,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+
+  proc.stderr?.on('data', (data) => {
+    const msg = data.toString();
+    if (msg.includes('EADDRINUSE')) {
+      console.error(`❌ Port ${ACCEPTANCE_PORT} already in use!`);
+    }
+  });
+
+  return proc;
+}
+
+// Poll readiness endpoint with timeout
+async function waitForHealth(timeoutMs = 15000) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    try {
+      const res = await fetch(`${BASE_URL}/api/health`, { signal: AbortSignal.timeout(500) });
+      if (res.ok) {
+        const body = await res.json();
+        if (body.status === 'ok') return true;
+      }
+    } catch {
+      // Retry
+    }
+    await sleep(200);
+  }
+  throw new Error(`Server failed to become healthy on port ${ACCEPTANCE_PORT} within ${timeoutMs}ms`);
 }
 
 async function run() {
   console.log('🏁 Starting End-to-End Final Acceptance Verification...\n');
 
   let failedChecks = [];
+  let currentServer = null;
 
   function assertCheck(name, condition, extraInfo = '') {
     if (condition) {
@@ -19,29 +120,50 @@ async function run() {
     }
   }
 
-  function startServer() {
-    return spawn('node', ['dist/server.js'], {
-      cwd: path.resolve('backend'),
-      env: { ...process.env, PORT: '3005', NODE_ENV: 'production' },
-      shell: true,
-      stdio: 'ignore',
-    });
-  }
-
-  function killTree(proc) {
-    if (proc && proc.pid) {
-      try {
-        execSync(`taskkill /pid ${proc.pid} /T /F`, { stdio: 'ignore' });
-      } catch {}
+  const cleanup = () => {
+    if (currentServer) {
+      killProc(currentServer);
+      currentServer = null;
     }
-  }
+    cleanAcceptanceDb();
+  };
 
-  let server = startServer();
-  await sleep(2500);
-
-  const BASE_URL = 'http://localhost:3005';
+  process.on('SIGINT', () => {
+    cleanup();
+    process.exit(1);
+  });
+  process.on('SIGTERM', () => {
+    cleanup();
+    process.exit(1);
+  });
 
   try {
+    // 0. Setup isolated acceptance database using migrations
+    console.log('📦 Initializing isolated acceptance database from migrations...');
+    cleanAcceptanceDb();
+    execSync('npx prisma migrate deploy', {
+      cwd: path.resolve('backend'),
+      env: {
+        ...process.env,
+        DATABASE_URL: ACCEPTANCE_DB_URL,
+      },
+      stdio: 'pipe',
+    });
+
+    // Seed initial demo accounts in acceptance db
+    execSync('npm run seed', {
+      cwd: path.resolve('backend'),
+      env: {
+        ...process.env,
+        DATABASE_URL: ACCEPTANCE_DB_URL,
+      },
+      stdio: 'pipe',
+    });
+
+    console.log('🚀 Launching backend server...');
+    currentServer = startServer();
+    await waitForHealth();
+
     // 1. Health check
     const healthRes = await fetch(`${BASE_URL}/api/health`);
     const health = await healthRes.json();
@@ -108,10 +230,11 @@ async function run() {
         category: 'Coupe',
         price: 165000,
         quantity: 1,
+        images360: JSON.stringify(['https://example.com/r8_01.jpg', 'https://example.com/r8_02.jpg']),
       }),
     });
     const createdVehicle = await createRes.json();
-    assertCheck('Vehicle Creation by Admin (201)', createRes.status === 201);
+    assertCheck('Vehicle Creation with 360 images by Admin (201)', createRes.status === 201 && createdVehicle.images360?.includes('r8_01.jpg'));
 
     const updateRes = await fetch(`${BASE_URL}/api/vehicles/${createdVehicle.id}`, {
       method: 'PUT',
@@ -181,12 +304,11 @@ async function run() {
       restockRes.status === 200 && restockedJson.vehicle?.quantity === 5
     );
 
-    // 10. Persistence Across Backend Restarts
-    console.log('Restarting backend server process to verify SQLite persistence...');
-    killTree(server);
-    await sleep(2000);
-    server = startServer();
-    await sleep(2500);
+    // 10. Persistence Across Real Process Restart
+    console.log('Restarting backend server process to verify SQLite persistence across process lifecycle...');
+    await stopServer(currentServer);
+    currentServer = startServer();
+    await waitForHealth();
 
     const afterRestartRes = await fetch(
       `${BASE_URL}/api/vehicles/search?make=Audi`,
@@ -195,7 +317,7 @@ async function run() {
     const afterRestartCars = await afterRestartRes.json();
     const persisted = afterRestartCars.find((c) => c.id === createdVehicle.id);
     assertCheck(
-      'Persistence across backend restart',
+      'Persistence across real backend process restart',
       Boolean(persisted && persisted.quantity === 5)
     );
 
@@ -218,7 +340,7 @@ async function run() {
     console.error('Acceptance check execution error:', err);
     process.exitCode = 1;
   } finally {
-    killTree(server);
+    cleanup();
     if (process.exitCode && process.exitCode !== 0) {
       process.exit(process.exitCode);
     }
