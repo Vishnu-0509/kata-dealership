@@ -161,7 +161,7 @@ export function DashboardPage() {
           </div>
         )}
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 space-y-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative space-y-8">
           {/* Hero Section with Live Backdrop Vibe */}
           <div className="glass-panel p-6 sm:p-8 relative overflow-hidden border border-slate-200/90 shadow-lg bg-white/90">
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">

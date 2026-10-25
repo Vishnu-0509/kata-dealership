@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { Vehicle } from '../../api/client';
 import { VEHICLE_CATEGORIES } from '../../constants/categories';
 
@@ -114,6 +115,16 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
 
   const categories = VEHICLE_CATEGORIES;
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !loading) {
+        onCancel();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onCancel, loading]);
+
   const quickSamples = [
     { label: 'Porsche 911', url: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80' },
     { label: 'BMW M4', url: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=800&q=80' },
@@ -121,17 +132,29 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
     { label: 'SUV', url: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80' },
   ];
 
-  return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-slide-up">
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[60] p-4 animate-slide-up"
+      onClick={onCancel}
+    >
       <div 
-        className="glass-panel w-full max-w-lg border border-slate-200 shadow-2xl overflow-hidden max-h-[92vh] flex flex-col bg-white text-slate-900"
+        className="glass-panel w-full max-w-lg border border-slate-200 shadow-2xl overflow-hidden max-h-[92vh] flex flex-col bg-white text-slate-900 my-auto rounded-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50">
           <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
             <span>🚘</span> {title}
           </h2>
-          <button onClick={onCancel} className="text-slate-400 hover:text-slate-700 p-1 rounded-lg">✕</button>
+          <button
+            type="button"
+            onClick={onCancel}
+            aria-label="Close modal"
+            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center font-bold text-sm transition-colors border border-slate-200"
+          >
+            ✕
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4">
@@ -547,6 +570,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

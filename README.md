@@ -339,6 +339,7 @@ Ran all test suites.
 ### Actual Frontend Test Results (Vitest + jsdom)
 
 ```text
+ ✓ src/tests/VehicleInspectModalPopup.test.tsx      (4 tests passed)
  ✓ src/tests/VehicleLightContrast.test.tsx          (2 tests passed)
  ✓ src/tests/VehicleComparisonModal.test.tsx         (4 tests passed)
  ✓ src/tests/LoginFormClearerFields.test.tsx         (4 tests passed)
@@ -351,12 +352,12 @@ Ran all test suites.
  ✓ src/tests/ClientInterceptorAndCategories.test.ts  (2 tests passed)
  ✓ src/tests/VehicleListEmptyModal.test.tsx          (2 tests passed)
 
-Test Files:  11 passed, 11 total
-Tests:       40 passed, 40 total
-Time:        9.66s
+Test Files:  12 passed, 12 total
+Tests:       44 passed, 44 total
+Time:        6.28s
 ```
 
-**Total automated tests across stack:** **106 passed of 106 tests (100% passing).**
+**Total automated tests across stack:** **110 passed of 110 tests (100% passing).**
 
 ---
 
@@ -441,6 +442,11 @@ In the initial project setup, the baseline commit bundled initial implementation
 ### 16. Cross-Platform Acceptance Script & Clean Server Lifecycle
 - **Problem:** `scripts/final_acceptance_check.mjs` crashed on Windows when using POSIX `SIGTERM`, failed to wait for server health readiness, operated on development data, and risked leaving orphan processes.
 - **Refactor (Commit `c61c01e`):** Rewrote the script to utilize cross-platform termination (Windows `taskkill /pid /T /F` and POSIX signals), added `waitForHealth` readiness polling, isolated checks against a dedicated `acceptance.db` via `prisma migrate deploy`, and confirmed port termination before restart verification.
+
+### 17. Portal Overlay & High-Contrast Close Button for Vehicle Popups
+- **Problem:** When clicking a vehicle card, the inspection popup was trapped inside `<main className="relative z-10">`, causing the sticky upper bar (`Navbar` at `z-40`) to float on top of the modal and cut off the popup header. Additionally, the close button used dark grey styling (`bg-slate-900/80 text-slate-200`) that blended invisibly into dark vehicle photos and asphalt backgrounds, and clicking outside or pressing Escape did not dismiss the modal.
+- **Red Phase (Commit `8c134d4`):** Authored `frontend/src/tests/VehicleInspectModalPopup.test.tsx` asserting: (1) high-contrast white circular button with dark bold icon (`bg-white text-slate-900`), (2) dismissal on backdrop click, (3) dismissal on `Escape` key, and (4) portal rendering to `document.body` with `z-[60]` overlaying the top navbar.
+- **Green Phase:** Wrapped `VehicleInspectModal` in React `createPortal(..., document.body)` with `z-[60]`, updated the close button to a prominent `bg-white text-slate-900 shadow-2xl ring-2 ring-slate-900/25` circular button, added backdrop click `onClick={onClose}`, added `Escape` key listener, and removed `z-10` from `<main>` in `DashboardPage.tsx`.
 
 ---
 

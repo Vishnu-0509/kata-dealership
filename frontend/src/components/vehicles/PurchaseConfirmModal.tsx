@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Vehicle } from '../../api/client';
 
 interface Props {
@@ -11,10 +13,25 @@ export function PurchaseConfirmModal({ vehicle, onConfirm, onCancel, isProcessin
   const estDocFee = 495;
   const totalPrice = vehicle.price + estDocFee;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-slide-up">
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isProcessing) {
+        onCancel();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onCancel, isProcessing]);
+
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md animate-slide-up"
+      onClick={onCancel}
+    >
       <div 
-        className="glass-panel max-w-md w-full p-6 border border-cyan-500/30 shadow-2xl space-y-5"
+        className="glass-panel max-w-md w-full p-6 border border-teal-500/30 shadow-2xl space-y-5 bg-slate-900 text-white"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
@@ -26,8 +43,10 @@ export function PurchaseConfirmModal({ vehicle, onConfirm, onCancel, isProcessin
             </div>
           </div>
           <button 
+            type="button"
             onClick={onCancel}
-            className="text-slate-400 hover:text-white p-1 rounded-lg"
+            aria-label="Close modal"
+            className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center font-bold text-sm transition-colors border border-slate-700"
           >
             ✕
           </button>
@@ -89,6 +108,7 @@ export function PurchaseConfirmModal({ vehicle, onConfirm, onCancel, isProcessin
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

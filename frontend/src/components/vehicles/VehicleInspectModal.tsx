@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Vehicle } from '../../api/client';
 import { exhaustSound } from '../../utils/exhaustAudio';
 import { Vehicle360Viewer } from './Vehicle360Viewer';
@@ -12,6 +13,17 @@ interface Props {
 
 export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing }: Props) {
   const [isRevving, setIsRevving] = useState(false);
+
+  // Keyboard shortcut: Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const parsedAngles = useMemo<string[]>(() => {
     if (!vehicle.images360) return [];
@@ -52,10 +64,16 @@ export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing
     return `${vehicle.category} Tuned Exhaust`;
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-slide-up">
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div
+      data-testid="inspect-modal-backdrop"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-slate-900/70 backdrop-blur-md animate-slide-up overflow-y-auto"
+      onClick={onClose}
+    >
       <div 
-        className="glass-panel max-w-2xl w-full overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[90vh] bg-white text-slate-900"
+        className="glass-panel max-w-2xl w-full overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[88vh] bg-white text-slate-900 my-auto rounded-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Media Header with Tab Switcher */}
@@ -86,11 +104,13 @@ export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing
             </button>
           </div>
 
-          {/* Close Button with high z-index */}
+          {/* Close Button: prominent, high-contrast white button with dark icon, visible on all car photos */}
           <button
+            type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="absolute top-4 right-4 z-40 bg-slate-900/80 hover:bg-slate-800 text-slate-200 hover:text-white p-2 rounded-full backdrop-blur-md border border-white/20 transition-colors shadow-lg"
+            title="Close modal (Esc)"
+            className="absolute top-4 right-4 z-40 bg-white hover:bg-slate-100 text-slate-900 hover:text-black w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-2xl border-2 border-white ring-2 ring-slate-900/25 transition-all hover:scale-110 active:scale-95 cursor-pointer focus:outline-none focus:ring-4 focus:ring-teal-500/50"
           >
             ✕
           </button>
@@ -301,6 +321,7 @@ export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
