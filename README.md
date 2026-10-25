@@ -244,16 +244,16 @@ Tests:       32 passed, 32 total
 ### Frontend Test Results (Vitest + React Testing Library)
 
 ```text
- ✓ src/tests/VehicleCard.test.tsx            (5 tests passed)
+ ✓ src/tests/VehicleCard.test.tsx            (6 tests passed)
  ✓ src/tests/LoginForm.test.tsx              (3 tests passed)
  ✓ src/tests/RegisterForm.test.tsx           (3 tests passed)
  ✓ src/tests/VehicleComparisonModal.test.tsx (4 tests passed)
 
 Test Files:  4 passed (4)
-Tests:       15 passed (15)
+Tests:       16 passed (16)
 ```
 
-**Total automated tests across stack:** **47 tests, 100% passing.**
+**Total automated tests across stack:** **48 tests, 100% passing.**
 
 ---
 
