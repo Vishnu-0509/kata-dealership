@@ -24,7 +24,7 @@ describe('Axios 401 Interceptor and Category Filter Tests (TDD)', () => {
 
     // Grab the response error handler from apiClient interceptors
     // @ts-expect-error accessing internal axios handlers for unit testing
-    const responseInterceptor = apiClient.interceptors.response.handlers[0].rejected;
+    const responseInterceptor = apiClient.interceptors.response.handlers[0]?.rejected as (err: unknown) => Promise<unknown>;
 
     await expect(responseInterceptor(error)).rejects.toEqual(error);
 
