@@ -132,12 +132,21 @@ async function run() {
     console.log('Capturing Customer Dashboard...');
     await captureScreenshot('02-customer-dashboard.png');
 
-    // 3. Open Specifications Comparison Modal
-    console.log('3. Opening Specifications & Comparison Matrix...');
+    // 3. Select 2 vehicles for comparison and open matrix
+    console.log('3. Selecting 2 vehicles for comparison and opening matrix...');
+    await evaluate(`
+      (() => {
+        const compareBtns = Array.from(document.querySelectorAll('button')).filter(b => b.textContent.includes('Compare') && !b.textContent.includes('Specifications'));
+        if (compareBtns[0]) compareBtns[0].click();
+        if (compareBtns[1]) compareBtns[1].click();
+      })()
+    `);
+    await sleep(800);
+
     await evaluate(`
       (() => {
         const btns = Array.from(document.querySelectorAll('button'));
-        const compareBtn = btns.find(b => b.textContent.includes('Specifications & Compare') || b.textContent.includes('Specifications'));
+        const compareBtn = btns.find(b => b.textContent.includes('Compare Specs') || b.textContent.includes('Specifications & Compare') || b.textContent.includes('Specifications'));
         if (compareBtn) compareBtn.click();
       })()
     `);

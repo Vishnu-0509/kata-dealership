@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { Vehicle360Viewer } from '../components/vehicles/Vehicle360Viewer';
 
 describe('Vehicle360Viewer Repairs & Robustness (TDD)', () => {

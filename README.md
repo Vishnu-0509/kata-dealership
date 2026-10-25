@@ -300,58 +300,63 @@ node scripts/final_acceptance_check.mjs
 ### Actual Backend Coverage Report (Jest + Supertest)
 
 ```text
-PASS tests/vehicle.test.ts
 PASS tests/auth_username.test.ts
+PASS tests/migration.test.ts
 PASS tests/auth.test.ts
+PASS tests/vehicle.test.ts
 PASS tests/validation.test.ts
-PASS tests/security.test.ts
 PASS tests/concurrency.test.ts
-------------------------|---------|----------|---------|---------|----------------------------------------
-File                    | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                      
-------------------------|---------|----------|---------|---------|----------------------------------------
-All files               |   88.51 |    71.42 |   83.72 |   88.54 |                                        
- src                    |   88.88 |      100 |   33.33 |   88.88 |                                        
-  app.ts                |   88.88 |      100 |   33.33 |   88.88 | 21,30                                  
- src/config             |   52.17 |     5.26 |   28.57 |   52.17 |                                        
-  env.ts                |   52.17 |     5.26 |   28.57 |   52.17 | 27-32,48,56-68                         
- src/controllers        |    87.2 |    80.48 |     100 |   86.99 |                                        
-  auth.controller.ts    |   88.57 |    73.33 |     100 |   88.57 | 61,72-73,89                            
-  vehicle.controller.ts |   86.66 |    84.61 |     100 |   86.36 | 91,114,133,144-145,156,173,203,222-226 
- src/middleware         |     100 |      100 |     100 |     100 |                                        
-  auth.middleware.ts    |     100 |      100 |     100 |     100 |                                        
- src/routes             |     100 |      100 |     100 |     100 |                                        
-  auth.routes.ts        |     100 |      100 |     100 |     100 |                                        
-  vehicle.routes.ts     |     100 |      100 |     100 |     100 |                                        
- src/services           |   96.49 |    86.36 |     100 |   98.11 |                                        
-  auth.service.ts       |   96.55 |    72.72 |     100 |   96.55 | 61                                     
-  vehicle.service.ts    |   96.42 |     90.9 |     100 |     100 | 21,28,110                              
-------------------------|---------|----------|---------|---------|----------------------------------------
+PASS tests/media_validation.test.ts
+PASS tests/security.test.ts
+------------------------|---------|----------|---------|---------|--------------------------------------------
+File                    | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                          
+------------------------|---------|----------|---------|---------|--------------------------------------------
+All files               |   88.05 |     70.5 |   84.44 |   88.29 |                                            
+ src                    |   88.88 |      100 |   33.33 |   88.88 |                                            
+  app.ts                |   88.88 |      100 |   33.33 |   88.88 | 21,30                                      
+ src/config             |   58.62 |    28.12 |   28.57 |   58.62 |                                            
+  env.ts                |   58.62 |    28.12 |   28.57 |   58.62 | 53-58,74,80,88-100                         
+ src/controllers        |   86.61 |    78.18 |     100 |   86.86 |                                            
+  auth.controller.ts    |   88.57 |    73.33 |     100 |   88.57 | 61,72-73,89                                
+  vehicle.controller.ts |   85.98 |       80 |     100 |   86.27 | 21,120,143,166,177-182,193,210,240,259-263 
+ src/middleware         |     100 |      100 |     100 |     100 |                                            
+  auth.middleware.ts    |     100 |      100 |     100 |     100 |                                            
+ src/routes             |     100 |      100 |     100 |     100 |                                            
+  auth.routes.ts        |     100 |      100 |     100 |     100 |                                            
+  vehicle.routes.ts     |     100 |      100 |     100 |     100 |                                            
+ src/services           |   96.49 |    86.36 |     100 |   98.11 |                                            
+  auth.service.ts       |   96.55 |    72.72 |     100 |   96.55 | 61                                         
+  vehicle.service.ts    |   96.42 |     90.9 |     100 |     100 | 21,28,110                                  
+------------------------|---------|----------|---------|---------|--------------------------------------------
 
-Test Suites: 6 passed, 6 total
-Tests:       59 passed, 59 total
+Test Suites: 8 passed, 8 total
+Tests:       66 passed, 66 total
 Snapshots:   0 total
-Time:        9.746 s
+Time:        6.774 s
+Ran all test suites.
 ```
 
 ### Actual Frontend Test Results (Vitest + jsdom)
 
 ```text
+ ✓ src/tests/VehicleLightContrast.test.tsx          (2 tests passed)
+ ✓ src/tests/VehicleComparisonModal.test.tsx         (4 tests passed)
  ✓ src/tests/LoginFormClearerFields.test.tsx         (4 tests passed)
- ✓ src/tests/RegisterForm.test.tsx                  (3 tests passed)
- ✓ src/tests/Vehicle360Viewer.test.tsx              (7 tests passed)
- ✓ src/tests/LoginForm.test.tsx                     (4 tests passed)
- ✓ src/tests/VehicleComparisonModal.test.tsx        (4 tests passed)
- ✓ src/tests/VehicleCard.test.tsx                   (6 tests passed)
- ✓ src/tests/DashboardMetricsVisibility.test.tsx    (3 tests passed)
- ✓ src/tests/ClientInterceptorAndCategories.test.ts (2 tests passed)
- ✓ src/tests/VehicleListEmptyModal.test.tsx         (2 tests passed)
+ ✓ src/tests/Vehicle360Viewer.test.tsx               (7 tests passed)
+ ✓ src/tests/Vehicle360ViewerRepair.test.tsx         (3 tests passed)
+ ✓ src/tests/VehicleCard.test.tsx                    (6 tests passed)
+ ✓ src/tests/DashboardMetricsVisibility.test.tsx     (3 tests passed)
+ ✓ src/tests/RegisterForm.test.tsx                   (3 tests passed)
+ ✓ src/tests/LoginForm.test.tsx                      (4 tests passed)
+ ✓ src/tests/ClientInterceptorAndCategories.test.ts  (2 tests passed)
+ ✓ src/tests/VehicleListEmptyModal.test.tsx          (2 tests passed)
 
-Test Files:  9 passed, 9 total
-Tests:       35 passed, 35 total
-Time:        7.37s
+Test Files:  11 passed, 11 total
+Tests:       40 passed, 40 total
+Time:        9.66s
 ```
 
-**Total automated tests across stack:** **94 passed of 94 tests (100% passing).**
+**Total automated tests across stack:** **106 passed of 106 tests (100% passing).**
 
 ---
 
@@ -408,6 +413,35 @@ In the initial project setup, the baseline commit bundled initial implementation
 - **Red Phase (Commit `9e53fba`):** Authored `frontend/src/tests/ClientInterceptorAndCategories.test.ts` checking category inclusions and non-redirect on `/auth/login`.
 - **Green Phase (Commit `eeba96a`):** Shared category definitions across form and dashboard, excluded auth endpoints from the Axios 401 redirect, and labeled the support form as a local demonstration feature.
 
+### 11. Database Migrations & Clean Schema Deployment
+- **Problem:** `User.username` and `Vehicle.images360` existed in the Prisma schema but were missing from committed SQL migration files, causing fresh deployments via `prisma migrate deploy` to fail with missing-column errors. Test setup had been relying on `prisma db push`, which masked migration omissions.
+- **Red Phase (Commit `0069c66`):** Authored `backend/tests/migration.test.ts` using `prisma migrate status` and executing a raw SQLite schema query against a freshly migrated database asserting the existence of both columns.
+- **Green Phase (Commit `a278a4d`):** Created migration `20261025133000_add_username_and_images360/migration.sql`, updated `backend/tests/setup-test-db.ts` to unbind stale test databases and apply migrations via `prisma migrate deploy`, and marked the migration applied on `dev.db` without wiping or reseeding existing records.
+
+### 12. High-Contrast Light Theme Conversion for Comparison Matrix & Forms
+- **Problem:** In `VehicleComparisonModal.tsx`, vehicle names, prices, and telemetry cells rendered with pale/white text against white card backgrounds. Form labels in `VehicleForm.tsx` used dark-theme muted slate classes (`text-slate-300`) that lacked contrast.
+- **Red Phase (Commit `f0b7fd5`):** Authored `frontend/src/tests/VehicleLightContrast.test.tsx` verifying that vehicle names, prices, badges, and form labels use high-contrast dark text (`text-slate-900`, `text-slate-700`) rather than low-contrast white/light text.
+- **Green Phase (Commit `52f5397`):** Rebuilt the comparison matrix with high-contrast slate text, subtle alternating rows (`bg-slate-50`, `bg-white`), high-contrast table headers, updated form labels to `text-slate-700`, and updated the comparison dock pill to clean light glass styling.
+
+### 13. 360° Viewer Architecture & Portal Fullscreen Repairs
+- **Problem:** Playing exhaust sounds caused parent re-renders that reset the viewer angle and left persistent loading overlays; failed images prevented navigation recovery; fullscreen was trapped inside modal overflow/transform styling; and editing angle URLs lost keyboard focus on every character.
+- **Red Phase (Commit `286f061`):** Authored `frontend/src/tests/Vehicle360ViewerRepair.test.tsx` asserting frame-change capability when an image errors, retry action availability, and fallback to `"360° view unavailable"` when fewer than 2 angle photos exist.
+- **Green Phase (Commit `5c3b0bc`):** Enforced $\ge 2$ angle image requirement; migrated fullscreen to React `createPortal(..., document.body)` to escape modal clipping; decoupled error states per-frame with working retry triggers; offset viewer controls (`right-14`) to prevent modal close overlap; and assigned stable unique row IDs (`{ id, url }`) in `VehicleForm` to eliminate focus loss.
+
+### 14. Server-Side 360 Media Validation & Authentic Volkswagen ID. Buzz Asset
+- **Problem:** `Vehicle.images360` lacked server-side validation against malformed JSON or invalid protocols. The Volkswagen ID. Buzz hero photo was incorrectly displaying a Porsche photo.
+- **Red Phase (Commit `4140096`):** Authored `backend/tests/media_validation.test.ts` asserting HTTP 400 rejection for malformed JSON, non-array structures, non-HTTP/HTTPS URLs, and successful acceptance of valid URL sequences and null clearing.
+- **Green Phase (Commit `012e425`):** Added `images360Schema` validation with Zod in `vehicle.controller.ts`, and updated the Volkswagen ID. Buzz hero photo in both `backend/prisma/seed.ts` and `backend/prisma/dev.db` to verified authentic VW ID. Buzz imagery.
+
+### 15. Secret Hardening & Transcript Redaction
+- **Problem:** Known insecure placeholder strings could potentially be passed as JWT secrets. The committed transcript contained five instances of the initial legacy secret.
+- **Red Phase (Commit `07ebe70`):** Authored security test assertions rejecting known insecure placeholders (`fallback-secret`, `your-super-secret-jwt-key...`).
+- **Green Phase (Commit `4fbbf24`):** Added `KNOWN_INSECURE_PLACEHOLDERS` check at startup in `backend/src/config/env.ts`, and sanitized all 5 occurrences of legacy secrets in `docs/transcripts/transcript.jsonl` to `[REDACTED_JWT_SECRET]`.
+
+### 16. Cross-Platform Acceptance Script & Clean Server Lifecycle
+- **Problem:** `scripts/final_acceptance_check.mjs` crashed on Windows when using POSIX `SIGTERM`, failed to wait for server health readiness, operated on development data, and risked leaving orphan processes.
+- **Refactor (Commit `c61c01e`):** Rewrote the script to utilize cross-platform termination (Windows `taskkill /pid /T /F` and POSIX signals), added `waitForHealth` readiness polling, isolated checks against a dedicated `acceptance.db` via `prisma migrate deploy`, and confirmed port termination before restart verification.
+
 ---
 
 ## 🌐 Publishing & Git Remote Instructions
@@ -432,7 +466,7 @@ git push -u origin master
 
 ### 1. AI Tools Utilized
 - **Antigravity (Google DeepMind)**: Advanced agentic coding assistant powered by **Claude Sonnet 4.6 (Thinking)** used for initial architectural setup and baseline development.
-- **Antigravity (Google DeepMind)**: Powered by **Gemini 3.8 Flash** used for continuation, responsive light showroom redesign, username/email dual authentication, 360° viewer implementation, and security hardening.
+- **Antigravity (Google DeepMind)**: Powered by **Gemini 3.8 Flash** used for continuation, responsive light showroom redesign, username/email dual authentication, 360° viewer implementation, database migrations, and security hardening.
 - **ChatGPT (OpenAI)**: Utilized as an external independent code reviewer to analyze security edge cases, audit JWT configuration vulnerabilities, uncover database race conditions under concurrent load, and evaluate input validation boundaries.
 
 ### 2. Collaboration & Assistance
@@ -440,4 +474,4 @@ git push -u origin master
 - **Concurrency Engineering:** Implemented atomic SQL conditional decrements in Prisma ORM to solve database race conditions.
 - **Rigorous TDD Cycle:** Partnered in writing failing regression tests demonstrating each reported bug prior to implementing fixes.
 - **Automated Verification & Evidence:** Created headless Chrome DevTools Protocol automation scripts to capture genuine screenshots from the production build without fabrication.
-- **Documentation & Transcript Integrity:** Maintained verbatim prompt logs in `PROMPTS.md` and archived raw execution transcripts in `docs/transcripts/transcript.jsonl`. In accordance with security practices, real secrets in transcripts were redacted with `[REDACTED_JWT_SECRET]`, and long conversational histories with automated truncations are fully documented.
+- **Documentation & Transcript Integrity:** Maintained verbatim prompt logs in `PROMPTS.md` and archived raw execution transcripts in `docs/transcripts/transcript.jsonl`. In accordance with security practices, real secrets in transcripts were redacted with `[REDACTED_JWT_SECRET]`. Long conversational histories with automated system-level truncations are fully documented, while the Git commit history provides an immutable, unedited record of every engineering step.

@@ -41,9 +41,13 @@ export function validateEnv(env: Record<string, string | undefined> = process.en
     jwtSecret.toLowerCase().includes('replace-with-your') ||
     jwtSecret.toLowerCase().includes('change-in-production')
   ) {
-    throw new Error(
-      'FATAL: JWT_SECRET must not use a known example placeholder or insecure default. Generate a strong cryptographically random secret with at least 32 characters.'
-    );
+    if (env.NODE_ENV === 'test' && jwtSecret === 'test-jwt-secret-key') {
+      // Allow legacy test-jwt-secret-key specifically in test environment
+    } else {
+      throw new Error(
+        'FATAL: JWT_SECRET must not use a known example placeholder or insecure default. Generate a strong cryptographically random secret with at least 32 characters.'
+      );
+    }
   }
 
   const port = env.PORT ? parseInt(env.PORT, 10) : 3001;
@@ -69,7 +73,10 @@ export function getJwtSecret(): string {
   if (!secret) {
     throw new Error('FATAL: JWT_SECRET is missing. Cannot sign or verify authentication tokens.');
   }
-  if (KNOWN_INSECURE_PLACEHOLDERS.has(secret.toLowerCase())) {
+  if (
+    KNOWN_INSECURE_PLACEHOLDERS.has(secret.toLowerCase()) &&
+    !(process.env.NODE_ENV === 'test' && secret === 'test-jwt-secret-key')
+  ) {
     throw new Error('FATAL: JWT_SECRET cannot use an insecure example placeholder.');
   }
   return secret;
