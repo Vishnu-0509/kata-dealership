@@ -109,4 +109,20 @@ describe('Security & Authentication Tests (TDD)', () => {
     const { validateEnv } = require('../src/config/env');
     expect(() => validateEnv({})).toThrow(/JWT_SECRET.*required|missing/i);
   });
+
+  it('should reject known example placeholders and weak secrets during startup', () => {
+    const { validateEnv } = require('../src/config/env');
+    const knownInsecurePlaceholders = [
+      'fallback-secret',
+      'your-super-secret-jwt-key-change-in-production',
+      'replace-with-your-generated-32-plus-char-secret',
+      'kata-dealership-secure-jwt-secret-key-32chars',
+    ];
+
+    for (const placeholder of knownInsecurePlaceholders) {
+      expect(() => validateEnv({ JWT_SECRET: placeholder })).toThrow(
+        /placeholder|insecure|example/i
+      );
+    }
+  });
 });
