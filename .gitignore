@@ -6,3 +6,5 @@ dist/
 coverage/
 temp-chrome-profile/
 *.log
+*.exe
+scripts/LIVE_URL.txt

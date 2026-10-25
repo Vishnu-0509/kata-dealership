@@ -64,7 +64,7 @@ async function run() {
       }),
     });
     const data = await res.json();
-    assert(res.status === 201 && data.email === testEmail, `Registered new user (${testUsername})`);
+    assert(res.status === 201 && data.user?.email === testEmail, `Registered new user (${testUsername})`);
   } catch (err) {
     assert(false, `Registration failed: ${err.message}`);
   }
@@ -142,8 +142,9 @@ async function run() {
         method: 'POST',
         headers: { Authorization: `Bearer ${userToken}` },
       });
-      const updated = await res.json();
-      assert(res.status === 200 && updated.quantity === initialQty - 1, `Purchase successful: Stock decremented from ${initialQty} to ${updated.quantity}`);
+      const data = await res.json();
+      const updatedQty = data.vehicle?.quantity;
+      assert(res.status === 200 && updatedQty === initialQty - 1, `Purchase successful: Stock decremented from ${initialQty} to ${updatedQty}`);
     } catch (err) {
       assert(false, `Purchase failed: ${err.message}`);
     }

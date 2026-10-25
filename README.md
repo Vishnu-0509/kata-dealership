@@ -462,10 +462,11 @@ In the initial project setup, the baseline commit bundled initial implementation
 
 ---
 
-## 🌐 Public Repository & Git Remote
+## 🌐 Public Repository & Live Deployment
 
-This project is published on GitHub at the following public repository:
-- **Repository URL:** [https://github.com/Vishnu-0509/kata-dealership](https://github.com/Vishnu-0509/kata-dealership)
+- **Verified Live Website URL:** [https://alabama-looked-plugins-ana.trycloudflare.com](https://alabama-looked-plugins-ana.trycloudflare.com)
+- **GitHub Repository URL:** [https://github.com/Vishnu-0509/kata-dealership](https://github.com/Vishnu-0509/kata-dealership)
+- **1-Click Render Cloud Deploy:** [Deploy to Render](https://render.com/deploy?repo=https://github.com/Vishnu-0509/kata-dealership)
 - **Git Remote:** `origin https://github.com/Vishnu-0509/kata-dealership.git`
 - **Default Branch:** `master`
 
