@@ -9,6 +9,7 @@ const config: Config = {
     '^.+\\.tsx?$': 'ts-jest',
   },
   clearMocks: true,
+  globalSetup: '<rootDir>/tests/globalSetup.ts',
   collectCoverageFrom: ['src/**/*.ts', '!src/server.ts'],
 };
 
