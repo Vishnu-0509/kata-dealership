@@ -79,6 +79,31 @@ describe('Security & Authentication Tests (TDD)', () => {
     expect(res.body.message).toMatch(/admin access required/i);
   });
 
+  it('should reject purchase requests from demo client accounts (view-only mode)', async () => {
+    const demoToken = jwt.sign(
+      { userId: 'demo-client-id', email: 'demo@dealership.com', role: 'DEMO' },
+      TEST_JWT_SECRET
+    );
+
+    // Create sample car
+    const vehicle = await prisma.vehicle.create({
+      data: {
+        make: 'Porsche',
+        model: 'Cayman',
+        category: 'Coupe',
+        price: 68000,
+        quantity: 2,
+      },
+    });
+
+    const res = await request(app)
+      .post(`/api/vehicles/${vehicle.id}/purchase`)
+      .set('Authorization', `Bearer ${demoToken}`);
+
+    expect(res.status).toBe(403);
+    expect(res.body.message).toMatch(/demo/i);
+  });
+
   it('should fail configuration startup when JWT_SECRET is missing', () => {
     // Dynamic import of the env config module should throw when JWT_SECRET is missing
     const { validateEnv } = require('../src/config/env');

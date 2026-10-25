@@ -111,6 +111,17 @@ describe('POST /api/auth/login', () => {
     expect(res.body.user.email).toBe(testUser.email);
   });
 
+  it('should allow login with case-insensitive and trimmed email', async () => {
+    const res = await request(app).post('/api/auth/login').send({
+      email: '  Login@Example.COM  ',
+      password: 'password123',
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.token).toBeDefined();
+    expect(res.body.user.email).toBe(testUser.email);
+  });
+
   it('should return 401 when password is incorrect', async () => {
     const res = await request(app).post('/api/auth/login').send({
       email: testUser.email,
