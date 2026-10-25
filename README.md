@@ -34,7 +34,7 @@ All screenshots were captured from the running application using automated headl
 - [Test Suite & Coverage Report](#-test-suite--coverage-report)
 - [TDD Narrative & Remediation Audit](#-tdd-narrative--remediation-audit)
 - [Publishing & Git Remote Instructions](#-publishing--git-remote-instructions)
-- [My AI Usage](#-my-ai-usage)
+- [My AI Usage](#my-ai-usage)
 
 ---
 
@@ -474,16 +474,38 @@ git push -u origin master
 
 ---
 
-## 🤖 My AI Usage
+## My AI Usage
 
-### 1. AI Tools Utilized
-- **Antigravity (Google DeepMind)**: Advanced agentic coding assistant powered by **Claude Sonnet 4.6 (Thinking)** used for initial architectural setup and baseline development.
-- **Antigravity (Google DeepMind)**: Powered by **Gemini 3.8 Flash** used for continuation, responsive light showroom redesign, username/email dual authentication, 360° viewer implementation, database migrations, and security hardening.
-- **ChatGPT (OpenAI)**: Utilized as an external independent code reviewer to analyze security edge cases, audit JWT configuration vulnerabilities, uncover database race conditions under concurrent load, and evaluate input validation boundaries.
+### 1. AI Tools Utilized & Exact Configuration
+- **Antigravity with Claude Sonnet 4.6 (Thinking)**: Used in the initial phase for project scaffolding, architectural blueprinting, baseline Express + Prisma REST API implementation, React frontend layout, and initial unit/integration tests.
+- **Antigravity with Gemini 3.8 Flash**: Used in the continuation phase for UI refinements, light automotive showroom styling, dual username/email authentication, interactive 360° vehicle viewer with pointer capture and memory preloading, modal portal overlays with high-contrast controls, database SQL migration generation, test suite expansion, security hardening, and cross-platform verification.
+- **ChatGPT**: Used as an external independent code reviewer to analyze security vulnerabilities, formulate targeted review prompts, audit JWT configuration weaknesses, detect concurrent purchase race conditions, identify missing migration columns, and evaluate input validation boundaries.
 
-### 2. Collaboration & Assistance
-- **Security Audit & Hardening:** Designed fail-fast startup configuration validation, eliminated fallback secrets, rotated JWT secrets locally, and sanitized test configurations.
-- **Concurrency Engineering:** Implemented atomic SQL conditional decrements in Prisma ORM to solve database race conditions.
-- **Rigorous TDD Cycle:** Partnered in writing failing regression tests demonstrating each reported bug prior to implementing fixes.
-- **Automated Verification & Evidence:** Created headless Chrome DevTools Protocol automation scripts to capture genuine screenshots from the production build without fabrication.
-- **Documentation & Transcript Integrity:** Maintained verbatim prompt logs in `PROMPTS.md` and archived raw execution transcripts in `docs/transcripts/transcript.jsonl`. In accordance with security practices, real secrets in transcripts were redacted with `[REDACTED_JWT_SECRET]`. Long conversational histories with automated system-level truncations are fully documented, while the Git commit history provides an immutable, unedited record of every engineering step.
+### 2. How These Tools Assisted
+- **Implementation:** Generated modular Express controllers, Prisma schema definitions, React components, Tailwind styling tokens, and accessible form structures.
+- **Testing:** Scaffolded Jest and Vitest test suites, wrote high-concurrency race condition tests (5 concurrent requests against 1 item), crafted schema migration tests, and authored React component interaction tests.
+- **Debugging:** Resolved React modal stacking context traps (`createPortal`), eliminated drag rotation stutter using synchronous refs and pointer capture, and hardened cross-platform script lifecycles for Windows PowerShell and POSIX environments.
+- **Documentation:** Structured comprehensive setup guides, authored step-by-step TDD narratives, compiled API endpoint references, maintained verbatim prompt logs in `PROMPTS.md`, and recorded test execution reports.
+
+### 3. Honest Reflection: Benefits, Mistakes & Verification Needed
+- **Benefits:**
+  - Dramatically accelerated the development workflow across both backend and frontend layers.
+  - Enabled rapid exploration and resolution of tricky architectural challenges, such as atomic database conditional updates to prevent negative stock under concurrent purchase spikes.
+  - Facilitated comprehensive test suite construction (achieving 113 total passing automated tests and >88% backend line coverage).
+- **Mistakes & Oversights Made by AI:**
+  - *Hardcoded Fallback Secret:* In the initial implementation, AI introduced a fallback secret (`'fallback-secret'`) in `auth.service.ts` that allowed token forgery when environment variables were omitted.
+  - *Non-Atomic Stock Decrement:* The initial stock purchase logic performed a separate read and subsequent write, permitting simultaneous purchases to drive inventory into negative numbers.
+  - *Missing Database Migrations:* AI initially relied on `prisma db push`, which masked the fact that SQL migration files for `username` and `images360` had never been generated.
+  - *Early TDD Deviation:* The initial project baseline bundled code and tests together in a single commit rather than strictly committing each Red test before its Green counterpart.
+  - *UI Stacking & Contrast Issues:* Early light-theme iterations suffered from low-contrast white-on-white text in the comparison matrix and nested modal clipping beneath the sticky top navigation bar.
+  - *Secret Exposure in Diagnostics:* Early command outputs in raw transcript logs briefly recorded test environment secrets before being audited and redacted.
+- **Verification Needed & Applied:**
+  - No AI-generated code was accepted blindly. Every feature, bugfix, and refactoring step was systematically verified through:
+    1. Automated failing test cases (Red phase) reproducing the exact bug before implementation.
+    2. Automated passing test runs (Green phase) verifying resolution without regression.
+    3. Production compilation checks (`tsc` for backend, `vite build` for frontend).
+    4. Migration verification against clean SQLite databases (`prisma migrate deploy`).
+    5. Real multi-process end-to-end acceptance testing (`scripts/final_acceptance_check.mjs`).
+    6. Headless Chrome browser visual captures for authentic screenshot evidence.
+- **Authenticity Statement:**
+  - All automated tests, coverage numbers, and screenshots in this repository are real and verifiable. No manual work is claimed where AI was used, no pristine early-stage TDD compliance is fabricated, and all tool contributions are attributed truthfully.
