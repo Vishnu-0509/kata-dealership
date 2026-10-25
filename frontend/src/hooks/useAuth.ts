@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react';
 import { authApi } from '../api/client';
 
-interface User {
+export interface User {
   id: string;
   email: string;
+  username?: string | null;
   role: string;
 }
 
@@ -17,8 +18,8 @@ export function useAuth() {
     return stored ? JSON.parse(stored) : null;
   });
 
-  const login = useCallback(async (email: string, password: string) => {
-    const res = await authApi.login(email, password);
+  const login = useCallback(async (usernameOrEmail: string, password: string) => {
+    const res = await authApi.login(usernameOrEmail, password);
     const { token, user: userData } = res.data;
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
@@ -26,10 +27,10 @@ export function useAuth() {
     return userData;
   }, []);
 
-  const register = useCallback(async (email: string, password: string) => {
-    await authApi.register(email, password);
+  const register = useCallback(async (email: string, password: string, username?: string) => {
+    await authApi.register(email, password, username);
     // Auto-login after register
-    return login(email, password);
+    return login(username || email, password);
   }, [login]);
 
   const logout = useCallback(() => {

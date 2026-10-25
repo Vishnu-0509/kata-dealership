@@ -36,13 +36,20 @@ apiClient.interceptors.response.use(
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
+export interface UserData {
+  id: string;
+  email: string;
+  username?: string | null;
+  role: string;
+}
+
 export const authApi = {
-  register: (email: string, password: string) =>
-    apiClient.post('/auth/register', { email, password }),
-  login: (email: string, password: string) =>
-    apiClient.post<{ token: string; user: { id: string; email: string; role: string } }>(
+  register: (email: string, password: string, username?: string) =>
+    apiClient.post('/auth/register', { email, password, ...(username ? { username } : {}) }),
+  login: (usernameOrEmail: string, password: string) =>
+    apiClient.post<{ token: string; user: UserData }>(
       '/auth/login',
-      { email, password }
+      { usernameOrEmail, password }
     ),
 };
 
@@ -56,6 +63,7 @@ export interface Vehicle {
   price: number;
   quantity: number;
   imageUrl?: string | null;
+  images360?: string | null;
   exhaustAudioUrl?: string | null;
   year?: number | null;
   bhp?: number | null;

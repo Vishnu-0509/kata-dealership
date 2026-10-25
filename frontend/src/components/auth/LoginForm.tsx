@@ -5,8 +5,9 @@ import { useAuth } from '../../hooks/useAuth';
 export function LoginForm() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -15,18 +16,18 @@ export function LoginForm() {
     setError('');
     setLoading(true);
     try {
-      await login(email.trim().toLowerCase(), password);
+      await login(identifier.trim().toLowerCase(), password);
       navigate('/');
     } catch (err: unknown) {
       const axiosErr = err as { response?: { status?: number; data?: { message?: string } }; message?: string };
       if (axiosErr.response?.data?.message) {
         setError(axiosErr.response.data.message);
       } else if (axiosErr.response?.status === 401 || axiosErr.message === 'Unauthorized' || axiosErr.message?.toLowerCase().includes('invalid')) {
-        setError('Invalid email or password. Please try again.');
+        setError('Invalid username/email or password. Please try again.');
       } else if (!axiosErr.response) {
         setError('Cannot connect to backend API server. Please ensure the backend server is running on port 3001.');
       } else {
-        setError('Invalid email or password. Please try again.');
+        setError('Invalid username/email or password. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -34,12 +35,12 @@ export function LoginForm() {
   };
 
   const handleClientDemo = async () => {
-    setEmail('demo@dealership.com');
+    setIdentifier('demo');
     setPassword('demo123');
     setError('');
     setLoading(true);
     try {
-      await login('demo@dealership.com', 'demo123');
+      await login('demo', 'demo123');
       navigate('/');
     } catch (err: unknown) {
       const axiosErr = err as { response?: { status?: number; data?: { message?: string } } };
@@ -77,27 +78,44 @@ export function LoginForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+            <label htmlFor="usernameOrEmail" className="block text-xs font-semibold text-slate-300 mb-1">
+              Username or Email
+            </label>
             <input
-              type="email"
+              id="usernameOrEmail"
+              type="text"
               className="glass-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="Enter username or email"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Password</label>
-            <input
-              type="password"
-              className="glass-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-            />
+            <label htmlFor="password" className="block text-xs font-semibold text-slate-300 mb-1">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                className="glass-input pr-10"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors p-1 text-sm focus:outline-none"
+                title={showPassword ? 'Hide password' : 'Show password'}
+              >
+                <span>{showPassword ? '🙈' : '👁️'}</span>
+              </button>
+            </div>
           </div>
 
           <button type="submit" className="btn-primary w-full py-3 font-bold text-sm mt-2" disabled={loading}>

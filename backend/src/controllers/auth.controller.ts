@@ -4,13 +4,28 @@ import { AuthService } from '../services/auth.service';
 
 const registerSchema = z.object({
   email: z.string().trim().toLowerCase().email('Invalid email address'),
+  username: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(3, 'Username must be at least 3 characters')
+    .max(30, 'Username must not exceed 30 characters')
+    .regex(/^[a-z0-9_-]+$/, 'Username must contain only letters, numbers, underscores or hyphens')
+    .optional(),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-const loginSchema = z.object({
-  email: z.string().trim().toLowerCase().email('Invalid email address'),
-  password: z.string().min(1),
-});
+const loginSchema = z
+  .object({
+    usernameOrEmail: z.string().trim().optional(),
+    email: z.string().trim().optional(),
+    username: z.string().trim().optional(),
+    password: z.string().min(1, 'Password is required'),
+  })
+  .refine((data) => Boolean(data.usernameOrEmail || data.email || data.username), {
+    message: 'Username or email is required',
+    path: ['usernameOrEmail'],
+  });
 
 /**
  * AuthController handles HTTP requests for user authentication.
@@ -33,9 +48,15 @@ export class AuthController {
       const user = await this.authService.register(parsed.data);
       res.status(201).json({ message: 'User registered successfully', user });
     } catch (err: unknown) {
-      if (err instanceof Error && err.message === 'EMAIL_EXISTS') {
-        res.status(409).json({ message: 'Email already in use' });
-        return;
+      if (err instanceof Error) {
+        if (err.message === 'EMAIL_EXISTS') {
+          res.status(409).json({ message: 'Email already in use' });
+          return;
+        }
+        if (err.message === 'USERNAME_EXISTS') {
+          res.status(409).json({ message: 'Username already in use' });
+          return;
+        }
       }
       res.status(500).json({ message: 'Internal server error' });
     }
@@ -52,12 +73,17 @@ export class AuthController {
       return;
     }
 
+    const identifier = (parsed.data.usernameOrEmail || parsed.data.email || parsed.data.username || '').trim().toLowerCase();
+
     try {
-      const result = await this.authService.login(parsed.data);
+      const result = await this.authService.login({
+        usernameOrEmail: identifier,
+        password: parsed.data.password,
+      });
       res.status(200).json({ message: 'Login successful', ...result });
     } catch (err: unknown) {
       if (err instanceof Error && err.message === 'INVALID_CREDENTIALS') {
-        res.status(401).json({ message: 'Invalid email or password' });
+        res.status(401).json({ message: 'Invalid credentials. Please verify your username/email and password.' });
         return;
       }
       res.status(500).json({ message: 'Internal server error' });

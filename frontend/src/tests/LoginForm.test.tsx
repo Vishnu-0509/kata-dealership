@@ -20,8 +20,8 @@ const renderWithRouter = (ui: React.ReactElement) => {
 describe('LoginForm', () => {
   it('renders login form inputs and submit button', () => {
     renderWithRouter(<LoginForm />);
-    expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Enter username or email')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Enter password')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
   });
 
@@ -29,10 +29,10 @@ describe('LoginForm', () => {
     mockLogin.mockResolvedValueOnce({ id: '1', email: 'test@dealership.com', role: 'USER' });
     renderWithRouter(<LoginForm />);
 
-    fireEvent.change(screen.getByPlaceholderText('you@example.com'), {
+    fireEvent.change(screen.getByPlaceholderText('Enter username or email'), {
       target: { value: 'test@dealership.com' },
     });
-    fireEvent.change(screen.getByPlaceholderText('••••••••'), {
+    fireEvent.change(screen.getByPlaceholderText('Enter password'), {
       target: { value: 'secret123' },
     });
 
@@ -47,17 +47,17 @@ describe('LoginForm', () => {
     mockLogin.mockRejectedValueOnce(new Error('Unauthorized'));
     renderWithRouter(<LoginForm />);
 
-    fireEvent.change(screen.getByPlaceholderText('you@example.com'), {
+    fireEvent.change(screen.getByPlaceholderText('Enter username or email'), {
       target: { value: 'wrong@dealership.com' },
     });
-    fireEvent.change(screen.getByPlaceholderText('••••••••'), {
+    fireEvent.change(screen.getByPlaceholderText('Enter password'), {
       target: { value: 'wrongpass' },
     });
 
     fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument();
+      expect(screen.getByText(/invalid.*password/i)).toBeInTheDocument();
     });
   });
 

@@ -3,6 +3,7 @@ import { Request } from 'express';
 export interface JwtPayload {
   userId: string;
   email: string;
+  username?: string | null;
   role: string;
 }
 
@@ -17,11 +18,13 @@ declare global {
 
 export interface RegisterBody {
   email: string;
+  username?: string | null;
   password: string;
 }
 
 export interface LoginBody {
-  email: string;
+  usernameOrEmail?: string;
+  email?: string;
   password: string;
 }
 
@@ -32,6 +35,7 @@ export interface CreateVehicleBody {
   price: number;
   quantity: number;
   imageUrl?: string | null;
+  images360?: string | null;
   exhaustAudioUrl?: string | null;
   year?: number | null;
   bhp?: number | null;
@@ -53,6 +57,7 @@ export interface UpdateVehicleBody {
   price?: number;
   quantity?: number;
   imageUrl?: string | null;
+  images360?: string | null;
   exhaustAudioUrl?: string | null;
   year?: number | null;
   bhp?: number | null;

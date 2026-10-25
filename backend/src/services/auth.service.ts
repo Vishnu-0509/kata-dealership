@@ -14,16 +14,26 @@ export class AuthService {
 
   /**
    * Registers a new user.
-   * @throws Error if email already exists
+   * @throws Error if email or username already exists
    */
   async register(data: RegisterBody) {
     const email = data.email.trim().toLowerCase();
-    const existing = await this.prisma.user.findUnique({
+    const existingEmail = await this.prisma.user.findUnique({
       where: { email },
     });
 
-    if (existing) {
+    if (existingEmail) {
       throw new Error('EMAIL_EXISTS');
+    }
+
+    const username = data.username ? data.username.trim().toLowerCase() : null;
+    if (username) {
+      const existingUsername = await this.prisma.user.findFirst({
+        where: { username },
+      });
+      if (existingUsername) {
+        throw new Error('USERNAME_EXISTS');
+      }
     }
 
     const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
@@ -31,23 +41,33 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: {
         email,
+        username,
         password: hashedPassword,
         role: 'USER',
       },
-      select: { id: true, email: true, role: true, createdAt: true },
+      select: { id: true, email: true, username: true, role: true, createdAt: true },
     });
 
     return user;
   }
 
   /**
-   * Logs in a user and returns a signed JWT.
+   * Logs in a user by username or email and returns a signed JWT.
    * @throws Error if credentials are invalid
    */
   async login(data: LoginBody) {
-    const email = data.email.trim().toLowerCase();
-    const user = await this.prisma.user.findUnique({
-      where: { email },
+    const identifier = (data.usernameOrEmail || data.email || '').trim().toLowerCase();
+    if (!identifier) {
+      throw new Error('INVALID_CREDENTIALS');
+    }
+
+    const user = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: identifier },
+          { username: identifier },
+        ],
+      },
     });
 
     if (!user) {
@@ -60,14 +80,14 @@ export class AuthService {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role },
+      { userId: user.id, email: user.email, username: user.username, role: user.role },
       getJwtSecret(),
       { expiresIn: '24h' }
     );
 
     return {
       token,
-      user: { id: user.id, email: user.email, role: user.role },
+      user: { id: user.id, email: user.email, username: user.username, role: user.role },
     };
   }
 }

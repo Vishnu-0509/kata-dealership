@@ -6,6 +6,7 @@ export function RegisterForm() {
   const { register } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
@@ -26,7 +27,11 @@ export function RegisterForm() {
 
     setLoading(true);
     try {
-      await register(email, password);
+      if (username.trim()) {
+        await register(email, password, username.trim());
+      } else {
+        await register(email, password);
+      }
       navigate('/');
     } catch (err: unknown) {
       const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
@@ -58,8 +63,21 @@ export function RegisterForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+            <label htmlFor="reg-username" className="block text-xs font-semibold text-slate-300 mb-1">Username (Optional)</label>
             <input
+              id="reg-username"
+              type="text"
+              className="glass-input"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Choose a unique username"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="reg-email" className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+            <input
+              id="reg-email"
               type="email"
               className="glass-input"
               value={email}

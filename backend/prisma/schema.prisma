@@ -13,6 +13,7 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
+  username  String?  @unique
   password  String
   role      String   @default("USER")
   createdAt DateTime @default(now())
@@ -26,6 +27,7 @@ model Vehicle {
   price           Float
   quantity        Int      @default(0)
   imageUrl        String?
+  images360       String?
   exhaustAudioUrl String?
   year            Int?     @default(2024)
   bhp             Int?
