@@ -112,14 +112,14 @@ Per project guidelines, we strictly avoid simulating 360° views by rotating a f
 ### Current Dealership Inventory 360° Asset Status
 | Vehicle | Primary Hero Photo | 360° Multi-Angle Sequence | Status |
 |---|---|---|---|
-| **Porsche 911 Carrera** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
-| **BMW M4 Competition** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
-| **Tesla Model 3 Performance** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
-| **Ford F-150 Lightning** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
-| **Toyota RAV4 Hybrid** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
-| **Honda Civic Sport** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
-| **Rivian R1T Launch Edition** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
-| **Volkswagen ID. Buzz** | ✅ High-Resolution | Ready for studio angle upload | ⚠️ Displays "360° view unavailable" + Hero Photo |
+| **Porsche 911 Carrera** | ✅ High-Resolution | ✅ 5 Distinct Angles (0°, 45°, 90°, 135°, 180°) | 🔄 **Active Interactive 360° Studio** |
+| **Toyota RAV4 Hybrid** | ✅ High-Resolution | ✅ 3 Distinct Angles (0°, 90°, 180°) | 🔄 **Active Interactive 360° Studio** |
+| **Tesla Model 3 Performance** | ✅ High-Resolution | ✅ 3 Distinct Angles (0°, 90°, 180°) | 🔄 **Active Interactive 360° Studio** |
+| **BMW M4 Competition** | ✅ High-Resolution | ✅ 2 Distinct Angles (45°, 90°) | 🔄 **Active Interactive 360° Studio** |
+| **Volkswagen ID. Buzz** | ✅ High-Resolution | ✅ 2 Distinct Angles (0°, 90°) | 🔄 **Active Interactive 360° Studio** |
+| **Ford F-150 Lightning** | ✅ High-Resolution | Single Showroom Photograph | 📷 Retains Static Photo (360° Unavailable) |
+| **Honda Civic Sport** | ✅ High-Resolution | Single Showroom Photograph | 📷 Retains Static Photo (360° Unavailable) |
+| **Rivian R1S Adventure** | ✅ High-Resolution | Single Showroom Photograph | 📷 Retains Static Photo (360° Unavailable) |
 
 *Administrators can upload and arrange sequential angle sets for any vehicle at any time using the "Add Angle Image" sequence builder in the Admin Edit modal.*
 
@@ -340,6 +340,7 @@ Ran all test suites.
 
 ```text
  ✓ src/tests/VehicleInspectModalPopup.test.tsx      (4 tests passed)
+ ✓ src/tests/Vehicle360PreloadAndPointer.test.tsx    (3 tests passed)
  ✓ src/tests/VehicleLightContrast.test.tsx          (2 tests passed)
  ✓ src/tests/VehicleComparisonModal.test.tsx         (4 tests passed)
  ✓ src/tests/LoginFormClearerFields.test.tsx         (4 tests passed)
@@ -352,12 +353,12 @@ Ran all test suites.
  ✓ src/tests/ClientInterceptorAndCategories.test.ts  (2 tests passed)
  ✓ src/tests/VehicleListEmptyModal.test.tsx          (2 tests passed)
 
-Test Files:  12 passed, 12 total
-Tests:       44 passed, 44 total
-Time:        6.28s
+Test Files:  13 passed, 13 total
+Tests:       47 passed, 47 total
+Time:        8.56s
 ```
 
-**Total automated tests across stack:** **110 passed of 110 tests (100% passing).**
+**Total automated tests across stack:** **113 passed of 113 tests (100% passing).**
 
 ---
 
@@ -447,6 +448,11 @@ In the initial project setup, the baseline commit bundled initial implementation
 - **Problem:** When clicking a vehicle card, the inspection popup was trapped inside `<main className="relative z-10">`, causing the sticky upper bar (`Navbar` at `z-40`) to float on top of the modal and cut off the popup header. Additionally, the close button used dark grey styling (`bg-slate-900/80 text-slate-200`) that blended invisibly into dark vehicle photos and asphalt backgrounds, and clicking outside or pressing Escape did not dismiss the modal.
 - **Red Phase (Commit `8c134d4`):** Authored `frontend/src/tests/VehicleInspectModalPopup.test.tsx` asserting: (1) high-contrast white circular button with dark bold icon (`bg-white text-slate-900`), (2) dismissal on backdrop click, (3) dismissal on `Escape` key, and (4) portal rendering to `document.body` with `z-[60]` overlaying the top navbar.
 - **Green Phase:** Wrapped `VehicleInspectModal` in React `createPortal(..., document.body)` with `z-[60]`, updated the close button to a prominent `bg-white text-slate-900 shadow-2xl ring-2 ring-slate-900/25` circular button, added backdrop click `onClick={onClose}`, added `Escape` key listener, and removed `z-10` from `<main>` in `DashboardPage.tsx`.
+
+### 18. 360° Studio Smooth Rotation, Memory Preloading & Multi-Angle Seed Data
+- **Problem:** In the database, `images360` was null for all vehicles, so clicking on any product always showed "360° view unavailable" with no active rotating studio. In addition, when angles were rotated, `setIsLoading(true)` was called on every step, producing a flashing spinner and blocking mouse dragging; mouse dragging stopped whenever the cursor drifted outside the container; and touch gestures triggered page scrolls instead of vehicle rotation.
+- **Red Phase (Commit `7dd27f7`):** Authored `frontend/src/tests/Vehicle360PreloadAndPointer.test.tsx` asserting: (1) default 360 studio rendering with angle count when angles exist, (2) disabled/unavailable indicator when angles are absent, and (3) smooth drag rotation with `touch-none`.
+- **Green Phase:** Refactored drag tracking to synchronous refs (`isDraggingRef`, `dragStartXRef`) and pointer capture, added memory preloading of angle frames for instantaneous transitions without loading flicker, added `touch-none` styling, added angle badges to studio tabs, and populated verified authentic multi-angle sequences in `dev.db` and `backend/prisma/seed.ts` for Porsche 911 (5 angles), Toyota RAV4 (3 angles), Tesla Model 3 (3 angles), BMW M4 (2 angles), and Volkswagen ID. Buzz (2 angles).
 
 ---
 

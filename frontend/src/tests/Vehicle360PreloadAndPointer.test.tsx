@@ -69,7 +69,7 @@ describe('360 Degree Viewer Enhancements & Preloading (TDD Red)', () => {
     expect(tab360.textContent).toContain('Unavailable');
   });
 
-  it('rotates angle smoothly using pointer events with touchAction none', () => {
+  it('rotates angle smoothly using drag events with touchAction none', () => {
     render(
       <Vehicle360Viewer
         images={samplePorscheAngles}
@@ -84,10 +84,10 @@ describe('360 Degree Viewer Enhancements & Preloading (TDD Red)', () => {
     const img = screen.getByRole('img');
     expect(img).toHaveAttribute('src', samplePorscheAngles[0]);
 
-    // Drag forward via pointer events
-    fireEvent.pointerDown(container, { clientX: 200, pointerId: 1 });
-    fireEvent.pointerMove(container, { clientX: 170, pointerId: 1 });
-    fireEvent.pointerUp(container, { pointerId: 1 });
+    // Drag forward horizontally
+    fireEvent.mouseDown(container, { clientX: 200 });
+    fireEvent.mouseMove(container, { clientX: 170 });
+    fireEvent.mouseUp(container);
 
     expect(img).toHaveAttribute('src', samplePorscheAngles[1]);
   });

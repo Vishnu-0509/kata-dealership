@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, MouseEvent, TouchEvent, KeyboardEvent } from 'react';
+import { useState, useRef, useEffect, useMemo, MouseEvent, TouchEvent, PointerEvent, KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
 
 interface Props {
@@ -16,11 +16,13 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
   const hasAngles = angleList.length >= 2;
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStartX, setDragStartX] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [preloadedSet, setPreloadedSet] = useState<Record<number, boolean>>({});
+
+  const isDraggingRef = useRef(false);
+  const dragStartXRef = useRef(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const fullscreenBtnRef = useRef<HTMLButtonElement>(null);
@@ -40,6 +42,38 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
       setIsLoading(true);
     }
   }, [imagesKey, vehicleName]);
+
+  // Preload angle images into memory for instant frame transitions without latency
+  useEffect(() => {
+    if (!hasAngles) {
+      setIsLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+    angleList.forEach((url, idx) => {
+      const img = new Image();
+      img.src = url;
+      img.onload = () => {
+        if (!isMounted) return;
+        setPreloadedSet((prev) => ({ ...prev, [idx]: true }));
+        if (idx === currentIndex) {
+          setIsLoading(false);
+        }
+      };
+      img.onerror = () => {
+        if (!isMounted) return;
+        if (idx === currentIndex) {
+          setIsLoading(false);
+          setHasError(true);
+        }
+      };
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [angleList, hasAngles]);
 
   // Check cached image completion on index change
   useEffect(() => {
@@ -81,16 +115,22 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
 
   const handleNext = () => {
     if (!hasAngles) return;
+    const nextIdx = (currentIndex + 1) % angleList.length;
     setHasError(false);
-    setIsLoading(true);
-    setCurrentIndex((prev) => (prev + 1) % angleList.length);
+    if (!preloadedSet[nextIdx]) {
+      setIsLoading(true);
+    }
+    setCurrentIndex(nextIdx);
   };
 
   const handlePrev = () => {
     if (!hasAngles) return;
+    const prevIdx = (currentIndex - 1 + angleList.length) % angleList.length;
     setHasError(false);
-    setIsLoading(true);
-    setCurrentIndex((prev) => (prev - 1 + angleList.length) % angleList.length);
+    if (!preloadedSet[prevIdx]) {
+      setIsLoading(true);
+    }
+    setCurrentIndex(prevIdx);
   };
 
   const handleReset = () => {
@@ -109,54 +149,89 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
     }
   };
 
-  // Mouse drag handlers
-  const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+  // Pointer drag handlers (smooth, unified pointer capture across mouse and touch)
+  const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
     if (!hasAngles) return;
-    setIsDragging(true);
-    setDragStartX(e.clientX);
+    isDraggingRef.current = true;
+    dragStartXRef.current = e.clientX;
+    if (typeof e.currentTarget.setPointerCapture === 'function') {
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch {}
+    }
   };
 
-  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (!isDragging || !hasAngles) return;
-    const deltaX = e.clientX - dragStartX;
-    const threshold = 18; // Drag sensitivity in px
+  const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current || !hasAngles) return;
+    const deltaX = e.clientX - dragStartXRef.current;
+    const threshold = 15; // Smooth rotation sensitivity
     if (Math.abs(deltaX) >= threshold) {
       if (deltaX < 0) {
         handleNext();
       } else {
         handlePrev();
       }
-      setDragStartX(e.clientX);
+      dragStartXRef.current = e.clientX;
+    }
+  };
+
+  const handlePointerUp = (e: PointerEvent<HTMLDivElement>) => {
+    isDraggingRef.current = false;
+    if (typeof e.currentTarget.releasePointerCapture === 'function') {
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {}
+    }
+  };
+
+  // Mouse drag fallback handlers
+  const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    if (!hasAngles) return;
+    isDraggingRef.current = true;
+    dragStartXRef.current = e.clientX;
+  };
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current || !hasAngles) return;
+    const deltaX = e.clientX - dragStartXRef.current;
+    const threshold = 15;
+    if (Math.abs(deltaX) >= threshold) {
+      if (deltaX < 0) {
+        handleNext();
+      } else {
+        handlePrev();
+      }
+      dragStartXRef.current = e.clientX;
     }
   };
 
   const handleMouseUp = () => {
-    setIsDragging(false);
+    isDraggingRef.current = false;
   };
 
   // Touch swipe handlers
   const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
     if (!hasAngles) return;
-    setIsDragging(true);
-    setDragStartX(e.touches[0].clientX);
+    isDraggingRef.current = true;
+    dragStartXRef.current = e.touches[0].clientX;
   };
 
   const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
-    if (!isDragging || !hasAngles) return;
-    const deltaX = e.touches[0].clientX - dragStartX;
-    const threshold = 18;
+    if (!isDraggingRef.current || !hasAngles) return;
+    const deltaX = e.touches[0].clientX - dragStartXRef.current;
+    const threshold = 15;
     if (Math.abs(deltaX) >= threshold) {
       if (deltaX < 0) {
         handleNext();
       } else {
         handlePrev();
       }
-      setDragStartX(e.touches[0].clientX);
+      dragStartXRef.current = e.touches[0].clientX;
     }
   };
 
   const handleTouchEnd = () => {
-    setIsDragging(false);
+    isDraggingRef.current = false;
   };
 
   const toggleFullscreen = () => {
@@ -200,6 +275,10 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
       data-testid="viewer-360-container"
       tabIndex={0}
       onKeyDown={handleKeyDown}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -207,7 +286,7 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className={`relative w-full overflow-hidden select-none cursor-grab active:cursor-grabbing focus:outline-none transition-all ${
+      className={`relative w-full overflow-hidden select-none touch-none cursor-grab active:cursor-grabbing focus:outline-none transition-all ${
         inFullscreen
           ? 'w-full h-full max-w-6xl max-h-[90vh] bg-slate-950 rounded-2xl border border-teal-500/30 flex items-center justify-center'
           : 'h-64 sm:h-80 bg-slate-950 rounded-xl border border-teal-500/20 shadow-inner'

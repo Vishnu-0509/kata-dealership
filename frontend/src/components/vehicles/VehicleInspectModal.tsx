@@ -82,14 +82,22 @@ export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing
           <div className="absolute top-4 left-4 z-20 flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-md p-1 rounded-xl border border-white/10 shadow-lg">
             <button
               type="button"
-              onClick={() => setActiveTab('360')}
+              onClick={() => parsedAngles.length >= 2 && setActiveTab('360')}
+              disabled={parsedAngles.length < 2}
+              title={
+                parsedAngles.length >= 2
+                  ? `Rotate 360° Studio Photography (${parsedAngles.length} Angles)`
+                  : '360° studio capture unavailable for this model'
+              }
               className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                activeTab === '360'
+                parsedAngles.length < 2
+                  ? 'opacity-60 cursor-not-allowed text-slate-400'
+                  : activeTab === '360'
                   ? 'bg-teal-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white'
               }`}
             >
-              🔄 360° Studio
+              🔄 360° Studio {parsedAngles.length >= 2 ? `(${parsedAngles.length} Angles)` : '(Unavailable)'}
             </button>
             <button
               type="button"
