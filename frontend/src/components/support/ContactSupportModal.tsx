@@ -16,15 +16,33 @@ export function ContactSupportModal({ onClose }: Props) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
+
+    try {
+      // Store inquiry in local storage for demonstration persistence without sending live emails
+      const existing = JSON.parse(localStorage.getItem('kata_demo_inquiries') || '[]');
+      const newTicket = {
+        id: `TICKET-${Date.now().toString().slice(-6)}`,
+        name,
+        email,
+        inquiryType,
+        message,
+        createdAt: new Date().toISOString(),
+      };
+      localStorage.setItem('kata_demo_inquiries', JSON.stringify([newTicket, ...existing]));
+
+      setTimeout(() => {
+        setIsSubmitting(false);
+        showToast(
+          'info',
+          'Demo Inquiry Recorded',
+          `Thank you ${name}. Inquiry #${newTicket.id} saved to local browser storage (demonstration mode — no external messages sent).`
+        );
+        onClose();
+      }, 400);
+    } catch {
       setIsSubmitting(false);
-      showToast(
-        'success',
-        'Support Ticket Dispatched',
-        `Thank you ${name}. Our concierge team will reach out at ${email} shortly.`
-      );
-      onClose();
-    }, 600);
+      showToast('error', 'Storage Error', 'Could not save simulated inquiry.');
+    }
   };
 
   return (
@@ -101,8 +119,13 @@ export function ContactSupportModal({ onClose }: Props) {
 
           {/* Inquiry / Message Form */}
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+            <div className="badge-glass bg-amber-500/10 text-amber-300 border-amber-500/30 text-xs py-2 px-3 rounded-lg flex items-center gap-2">
+              <span>ℹ️</span>
+              <span><strong>Demonstration Form:</strong> Inquiries are saved locally in browser storage for evaluation. No emails are sent to real recipients.</span>
+            </div>
+
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <span>✍️</span> Send Direct Dispatch Inquiry
+              <span>✍️</span> Simulated Concierge Inquiry
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -160,7 +183,7 @@ export function ContactSupportModal({ onClose }: Props) {
                 Cancel
               </button>
               <button type="submit" className="btn-primary flex-1 py-2.5 font-bold" disabled={isSubmitting}>
-                {isSubmitting ? 'Transmitting Dispatch...' : 'Submit Inquiry'}
+                {isSubmitting ? 'Saving Demo Inquiry...' : 'Save Demo Inquiry'}
               </button>
             </div>
           </form>

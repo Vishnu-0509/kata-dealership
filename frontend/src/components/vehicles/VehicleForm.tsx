@@ -1,5 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { Vehicle } from '../../api/client';
+import { VEHICLE_CATEGORIES } from '../../constants/categories';
 
 interface Props {
   initial?: Partial<Vehicle>;
@@ -56,7 +57,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
     });
   };
 
-  const categories = ['Sedan', 'SUV', 'Truck', 'Coupe', 'Hatchback', 'Van', 'Convertible', 'Electric'];
+  const categories = VEHICLE_CATEGORIES;
 
   const quickSamples = [
     { label: 'Porsche 911', url: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80' },

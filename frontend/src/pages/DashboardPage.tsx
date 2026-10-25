@@ -10,6 +10,7 @@ import { useVehicles, usePurchaseVehicle } from '../hooks/useVehicles';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../components/common/Toast';
 import { Vehicle } from '../api/client';
+import { VEHICLE_CATEGORIES } from '../constants/categories';
 
 export function DashboardPage() {
   const { isAdmin } = useAuth();
@@ -59,7 +60,14 @@ export function DashboardPage() {
     });
   };
 
-  const categories = ['All', 'Coupe', 'Electric', 'SUV', 'Sedan', 'Truck', 'Van'];
+  // Categories derived from standard list plus any custom inventory categories
+  const categories = useMemo(() => {
+    const set = new Set<string>(['All', ...VEHICLE_CATEGORIES]);
+    allVehicles.forEach((v) => {
+      if (v.category) set.add(v.category);
+    });
+    return Array.from(set);
+  }, [allVehicles]);
 
   // Calculate live fleet metrics
   const metrics = useMemo(() => {
