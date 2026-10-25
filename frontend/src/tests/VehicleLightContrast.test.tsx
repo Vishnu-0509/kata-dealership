@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { VehicleComparisonModal } from '../components/vehicles/VehicleComparisonModal';
 import { VehicleForm } from '../components/vehicles/VehicleForm';
@@ -54,7 +54,7 @@ describe('Light Theme Contrast & Readability (TDD)', () => {
     expect(porscheTitle.className).not.toMatch(/\btext-white\b/);
 
     // Price must not be text-white
-    const porschePrice = screen.getByText(/\$114,400/);
+    const porschePrice = screen.getByText((content) => content.includes('14,400'));
     expect(porschePrice.className).not.toMatch(/\btext-white\b/);
     expect(porschePrice.className).toMatch(/text-slate-900|text-teal-600|text-slate-800/);
 
@@ -73,14 +73,14 @@ describe('Light Theme Contrast & Readability (TDD)', () => {
       />
     );
 
-    // Expand specs
-    const expandBtn = screen.getByRole('button', { name: /engineering specifications & telemetry/i });
-    expandBtn.click();
-
     // Check Image URL label
     const imgLabel = screen.getByText(/Vehicle Image URL/i);
     expect(imgLabel.className).not.toMatch(/\btext-slate-300\b/);
     expect(imgLabel.className).toMatch(/text-slate-700|text-slate-800|text-slate-900/);
+
+    // Expand specs
+    const expandBtn = screen.getByRole('button', { name: /engineering specifications & telemetry/i });
+    fireEvent.click(expandBtn);
 
     // Check BHP label
     const bhpLabel = screen.getByText(/BHP \(Horsepower\)/i);

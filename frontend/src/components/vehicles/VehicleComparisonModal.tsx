@@ -117,7 +117,7 @@ export function VehicleComparisonModal({
                   {selectedVehicles.length} of 4 Manually Selected
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-600 font-medium">
                 Manually select 2 to 4 vehicles from inventory to compare engineering telemetry side-by-side
               </p>
             </div>
@@ -130,8 +130,8 @@ export function VehicleComparisonModal({
                 onClick={() => setShowCatalogSelector(!showCatalogSelector)}
                 className={`text-xs px-3 py-1.5 rounded-xl font-semibold border transition-all flex items-center gap-1.5 ${
                   showCatalogSelector
-                    ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200'
-                    : 'bg-white/5 hover:bg-white/10 border-white/10 text-slate-300'
+                    ? 'bg-teal-50 border-teal-300 text-teal-800 shadow-sm'
+                    : 'bg-white hover:bg-slate-100 border-slate-200 text-slate-700'
                 }`}
               >
                 <span>🚘</span>
@@ -141,7 +141,7 @@ export function VehicleComparisonModal({
 
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-white p-2 rounded-lg text-lg leading-none transition-colors"
+              className="text-slate-400 hover:text-slate-800 p-2 rounded-lg text-lg leading-none transition-colors"
               title="Close Comparison"
             >
               ✕
@@ -151,13 +151,13 @@ export function VehicleComparisonModal({
 
         {/* 1. Manual Vehicle Selector Drawer (Always visible when < 2 cars or toggled) */}
         {showCatalogSelector && (
-          <div className="p-4 bg-slate-950/80 border-b border-slate-800 space-y-3 animate-slide-up max-h-72 overflow-y-auto">
+          <div className="p-4 bg-slate-50 border-b border-slate-200 space-y-3 animate-slide-up max-h-72 overflow-y-auto">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-teal-700 flex items-center gap-1.5">
                   <span>📋</span> Manual Vehicle Selection Catalog
                 </h3>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-slate-600 font-medium">
                   Click on any vehicle card to add or remove it from your side-by-side comparison (2 to 4 cars).
                 </p>
               </div>
@@ -168,12 +168,12 @@ export function VehicleComparisonModal({
                   placeholder="Filter cars..."
                   value={catalogSearch}
                   onChange={(e) => setCatalogSearch(e.target.value)}
-                  className="glass-input text-xs py-1 px-3 w-40"
+                  className="glass-input bg-white text-slate-900 border-slate-300 text-xs py-1 px-3 w-40"
                 />
                 {selectedIds.length > 0 && (
                   <button
                     onClick={clearAllSelections}
-                    className="text-[11px] text-slate-400 hover:text-rose-400 underline px-1"
+                    className="text-[11px] text-rose-600 hover:text-rose-700 font-semibold underline px-1"
                   >
                     Clear All
                   </button>
@@ -191,24 +191,24 @@ export function VehicleComparisonModal({
                   <div
                     key={v.id}
                     onClick={() => !isFull && toggleSelectVehicle(v.id)}
-                    className={`glass-card p-2.5 rounded-xl cursor-pointer border transition-all text-left flex flex-col justify-between group relative ${
+                    className={`p-2.5 rounded-xl cursor-pointer border transition-all text-left flex flex-col justify-between group relative bg-white ${
                       isSelected
-                        ? 'border-cyan-400 bg-cyan-500/10 shadow-md shadow-cyan-500/20'
+                        ? 'border-teal-500 bg-teal-50/80 shadow-md ring-2 ring-teal-500/20'
                         : isFull
-                        ? 'opacity-40 cursor-not-allowed border-white/5'
-                        : 'border-white/10 hover:border-cyan-500/50 hover:bg-white/[0.04]'
+                        ? 'opacity-40 cursor-not-allowed border-slate-200'
+                        : 'border-slate-200 hover:border-teal-500/60 hover:bg-slate-50 shadow-sm'
                     }`}
                   >
                     {/* Top Selection Status Pill */}
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[10px] font-bold text-slate-400">
+                      <span className="text-[10px] font-bold text-slate-500">
                         {v.year || 2024} · {v.category}
                       </span>
                       <span
                         className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
                           isSelected
-                            ? 'bg-cyan-500 text-slate-950'
-                            : 'bg-white/10 text-slate-400'
+                            ? 'bg-teal-600 text-white'
+                            : 'bg-slate-100 text-slate-600'
                         }`}
                       >
                         {isSelected ? '✓ Selected' : '+ Compare'}
@@ -220,20 +220,20 @@ export function VehicleComparisonModal({
                       <img
                         src={v.imageUrl || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=400&q=80'}
                         alt={v.model}
-                        className="w-10 h-10 rounded-lg object-cover"
+                        className="w-10 h-10 rounded-lg object-cover bg-slate-100"
                       />
                       <div className="overflow-hidden">
-                        <p className="text-xs font-bold text-white truncate">
+                        <p className="text-xs font-bold text-slate-900 truncate">
                           {v.make} {v.model}
                         </p>
-                        <p className="text-[11px] font-semibold text-cyan-400">
+                        <p className="text-[11px] font-black text-teal-600">
                           ${v.price.toLocaleString()}
                         </p>
                       </div>
                     </div>
 
                     {/* Mini Spec Badges */}
-                    <div className="flex items-center gap-1.5 text-[9px] text-slate-400">
+                    <div className="flex items-center gap-1.5 text-[9px] text-slate-600 font-medium">
                       {v.bhp && <span>⚡ {v.bhp} HP</span>}
                       {v.zeroToSixty && <span>• 🚀 {v.zeroToSixty}s</span>}
                       {v.topSpeed && <span>• 🏁 {v.topSpeed}mph</span>}
@@ -248,7 +248,7 @@ export function VehicleComparisonModal({
                 <button
                   type="button"
                   onClick={() => setShowCatalogSelector(false)}
-                  className="btn-primary text-xs py-1.5 px-4 font-bold flex items-center gap-1.5 shadow-cyan-500/20"
+                  className="btn-primary text-xs py-1.5 px-4 font-bold flex items-center gap-1.5 shadow-sm"
                 >
                   <span>View Matrix ({selectedVehicles.length} Cars)</span> <span>➔</span>
                 </button>
@@ -259,8 +259,8 @@ export function VehicleComparisonModal({
 
         {/* 2. Quick Add Bar when catalog drawer is closed and slots remain */}
         {!showCatalogSelector && selectedVehicles.length < 4 && availableVehiclesToAdd.length > 0 && (
-          <div className="px-5 py-2.5 bg-cyan-950/20 border-b border-cyan-500/20 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <span className="text-slate-300 font-semibold flex items-center gap-1.5">
+          <div className="px-5 py-2.5 bg-teal-50/70 border-b border-teal-200/60 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <span className="text-slate-800 font-semibold flex items-center gap-1.5">
               <span>➕</span> Add car to comparison ({4 - selectedVehicles.length} slot{4 - selectedVehicles.length > 1 ? 's' : ''} left):
             </span>
             <div className="flex items-center gap-2 flex-wrap">
@@ -268,14 +268,14 @@ export function VehicleComparisonModal({
                 <button
                   key={veh.id}
                   onClick={() => toggleSelectVehicle(veh.id)}
-                  className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-500/40 text-slate-200 transition-all text-xs flex items-center gap-1.5"
+                  className="px-2.5 py-1 rounded-lg bg-white hover:bg-teal-100 border border-slate-200 hover:border-teal-400 text-slate-800 transition-all text-xs flex items-center gap-1.5 shadow-sm"
                 >
-                  <span>+</span> {veh.year} {veh.make} {veh.model}
+                  <span className="text-teal-600 font-bold">+</span> {veh.year} {veh.make} {veh.model}
                 </button>
               ))}
               <button
                 onClick={() => setShowCatalogSelector(true)}
-                className="text-cyan-400 hover:underline font-semibold ml-1 text-xs"
+                className="text-teal-700 hover:underline font-bold ml-1 text-xs"
               >
                 Browse all inventory...
               </button>
@@ -284,12 +284,12 @@ export function VehicleComparisonModal({
         )}
 
         {/* 3. Comparison Table / Matrix Area */}
-        <div className="p-5 overflow-x-auto overflow-y-auto flex-1">
+        <div className="p-5 overflow-x-auto overflow-y-auto flex-1 bg-white">
           {selectedVehicles.length === 0 ? (
             <div className="text-center py-16 space-y-3">
               <span className="text-4xl block">⚖️</span>
-              <p className="text-base font-bold text-white">No vehicles selected yet.</p>
-              <p className="text-xs text-slate-400 max-w-md mx-auto">
+              <p className="text-base font-bold text-slate-900">No vehicles selected yet.</p>
+              <p className="text-xs text-slate-600 max-w-md mx-auto">
                 Use the manual selection catalog above or click &quot;Compare&quot; on vehicle cards in the showroom to pick 2 to 4 cars to compare side-by-side.
               </p>
               <div className="pt-2">
@@ -304,10 +304,10 @@ export function VehicleComparisonModal({
           ) : selectedVehicles.length === 1 ? (
             <div className="text-center py-16 space-y-3">
               <span className="text-4xl block">🚘</span>
-              <p className="text-base font-bold text-white">
-                1 car selected: <span className="text-cyan-400">{selectedVehicles[0].make} {selectedVehicles[0].model}</span>
+              <p className="text-base font-bold text-slate-900">
+                1 car selected: <span className="text-teal-600">{selectedVehicles[0].make} {selectedVehicles[0].model}</span>
               </p>
-              <p className="text-xs text-slate-400 max-w-md mx-auto">
+              <p className="text-xs text-slate-600 max-w-md mx-auto">
                 Please manually select at least 1 more car to unlock the side-by-side specification comparison matrix.
               </p>
               <div className="pt-2">
@@ -323,34 +323,34 @@ export function VehicleComparisonModal({
             <div className="min-w-[700px]">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800">
-                    <th className="p-3 w-44 text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-950/40 sticky left-0 z-10">
+                  <tr className="border-b border-slate-200">
+                    <th className="p-3 w-44 text-xs font-bold text-slate-700 uppercase tracking-wider bg-slate-50 sticky left-0 z-10 border-r border-slate-200">
                       Vehicle & Model
                     </th>
                     {selectedVehicles.map((veh) => (
                       <th key={veh.id} className="p-3 align-top min-w-[200px]">
-                        <div className="glass-card p-3 relative group border-white/10 flex flex-col justify-between h-full">
+                        <div className="bg-slate-50 border border-slate-200 p-3 relative group rounded-xl flex flex-col justify-between h-full shadow-sm">
                           <button
                             onClick={() => removeVehicle(veh.id)}
-                            className="absolute top-2 right-2 w-6 h-6 rounded-full bg-slate-800/80 hover:bg-rose-600 text-white flex items-center justify-center text-xs transition-colors shadow-md"
+                            className="absolute top-2 right-2 w-6 h-6 rounded-full bg-slate-200 hover:bg-rose-600 text-slate-700 hover:text-white flex items-center justify-center text-xs transition-colors shadow-sm"
                             title="Remove from comparison"
                           >
                             ✕
                           </button>
 
                           {/* Image */}
-                          <div className="h-28 rounded-lg overflow-hidden mb-2 bg-slate-950 relative">
+                          <div className="h-28 rounded-lg overflow-hidden mb-2 bg-slate-100 relative">
                             <img
                               src={veh.imageUrl || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80'}
                               alt={`${veh.make} ${veh.model}`}
                               className="w-full h-full object-cover"
                             />
-                            <span className="absolute bottom-1 left-1 badge-glass bg-black/60 text-cyan-300 text-[10px] px-1.5 py-0.5">
+                            <span className="absolute bottom-1 left-1 badge-glass bg-white/90 text-teal-800 border-slate-200 text-[10px] px-1.5 py-0.5 font-semibold">
                               {veh.category}
                             </span>
                           </div>
 
-                          <h3 className="text-sm font-bold text-white leading-tight">
+                          <h3 className="text-sm font-bold text-slate-900 leading-tight">
                             {veh.year || 2024} {veh.make} {veh.model}
                           </h3>
 
@@ -359,8 +359,8 @@ export function VehicleComparisonModal({
                             onClick={() => handleRevExhaust(veh)}
                             className={`mt-2.5 w-full py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
                               revvingId === veh.id
-                                ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30'
-                                : 'bg-white/5 hover:bg-cyan-500/10 text-cyan-300 border border-white/10'
+                                ? 'bg-amber-500 text-slate-950 shadow-sm'
+                                : 'bg-white hover:bg-teal-50 text-slate-700 hover:text-teal-700 border border-slate-200'
                             }`}
                           >
                             <span>{revvingId === veh.id ? '🔊' : '🎵'}</span>
@@ -372,10 +372,10 @@ export function VehicleComparisonModal({
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-slate-800/60 text-xs">
+                <tbody className="divide-y divide-slate-200 text-xs">
                   {/* Price */}
-                  <tr className="hover:bg-white/[0.02]">
-                    <td className="p-3 font-semibold text-slate-400 bg-slate-950/40 sticky left-0">
+                  <tr className="hover:bg-slate-50/60">
+                    <td className="p-3 font-bold text-slate-700 bg-slate-50 sticky left-0 border-r border-slate-200">
                       Showroom Price
                     </td>
                     {selectedVehicles.map((veh) => {
@@ -383,11 +383,11 @@ export function VehicleComparisonModal({
                       return (
                         <td key={veh.id} className="p-3">
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-base font-black text-white">
+                            <span className="text-base font-black text-teal-600">
                               ${veh.price.toLocaleString()}
                             </span>
                             {isBest && (
-                              <span className="badge-glass bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-[10px] py-0.5">
+                              <span className="badge-glass bg-emerald-50 text-emerald-800 border-emerald-300 text-[10px] py-0.5 font-bold">
                                 ★ Best Value
                               </span>
                             )}
@@ -398,8 +398,8 @@ export function VehicleComparisonModal({
                   </tr>
 
                   {/* BHP / Power */}
-                  <tr className="hover:bg-white/[0.02]">
-                    <td className="p-3 font-semibold text-slate-400 bg-slate-950/40 sticky left-0">
+                  <tr className="hover:bg-slate-50/60">
+                    <td className="p-3 font-bold text-slate-700 bg-slate-50 sticky left-0 border-r border-slate-200">
                       Horsepower (BHP)
                     </td>
                     {selectedVehicles.map((veh) => {
@@ -408,17 +408,17 @@ export function VehicleComparisonModal({
                         <td key={veh.id} className="p-3">
                           {veh.bhp ? (
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="font-bold text-white text-sm">
-                                {veh.bhp} <span className="text-cyan-400 text-xs">hp</span>
+                              <span className="font-bold text-slate-900 text-sm">
+                                {veh.bhp} <span className="text-teal-600 text-xs font-semibold">hp</span>
                               </span>
                               {isLeader && (
-                                <span className="badge-glass bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px] py-0.5">
+                                <span className="badge-glass bg-amber-50 text-amber-800 border-amber-300 text-[10px] py-0.5 font-bold">
                                   ⚡ Highest Power
                                 </span>
                               )}
                             </div>
                           ) : (
-                            <span className="text-slate-500 italic">—</span>
+                            <span className="text-slate-400 italic">—</span>
                           )}
                         </td>
                       );
@@ -426,8 +426,8 @@ export function VehicleComparisonModal({
                   </tr>
 
                   {/* 0-60 mph Acceleration */}
-                  <tr className="hover:bg-white/[0.02]">
-                    <td className="p-3 font-semibold text-slate-400 bg-slate-950/40 sticky left-0">
+                  <tr className="hover:bg-slate-50/60">
+                    <td className="p-3 font-bold text-slate-700 bg-slate-50 sticky left-0 border-r border-slate-200">
                       0 – 60 mph Acceleration
                     </td>
                     {selectedVehicles.map((veh) => {
@@ -440,17 +440,17 @@ export function VehicleComparisonModal({
                         <td key={veh.id} className="p-3">
                           {veh.zeroToSixty ? (
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="font-bold text-white text-sm">
-                                {veh.zeroToSixty} <span className="text-cyan-400 text-xs">sec</span>
+                              <span className="font-bold text-slate-900 text-sm">
+                                {veh.zeroToSixty} <span className="text-teal-600 text-xs font-semibold">sec</span>
                               </span>
                               {isQuickest && (
-                                <span className="badge-glass bg-cyan-500/20 text-cyan-300 border-cyan-500/40 text-[10px] py-0.5">
+                                <span className="badge-glass bg-teal-50 text-teal-800 border-teal-300 text-[10px] py-0.5 font-bold">
                                   🚀 Quickest
                                 </span>
                               )}
                             </div>
                           ) : (
-                            <span className="text-slate-500 italic">—</span>
+                            <span className="text-slate-400 italic">—</span>
                           )}
                         </td>
                       );
@@ -458,8 +458,8 @@ export function VehicleComparisonModal({
                   </tr>
 
                   {/* Top Speed */}
-                  <tr className="hover:bg-white/[0.02]">
-                    <td className="p-3 font-semibold text-slate-400 bg-slate-950/40 sticky left-0">
+                  <tr className="hover:bg-slate-50/60">
+                    <td className="p-3 font-bold text-slate-700 bg-slate-50 sticky left-0 border-r border-slate-200">
                       Top Speed
                     </td>
                     {selectedVehicles.map((veh) => {
@@ -469,17 +469,17 @@ export function VehicleComparisonModal({
                         <td key={veh.id} className="p-3">
                           {veh.topSpeed ? (
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="font-bold text-white text-sm">
-                                {veh.topSpeed} <span className="text-cyan-400 text-xs">mph</span>
+                              <span className="font-bold text-slate-900 text-sm">
+                                {veh.topSpeed} <span className="text-teal-600 text-xs font-semibold">mph</span>
                               </span>
                               {isFastest && (
-                                <span className="badge-glass bg-purple-500/20 text-purple-300 border-purple-500/40 text-[10px] py-0.5">
+                                <span className="badge-glass bg-purple-50 text-purple-800 border-purple-300 text-[10px] py-0.5 font-bold">
                                   🏁 Highest V-Max
                                 </span>
                               )}
                             </div>
                           ) : (
-                            <span className="text-slate-500 italic">—</span>
+                            <span className="text-slate-400 italic">—</span>
                           )}
                         </td>
                       );
@@ -487,102 +487,102 @@ export function VehicleComparisonModal({
                   </tr>
 
                   {/* Efficiency / Range */}
-                  <tr className="hover:bg-white/[0.02]">
-                    <td className="p-3 font-semibold text-slate-400 bg-slate-950/40 sticky left-0">
+                  <tr className="hover:bg-slate-50/60">
+                    <td className="p-3 font-bold text-slate-700 bg-slate-50 sticky left-0 border-r border-slate-200">
                       Mileage / Range
                     </td>
                     {selectedVehicles.map((veh) => (
-                      <td key={veh.id} className="p-3 font-medium text-slate-200">
-                        {veh.mileage || <span className="text-slate-500 italic">—</span>}
+                      <td key={veh.id} className="p-3 font-medium text-slate-800">
+                        {veh.mileage || <span className="text-slate-400 italic">—</span>}
                       </td>
                     ))}
                   </tr>
 
                   {/* Fuel / Battery Capacity */}
-                  <tr className="hover:bg-white/[0.02]">
-                    <td className="p-3 font-semibold text-slate-400 bg-slate-950/40 sticky left-0">
+                  <tr className="hover:bg-slate-50/60">
+                    <td className="p-3 font-bold text-slate-700 bg-slate-50 sticky left-0 border-r border-slate-200">
                       Fuel / Battery Capacity
                     </td>
                     {selectedVehicles.map((veh) => (
-                      <td key={veh.id} className="p-3 font-medium text-slate-200">
-                        {veh.fuelCapacity || <span className="text-slate-500 italic">—</span>}
+                      <td key={veh.id} className="p-3 font-medium text-slate-800">
+                        {veh.fuelCapacity || <span className="text-slate-400 italic">—</span>}
                       </td>
                     ))}
                   </tr>
 
                   {/* Transmission */}
-                  <tr className="hover:bg-white/[0.02]">
-                    <td className="p-3 font-semibold text-slate-400 bg-slate-950/40 sticky left-0">
+                  <tr className="hover:bg-slate-50/60">
+                    <td className="p-3 font-bold text-slate-700 bg-slate-50 sticky left-0 border-r border-slate-200">
                       Transmission
                     </td>
                     {selectedVehicles.map((veh) => (
-                      <td key={veh.id} className="p-3 text-slate-300">
-                        {veh.transmission || <span className="text-slate-500 italic">—</span>}
+                      <td key={veh.id} className="p-3 text-slate-800">
+                        {veh.transmission || <span className="text-slate-400 italic">—</span>}
                       </td>
                     ))}
                   </tr>
 
                   {/* Drivetrain */}
-                  <tr className="hover:bg-white/[0.02]">
-                    <td className="p-3 font-semibold text-slate-400 bg-slate-950/40 sticky left-0">
+                  <tr className="hover:bg-slate-50/60">
+                    <td className="p-3 font-bold text-slate-700 bg-slate-50 sticky left-0 border-r border-slate-200">
                       Drivetrain
                     </td>
                     {selectedVehicles.map((veh) => (
-                      <td key={veh.id} className="p-3 text-slate-300">
-                        {veh.drivetrain || <span className="text-slate-500 italic">—</span>}
+                      <td key={veh.id} className="p-3 text-slate-800">
+                        {veh.drivetrain || <span className="text-slate-400 italic">—</span>}
                       </td>
                     ))}
                   </tr>
 
                   {/* Engine / Motor Setup */}
-                  <tr className="hover:bg-white/[0.02]">
-                    <td className="p-3 font-semibold text-slate-400 bg-slate-950/40 sticky left-0">
+                  <tr className="hover:bg-slate-50/60">
+                    <td className="p-3 font-bold text-slate-700 bg-slate-50 sticky left-0 border-r border-slate-200">
                       Powertrain Architecture
                     </td>
                     {selectedVehicles.map((veh) => (
-                      <td key={veh.id} className="p-3 text-slate-300">
-                        {veh.engine || <span className="text-slate-500 italic">—</span>}
+                      <td key={veh.id} className="p-3 text-slate-800">
+                        {veh.engine || <span className="text-slate-400 italic">—</span>}
                       </td>
                     ))}
                   </tr>
 
                   {/* Seating */}
-                  <tr className="hover:bg-white/[0.02]">
-                    <td className="p-3 font-semibold text-slate-400 bg-slate-950/40 sticky left-0">
+                  <tr className="hover:bg-slate-50/60">
+                    <td className="p-3 font-bold text-slate-700 bg-slate-50 sticky left-0 border-r border-slate-200">
                       Seating Capacity
                     </td>
                     {selectedVehicles.map((veh) => (
-                      <td key={veh.id} className="p-3 text-slate-300">
-                        {veh.seating ? `${veh.seating} Passengers` : <span className="text-slate-500 italic">—</span>}
+                      <td key={veh.id} className="p-3 text-slate-800">
+                        {veh.seating ? `${veh.seating} Passengers` : <span className="text-slate-400 italic">—</span>}
                       </td>
                     ))}
                   </tr>
 
                   {/* Curb Weight */}
-                  <tr className="hover:bg-white/[0.02]">
-                    <td className="p-3 font-semibold text-slate-400 bg-slate-950/40 sticky left-0">
+                  <tr className="hover:bg-slate-50/60">
+                    <td className="p-3 font-bold text-slate-700 bg-slate-50 sticky left-0 border-r border-slate-200">
                       Curb Weight
                     </td>
                     {selectedVehicles.map((veh) => (
-                      <td key={veh.id} className="p-3 text-slate-300">
-                        {veh.curbWeight || <span className="text-slate-500 italic">—</span>}
+                      <td key={veh.id} className="p-3 text-slate-800">
+                        {veh.curbWeight || <span className="text-slate-400 italic">—</span>}
                       </td>
                     ))}
                   </tr>
 
                   {/* Inventory Availability */}
-                  <tr className="hover:bg-white/[0.02]">
-                    <td className="p-3 font-semibold text-slate-400 bg-slate-950/40 sticky left-0">
+                  <tr className="hover:bg-slate-50/60">
+                    <td className="p-3 font-bold text-slate-700 bg-slate-50 sticky left-0 border-r border-slate-200">
                       Inventory Status
                     </td>
                     {selectedVehicles.map((veh) => (
                       <td key={veh.id} className="p-3">
                         {veh.quantity === 0 ? (
-                          <span className="badge-glass bg-rose-500/20 text-rose-400 border-rose-500/40 text-[10px]">
+                          <span className="badge-glass bg-rose-50 text-rose-700 border-rose-300 text-[10px] font-bold">
                             Out of Stock
                           </span>
                         ) : (
-                          <span className="badge-glass bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-[10px]">
+                          <span className="badge-glass bg-emerald-50 text-emerald-800 border-emerald-300 text-[10px] font-bold">
                             {veh.quantity} Available
                           </span>
                         )}
@@ -592,7 +592,7 @@ export function VehicleComparisonModal({
 
                   {/* Purchase CTA Row */}
                   <tr>
-                    <td className="p-3 font-semibold text-slate-400 bg-slate-950/40 sticky left-0">
+                    <td className="p-3 font-bold text-slate-700 bg-slate-50 sticky left-0 border-r border-slate-200">
                       Order / Purchase
                     </td>
                     {selectedVehicles.map((veh) => (
@@ -617,20 +617,20 @@ export function VehicleComparisonModal({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-800 bg-slate-950/80 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-xs text-slate-400">
+        <div className="p-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-xs text-slate-600 font-medium">
             <span>💡</span> You have full manual control: select and deselect any vehicles above at any time.
           </div>
           <div className="flex items-center gap-2">
             {selectedVehicles.length > 0 && (
               <button
                 onClick={clearAllSelections}
-                className="btn-glass px-4 py-2 text-xs text-rose-300 hover:text-rose-200"
+                className="btn-glass bg-white px-4 py-2 text-xs text-rose-600 hover:text-rose-700 border-slate-200 font-semibold"
               >
                 Clear Selections
               </button>
             )}
-            <button onClick={onClose} className="btn-glass px-5 py-2 text-xs font-semibold">
+            <button onClick={onClose} className="btn-glass bg-white px-5 py-2 text-xs font-semibold text-slate-700 border-slate-200">
               Close
             </button>
           </div>

@@ -409,26 +409,26 @@ export function DashboardPage() {
       {/* Floating Bottom Comparison Drawer Dock (Users Only) */}
       {!isAdmin && comparedVehicleIds.length > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-xl px-4 animate-slide-up">
-          <div className="glass-panel p-3.5 border border-cyan-500/50 shadow-2xl flex items-center justify-between gap-3 bg-slate-950/95 backdrop-blur-2xl">
+          <div className="glass-panel p-3.5 border border-teal-500/40 shadow-2xl flex items-center justify-between gap-3 bg-white/95 backdrop-blur-2xl text-slate-900">
             <div className="flex items-center gap-2">
               <span className="text-xl">⚖️</span>
               <div>
-                <p className="text-xs font-bold text-white">
+                <p className="text-xs font-bold text-slate-900">
                   {comparedVehicleIds.length} Vehicle{comparedVehicleIds.length > 1 ? 's' : ''} Selected
                 </p>
-                <p className="text-[10px] text-slate-400">Ready for side-by-side spec comparison</p>
+                <p className="text-[10px] text-slate-600 font-medium">Ready for side-by-side spec comparison</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setComparedVehicleIds([])}
-                className="text-xs text-slate-400 hover:text-rose-400 underline px-2 py-1"
+                className="text-xs text-rose-600 hover:text-rose-700 font-semibold underline px-2 py-1"
               >
                 Clear
               </button>
               <button
                 onClick={() => setShowCompareModal(true)}
-                className="btn-primary text-xs px-4 py-2 font-bold shadow-cyan-500/30 flex items-center gap-1.5"
+                className="btn-primary text-xs px-4 py-2 font-bold shadow-sm flex items-center gap-1.5"
               >
                 <span>Compare Specs</span> <span>➔</span>
               </button>

@@ -10,6 +10,11 @@ interface Props {
   title: string;
 }
 
+interface AngleItem {
+  id: string;
+  url: string;
+}
+
 export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Props) {
   const [make, setMake] = useState(initial?.make || '');
   const [model, setModel] = useState(initial?.model || '');
@@ -20,12 +25,17 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl || '');
   const [exhaustAudioUrl, setExhaustAudioUrl] = useState(initial?.exhaustAudioUrl || '');
 
-  // 360 Interactive Viewer Angle Sequence
-  const [angleImages, setAngleImages] = useState<string[]>(() => {
+  // 360 Interactive Viewer Angle Sequence with stable row IDs
+  const [angleItems, setAngleItems] = useState<AngleItem[]>(() => {
     if (initial?.images360) {
       try {
         const parsed = JSON.parse(initial.images360);
-        return Array.isArray(parsed) ? parsed : [];
+        if (Array.isArray(parsed)) {
+          return parsed.map((url, i) => ({
+            id: `angle-init-${i}-${Math.random().toString(36).slice(2, 7)}`,
+            url: typeof url === 'string' ? url : String(url),
+          }));
+        }
       } catch {
         return [];
       }
@@ -48,32 +58,37 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
   const [showSpecsSection, setShowSpecsSection] = useState(Boolean(initial?.bhp || initial?.zeroToSixty || initial?.transmission));
 
   const addAngleImage = () => {
-    if (!newAngleUrl.trim()) return;
-    setAngleImages([...angleImages, newAngleUrl.trim()]);
+    const trimmed = newAngleUrl.trim();
+    if (!trimmed) return;
+    setAngleItems((prev) => [
+      ...prev,
+      { id: `angle-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, url: trimmed },
+    ]);
     setNewAngleUrl('');
   };
 
-  const removeAngleImage = (index: number) => {
-    setAngleImages(angleImages.filter((_, i) => i !== index));
+  const removeAngleImage = (id: string) => {
+    setAngleItems((prev) => prev.filter((item) => item.id !== id));
   };
 
   const moveAngleImage = (index: number, direction: 'up' | 'down') => {
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= angleImages.length) return;
-    const nextList = [...angleImages];
+    if (targetIndex < 0 || targetIndex >= angleItems.length) return;
+    const nextList = [...angleItems];
     const [moved] = nextList.splice(index, 1);
     nextList.splice(targetIndex, 0, moved);
-    setAngleImages(nextList);
+    setAngleItems(nextList);
   };
 
-  const updateAngleUrl = (index: number, url: string) => {
-    const nextList = [...angleImages];
-    nextList[index] = url;
-    setAngleImages(nextList);
+  const updateAngleUrl = (id: string, url: string) => {
+    setAngleItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, url } : item))
+    );
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    const cleanAngles = angleItems.map((item) => item.url.trim()).filter(Boolean);
     onSubmit({
       make: make.trim(),
       model: model.trim(),
@@ -82,7 +97,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
       price: parseFloat(price),
       quantity: parseInt(quantity, 10),
       imageUrl: imageUrl.trim() || null,
-      images360: angleImages.length > 0 ? JSON.stringify(angleImages) : null,
+      images360: cleanAngles.length > 0 ? JSON.stringify(cleanAngles) : null,
       exhaustAudioUrl: exhaustAudioUrl.trim() || null,
       bhp: bhp ? parseInt(bhp, 10) : null,
       zeroToSixty: zeroToSixty ? parseFloat(zeroToSixty) : null,
@@ -112,7 +127,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
         className="glass-panel w-full max-w-lg border border-slate-200 shadow-2xl overflow-hidden max-h-[92vh] flex flex-col bg-white text-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-6 border-b border-slate-200 flex items-center justify-between">
+        <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50">
           <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
             <span>🚘</span> {title}
           </h2>
@@ -203,12 +218,12 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
           {/* Vehicle Image URL & Live Preview */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-semibold text-slate-300">Vehicle Image URL</label>
+              <label className="text-xs font-semibold text-slate-700">Vehicle Image URL</label>
               {imageUrl && (
                 <button
                   type="button"
                   onClick={() => setImageUrl('')}
-                  className="text-[11px] text-rose-400 hover:text-rose-300 underline"
+                  className="text-[11px] text-rose-600 hover:text-rose-700 font-semibold underline"
                 >
                   Remove picture
                 </button>
@@ -224,13 +239,13 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
 
             {/* Quick Sample Image Presets */}
             <div className="flex flex-wrap gap-1.5 mt-2">
-              <span className="text-[11px] text-slate-500 mr-1 self-center">Presets:</span>
+              <span className="text-[11px] text-slate-600 font-medium mr-1 self-center">Presets:</span>
               {quickSamples.map((sample) => (
                 <button
                   key={sample.label}
                   type="button"
                   onClick={() => setImageUrl(sample.url)}
-                  className="px-2 py-0.5 rounded text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                  className="px-2 py-0.5 rounded text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors font-medium"
                 >
                   {sample.label}
                 </button>
@@ -239,7 +254,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
 
             {/* Live Photo Preview */}
             {imageUrl && (
-              <div className="mt-3 relative h-32 rounded-xl overflow-hidden border border-white/10 bg-slate-950">
+              <div className="mt-3 relative h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
                 <img
                   src={imageUrl}
                   alt="Preview"
@@ -248,7 +263,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                     (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80';
                   }}
                 />
-                <span className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[10px] text-white">
+                <span className="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] text-white">
                   Image Preview
                 </span>
               </div>
@@ -256,21 +271,21 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
           </div>
 
           {/* Interactive 360° Studio Photography Angles (Ordered Sequence) */}
-          <div className="glass-card p-4 bg-slate-900/60 border border-cyan-500/20 space-y-3">
+          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <label className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <span>🔄</span> 360° Interactive Angle Sequence ({angleImages.length} angles)
+                <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <span>🔄</span> 360° Interactive Angle Sequence ({angleItems.length} angles)
                 </label>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-slate-600 font-medium">
                   Sequential photographs of this vehicle from surrounding angles.
                 </p>
               </div>
-              {angleImages.length > 0 && (
+              {angleItems.length > 0 && (
                 <button
                   type="button"
-                  onClick={() => setAngleImages([])}
-                  className="text-[11px] text-rose-400 hover:text-rose-300 underline"
+                  onClick={() => setAngleItems([])}
+                  className="text-[11px] text-rose-600 hover:text-rose-700 font-semibold underline"
                 >
                   Clear All Angles
                 </button>
@@ -281,7 +296,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
             <div className="flex gap-2">
               <input
                 type="url"
-                className="glass-input flex-1 text-xs"
+                className="glass-input flex-1 text-xs bg-white text-slate-900 border-slate-200"
                 value={newAngleUrl}
                 onChange={(e) => setNewAngleUrl(e.target.value)}
                 placeholder="https://.../angle_01.jpg"
@@ -296,33 +311,33 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                 type="button"
                 onClick={addAngleImage}
                 disabled={!newAngleUrl.trim()}
-                className="btn-glass px-3 py-1.5 text-xs text-cyan-300 border-cyan-500/40 hover:bg-cyan-500/20 disabled:opacity-40"
+                className="btn-glass bg-white px-3 py-1.5 text-xs text-teal-700 border-teal-300 hover:bg-teal-50 disabled:opacity-40 font-semibold"
               >
                 + Add Angle
               </button>
             </div>
 
             {/* List of Ordered Angles */}
-            {angleImages.length > 0 ? (
+            {angleItems.length > 0 ? (
               <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                {angleImages.map((url, idx) => (
+                {angleItems.map((item, idx) => (
                   <div
-                    key={`${url}-${idx}`}
-                    className="flex items-center gap-2 bg-slate-950/80 p-2 rounded-lg border border-white/5 text-xs"
+                    key={item.id}
+                    className="flex items-center gap-2 bg-white p-2 rounded-lg border border-slate-200 text-xs shadow-sm"
                   >
-                    <span className="w-6 text-center font-bold text-cyan-400 text-[11px]">
+                    <span className="w-6 text-center font-bold text-teal-600 text-[11px]">
                       #{idx + 1}
                     </span>
                     <img
-                      src={url}
+                      src={item.url}
                       alt={`Angle ${idx + 1}`}
-                      className="w-10 h-8 object-cover rounded bg-slate-900 border border-white/10"
+                      className="w-10 h-8 object-cover rounded bg-slate-100 border border-slate-200"
                     />
                     <input
                       type="url"
-                      value={url}
-                      onChange={(e) => updateAngleUrl(idx, e.target.value)}
-                      className="glass-input flex-1 py-1 px-2 text-[11px]"
+                      value={item.url}
+                      onChange={(e) => updateAngleUrl(item.id, e.target.value)}
+                      className="glass-input bg-white text-slate-900 border-slate-200 flex-1 py-1 px-2 text-[11px]"
                     />
                     <div className="flex items-center gap-1">
                       <button
@@ -330,24 +345,24 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                         disabled={idx === 0}
                         onClick={() => moveAngleImage(idx, 'up')}
                         title="Move Up"
-                        className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30"
+                        className="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-30 border border-slate-200"
                       >
                         ↑
                       </button>
                       <button
                         type="button"
-                        disabled={idx === angleImages.length - 1}
+                        disabled={idx === angleItems.length - 1}
                         onClick={() => moveAngleImage(idx, 'down')}
                         title="Move Down"
-                        className="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30"
+                        className="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-30 border border-slate-200"
                       >
                         ↓
                       </button>
                       <button
                         type="button"
-                        onClick={() => removeAngleImage(idx)}
+                        onClick={() => removeAngleImage(item.id)}
                         title="Remove"
-                        className="px-1.5 py-0.5 rounded bg-rose-500/20 hover:bg-rose-500/40 text-rose-300"
+                        className="px-1.5 py-0.5 rounded bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold"
                       >
                         ✕
                       </button>
@@ -365,14 +380,14 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
           {/* Custom Exhaust Audio URL (Optional) */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-semibold text-slate-300">
+              <label className="text-xs font-semibold text-slate-700">
                 Custom Real Exhaust Audio URL <span className="text-slate-500 font-normal">(Optional MP3/WAV)</span>
               </label>
               {exhaustAudioUrl && (
                 <button
                   type="button"
                   onClick={() => setExhaustAudioUrl('')}
-                  className="text-[11px] text-rose-400 hover:text-rose-300 underline"
+                  className="text-[11px] text-rose-600 hover:text-rose-700 font-semibold underline"
                 >
                   Clear Audio
                 </button>
@@ -391,16 +406,16 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
           </div>
 
           {/* Engineering Specifications & Performance Toggle */}
-          <div className="pt-2 border-t border-slate-800">
+          <div className="pt-2 border-t border-slate-200">
             <button
               type="button"
               onClick={() => setShowSpecsSection(!showSpecsSection)}
-              className="flex items-center justify-between w-full py-2 text-xs font-bold text-cyan-400 hover:text-cyan-300"
+              className="flex items-center justify-between w-full py-2 text-xs font-bold text-teal-700 hover:text-teal-800"
             >
               <span className="flex items-center gap-1.5">
                 <span>⚙️</span> Engineering Specifications & Telemetry
               </span>
-              <span className="text-slate-400">{showSpecsSection ? '▲ Hide Specs' : '▼ Expand Specs'}</span>
+              <span className="text-slate-500">{showSpecsSection ? '▲ Hide Specs' : '▼ Expand Specs'}</span>
             </button>
 
             {showSpecsSection && (
@@ -408,7 +423,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                 {/* BHP & 0-60 & Top Speed */}
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">BHP (Horsepower)</label>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">BHP (Horsepower)</label>
                     <input
                       type="number"
                       className="glass-input text-xs"
@@ -418,7 +433,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">0-60 mph (sec)</label>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">0-60 mph (sec)</label>
                     <input
                       type="number"
                       step="0.1"
@@ -429,7 +444,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Top Speed (mph)</label>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">Top Speed (mph)</label>
                     <input
                       type="number"
                       className="glass-input text-xs"
@@ -443,7 +458,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                 {/* Mileage/Range & Fuel/Battery Capacity */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Mileage / Range</label>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">Mileage / Range</label>
                     <input
                       className="glass-input text-xs"
                       value={mileage}
@@ -452,7 +467,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Fuel / Battery Pack</label>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">Fuel / Battery Pack</label>
                     <input
                       className="glass-input text-xs"
                       value={fuelCapacity}
@@ -465,7 +480,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                 {/* Transmission & Drivetrain */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Transmission</label>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">Transmission</label>
                     <input
                       className="glass-input text-xs"
                       value={transmission}
@@ -474,7 +489,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Drivetrain</label>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">Drivetrain</label>
                     <input
                       className="glass-input text-xs"
                       value={drivetrain}
@@ -487,7 +502,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                 {/* Engine Type, Curb Weight & Seating */}
                 <div className="grid grid-cols-3 gap-3">
                   <div className="col-span-1">
-                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Seating</label>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">Seating</label>
                     <input
                       type="number"
                       className="glass-input text-xs"
@@ -499,7 +514,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                     />
                   </div>
                   <div className="col-span-2">
-                    <label className="block text-[11px] font-semibold text-slate-300 mb-1">Curb Weight</label>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">Curb Weight</label>
                     <input
                       className="glass-input text-xs"
                       value={curbWeight}
@@ -510,7 +525,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-300 mb-1">Engine / Motor Architecture</label>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">Engine / Motor Architecture</label>
                   <input
                     className="glass-input text-xs"
                     value={engine}
@@ -523,7 +538,7 @@ export function VehicleForm({ initial, onSubmit, onCancel, loading, title }: Pro
           </div>
 
           <div className="flex gap-3 pt-3 border-t border-slate-200">
-            <button type="button" className="btn-glass flex-1 py-2.5" onClick={onCancel}>
+            <button type="button" className="btn-glass bg-white flex-1 py-2.5 border-slate-200 text-slate-700" onClick={onCancel}>
               Cancel
             </button>
             <button type="submit" className="btn-primary flex-1 py-2.5 font-bold" disabled={loading}>
