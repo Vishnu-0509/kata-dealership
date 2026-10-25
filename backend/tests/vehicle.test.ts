@@ -188,6 +188,36 @@ describe('POST /api/vehicles', () => {
     expect(res.body.year).toBe(2024);
   });
 
+  it('should allow admin to create and update vehicle with ordered images360 sequence', async () => {
+    const angleImages = [
+      'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?angle=0',
+      'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?angle=45',
+      'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?angle=90',
+    ];
+    const res = await request(app)
+      .post('/api/vehicles')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        ...sampleVehicle,
+        model: '911 Carrera 360',
+        images360: JSON.stringify(angleImages),
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.images360).toBe(JSON.stringify(angleImages));
+
+    const updatedAngles = [angleImages[1], angleImages[0], angleImages[2]];
+    const putRes = await request(app)
+      .put(`/api/vehicles/${res.body.id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        images360: JSON.stringify(updatedAngles),
+      });
+
+    expect(putRes.status).toBe(200);
+    expect(putRes.body.images360).toBe(JSON.stringify(updatedAngles));
+  });
+
   it('should allow admin to create a vehicle with full engineering specifications', async () => {
     const res = await request(app)
       .post('/api/vehicles')
