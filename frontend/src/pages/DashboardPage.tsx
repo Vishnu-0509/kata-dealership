@@ -230,15 +230,17 @@ export function DashboardPage() {
             </div>
 
             {/* Real-time Fleet Metrics Bar */}
-            <div className="mt-8 pt-6 border-t border-white/15 grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className={`mt-8 pt-6 border-t border-white/15 grid grid-cols-2 ${isAdmin ? 'sm:grid-cols-4' : 'sm:grid-cols-3'} gap-4`}>
               <div className="glass-card p-4 border-white/20 bg-white/[0.08]">
                 <p className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Fleet Units</p>
                 <p className="text-2xl font-black text-white mt-1 drop-shadow">{metrics.totalVehicles}</p>
               </div>
-              <div className="glass-card p-4 border-white/20 bg-white/[0.08]">
-                <p className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Portfolio Value</p>
-                <p className="text-2xl font-black text-cyan-300 mt-1 drop-shadow">${(metrics.totalValue / 1000).toFixed(1)}k</p>
-              </div>
+              {isAdmin && (
+                <div className="glass-card p-4 border-white/20 bg-white/[0.08]">
+                  <p className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Portfolio Value</p>
+                  <p className="text-2xl font-black text-cyan-300 mt-1 drop-shadow">${(metrics.totalValue / 1000).toFixed(1)}k</p>
+                </div>
+              )}
               <div className="glass-card p-4 border-white/20 bg-white/[0.08]">
                 <p className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Available Models</p>
                 <p className="text-2xl font-black text-slate-100 mt-1 drop-shadow">{metrics.modelCount}</p>
