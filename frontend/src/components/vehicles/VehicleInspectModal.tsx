@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Vehicle } from '../../api/client';
 import { exhaustSound } from '../../utils/exhaustAudio';
 import { Vehicle360Viewer } from './Vehicle360Viewer';
@@ -13,17 +13,17 @@ interface Props {
 export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing }: Props) {
   const [isRevving, setIsRevving] = useState(false);
 
-  let parsedAngles: string[] = [];
-  if (vehicle.images360) {
+  const parsedAngles = useMemo<string[]>(() => {
+    if (!vehicle.images360) return [];
     try {
-      parsedAngles = JSON.parse(vehicle.images360);
-      if (!Array.isArray(parsedAngles)) parsedAngles = [];
+      const parsed = JSON.parse(vehicle.images360);
+      return Array.isArray(parsed) ? parsed : [];
     } catch {
-      parsedAngles = [];
+      return [];
     }
-  }
+  }, [vehicle.images360]);
 
-  const [activeTab, setActiveTab] = useState<'360' | 'photo'>(parsedAngles.length > 0 ? '360' : 'photo');
+  const [activeTab, setActiveTab] = useState<'360' | 'photo'>(parsedAngles.length >= 2 ? '360' : 'photo');
 
   const handleRev = () => {
     setIsRevving(true);
@@ -86,11 +86,11 @@ export function VehicleInspectModal({ vehicle, onClose, onPurchase, isPurchasing
             </button>
           </div>
 
-          {/* Close Button */}
+          {/* Close Button with high z-index */}
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="absolute top-4 right-4 z-20 bg-slate-900/70 hover:bg-slate-800 text-slate-300 hover:text-white p-2 rounded-full backdrop-blur-md border border-white/10 transition-colors"
+            className="absolute top-4 right-4 z-40 bg-slate-900/80 hover:bg-slate-800 text-slate-200 hover:text-white p-2 rounded-full backdrop-blur-md border border-white/20 transition-colors shadow-lg"
           >
             ✕
           </button>

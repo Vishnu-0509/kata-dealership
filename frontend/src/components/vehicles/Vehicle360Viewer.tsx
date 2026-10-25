@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, MouseEvent, TouchEvent, KeyboardEvent } from 'react';
+import { useState, useRef, useEffect, useMemo, MouseEvent, TouchEvent, KeyboardEvent } from 'react';
+import { createPortal } from 'react-dom';
 
 interface Props {
   images?: string[] | null;
@@ -7,8 +8,12 @@ interface Props {
 }
 
 export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Props) {
-  const angleList = Array.isArray(images) ? images.filter(Boolean) : [];
-  const hasAngles = angleList.length > 0;
+  const angleList = useMemo(() => {
+    return Array.isArray(images) ? images.filter((img): img is string => typeof img === 'string' && img.trim().length > 0) : [];
+  }, [images]);
+
+  // A genuine 360° interactive view requires at least 2 distinct angle photographs to rotate
+  const hasAngles = angleList.length >= 2;
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -18,13 +23,46 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
   const [hasError, setHasError] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const fullscreenBtnRef = useRef<HTMLButtonElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
-  // Reset to initial index when images prop changes
+  // Track serialized sequence and vehicle name so unrelated parent rerenders preserve current angle
+  const imagesKey = angleList.join('|');
+  const prevKeyRef = useRef(imagesKey);
+  const prevVehicleRef = useRef(vehicleName);
+
   useEffect(() => {
-    setCurrentIndex(0);
-    setHasError(false);
-    setIsLoading(true);
-  }, [images]);
+    if (prevKeyRef.current !== imagesKey || prevVehicleRef.current !== vehicleName) {
+      prevKeyRef.current = imagesKey;
+      prevVehicleRef.current = vehicleName;
+      setCurrentIndex(0);
+      setHasError(false);
+      setIsLoading(true);
+    }
+  }, [imagesKey, vehicleName]);
+
+  // Check cached image completion on index change
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
+      setIsLoading(false);
+    }
+  }, [currentIndex]);
+
+  // Handle ESC key to exit fullscreen and restore focus
+  useEffect(() => {
+    if (!isFullscreen) return;
+
+    const handleGlobalKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setIsFullscreen(false);
+        fullscreenBtnRef.current?.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [isFullscreen]);
 
   // Keyboard navigation
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -43,16 +81,32 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
 
   const handleNext = () => {
     if (!hasAngles) return;
+    setHasError(false);
+    setIsLoading(true);
     setCurrentIndex((prev) => (prev + 1) % angleList.length);
   };
 
   const handlePrev = () => {
     if (!hasAngles) return;
+    setHasError(false);
+    setIsLoading(true);
     setCurrentIndex((prev) => (prev - 1 + angleList.length) % angleList.length);
   };
 
   const handleReset = () => {
+    setHasError(false);
+    setIsLoading(true);
     setCurrentIndex(0);
+  };
+
+  const handleRetry = () => {
+    setHasError(false);
+    setIsLoading(true);
+    if (imgRef.current) {
+      const currentSrc = imgRef.current.src;
+      imgRef.current.src = '';
+      imgRef.current.src = currentSrc;
+    }
   };
 
   // Mouse drag handlers
@@ -68,10 +122,8 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
     const threshold = 18; // Drag sensitivity in px
     if (Math.abs(deltaX) >= threshold) {
       if (deltaX < 0) {
-        // Dragging left rotates forward
         handleNext();
       } else {
-        // Dragging right rotates backward
         handlePrev();
       }
       setDragStartX(e.clientX);
@@ -84,15 +136,14 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
 
   // Touch swipe handlers
   const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
-    if (!hasAngles || e.touches.length === 0) return;
+    if (!hasAngles) return;
     setIsDragging(true);
     setDragStartX(e.touches[0].clientX);
   };
 
   const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
-    if (!isDragging || !hasAngles || e.touches.length === 0) return;
-    const currentX = e.touches[0].clientX;
-    const deltaX = currentX - dragStartX;
+    if (!isDragging || !hasAngles) return;
+    const deltaX = e.touches[0].clientX - dragStartX;
     const threshold = 18;
     if (Math.abs(deltaX) >= threshold) {
       if (deltaX < 0) {
@@ -100,7 +151,7 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
       } else {
         handlePrev();
       }
-      setDragStartX(currentX);
+      setDragStartX(e.touches[0].clientX);
     }
   };
 
@@ -109,10 +160,16 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
   };
 
   const toggleFullscreen = () => {
-    setIsFullscreen((prev) => !prev);
+    setIsFullscreen((prev) => {
+      const next = !prev;
+      if (!next) {
+        setTimeout(() => fullscreenBtnRef.current?.focus(), 50);
+      }
+      return next;
+    });
   };
 
-  // Fallback state when no 360 angles are provided
+  // Fallback state when no or insufficient 360 angles are provided (< 2 images)
   if (!hasAngles) {
     return (
       <div className="relative w-full h-full min-h-[260px] bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center select-none">
@@ -125,9 +182,9 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
         
         {/* Unavailable Badge */}
-        <div className="absolute top-3 left-3 bg-slate-900/80 border border-slate-700/60 backdrop-blur-md px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-lg">
+        <div className="absolute top-3 left-3 bg-slate-900/90 border border-slate-700/80 backdrop-blur-md px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-lg">
           <span className="text-amber-400 text-xs">⚠️</span>
-          <span className="text-[11px] font-semibold text-slate-300">360° view unavailable</span>
+          <span className="text-[11px] font-semibold text-slate-200">360° view unavailable</span>
         </div>
       </div>
     );
@@ -136,7 +193,8 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
   const currentImage = angleList[currentIndex];
   const angleDegrees = Math.round((currentIndex / angleList.length) * 360);
 
-  return (
+  // Render viewer content
+  const renderViewerCore = (inFullscreen = false) => (
     <div
       ref={containerRef}
       data-testid="viewer-360-container"
@@ -149,41 +207,48 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className={`relative w-full overflow-hidden select-none cursor-grab active:cursor-grabbing focus:outline-none rounded-xl transition-all ${
-        isFullscreen
-          ? 'fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-6'
-          : 'h-64 sm:h-80 bg-slate-950 border border-cyan-500/20 shadow-inner'
+      className={`relative w-full overflow-hidden select-none cursor-grab active:cursor-grabbing focus:outline-none transition-all ${
+        inFullscreen
+          ? 'w-full h-full max-w-6xl max-h-[90vh] bg-slate-950 rounded-2xl border border-teal-500/30 flex items-center justify-center'
+          : 'h-64 sm:h-80 bg-slate-950 rounded-xl border border-teal-500/20 shadow-inner'
       }`}
     >
       {/* Loading Spinner */}
-      {isLoading && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/60 backdrop-blur-sm">
-          <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mb-2" />
-          <span className="text-xs font-semibold text-cyan-300">Loading 360° frame...</span>
+      {isLoading && !hasError && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/60 backdrop-blur-sm pointer-events-none">
+          <div className="w-8 h-8 border-2 border-teal-400 border-t-transparent rounded-full animate-spin mb-2" />
+          <span className="text-xs font-semibold text-teal-300">Loading 360° frame...</span>
         </div>
       )}
 
-      {/* Error State */}
+      {/* Error State with working retry */}
       {hasError ? (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/90 p-4 text-center">
           <span className="text-3xl mb-2">⚠️</span>
           <p className="text-sm font-bold text-rose-300">Unable to load 360° image</p>
-          <p className="text-xs text-slate-400 mt-1 max-w-xs">Failed to fetch angle photograph from source server.</p>
+          <p className="text-xs text-slate-400 mt-1 max-w-xs">Failed to fetch angle photograph. Navigate or retry.</p>
           <button
             type="button"
-            onClick={() => { setHasError(false); setIsLoading(true); }}
-            className="mt-3 px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/30"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRetry();
+            }}
+            className="mt-3 px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-500/20 border border-teal-500/40 text-teal-300 hover:bg-teal-500/30 transition-colors"
           >
             Retry Loading
           </button>
         </div>
       ) : (
         <img
+          ref={imgRef}
           src={currentImage}
           alt={`${vehicleName} at ${angleDegrees}° angle`}
           loading="lazy"
           onLoad={() => setIsLoading(false)}
-          onError={() => { setIsLoading(false); setHasError(true); }}
+          onError={() => {
+            setIsLoading(false);
+            setHasError(true);
+          }}
           className={`w-full h-full object-contain object-center transition-opacity duration-150 ${
             isLoading ? 'opacity-30' : 'opacity-100'
           }`}
@@ -191,11 +256,11 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
         />
       )}
 
-      {/* Top Overlay Indicators */}
-      <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
-        <div className="bg-slate-900/80 border border-cyan-500/30 backdrop-blur-md px-3 py-1 rounded-lg flex items-center gap-2 shadow-lg">
-          <span className="text-cyan-400 text-xs">🔄</span>
-          <span className="text-[11px] font-bold text-cyan-300 tracking-wider uppercase">
+      {/* Top Overlay Controls (spaced with right-14 to never overlap modal close button) */}
+      <div className={`absolute top-3 left-3 ${inFullscreen ? 'right-3' : 'right-14'} flex items-center justify-between pointer-events-none z-30`}>
+        <div className="bg-slate-900/85 border border-teal-500/30 backdrop-blur-md px-3 py-1 rounded-lg flex items-center gap-2 shadow-lg">
+          <span className="text-teal-400 text-xs">🔄</span>
+          <span className="text-[11px] font-bold text-teal-300 tracking-wider uppercase">
             Angle {currentIndex + 1} / {angleList.length} ({angleDegrees}°)
           </span>
         </div>
@@ -203,50 +268,84 @@ export function Vehicle360Viewer({ images, fallbackImageUrl, vehicleName }: Prop
         <div className="pointer-events-auto flex items-center gap-1.5">
           <button
             type="button"
-            onClick={(e) => { e.stopPropagation(); handleReset(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleReset();
+            }}
             aria-label="Reset angle"
             title="Reset angle to 0° (Home key)"
-            className="bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg text-xs font-semibold border border-white/10 backdrop-blur-md transition-colors"
+            className="bg-slate-900/85 hover:bg-slate-800 text-slate-200 hover:text-white px-2.5 py-1 rounded-lg text-xs font-semibold border border-white/15 backdrop-blur-md transition-colors"
           >
             ↺ Reset
           </button>
           <button
+            ref={fullscreenBtnRef}
             type="button"
-            onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }}
-            aria-label="Toggle fullscreen"
-            title={isFullscreen ? 'Exit Fullscreen' : 'View Fullscreen'}
-            className="bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white p-1.5 rounded-lg text-xs font-semibold border border-white/10 backdrop-blur-md transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFullscreen();
+            }}
+            aria-label={inFullscreen ? 'Exit fullscreen' : 'Toggle fullscreen'}
+            title={inFullscreen ? 'Exit Fullscreen (Esc)' : 'View Fullscreen'}
+            className="bg-slate-900/85 hover:bg-slate-800 text-slate-200 hover:text-white p-1.5 rounded-lg text-xs font-semibold border border-white/15 backdrop-blur-md transition-colors"
           >
-            {isFullscreen ? '⤓' : '⤢'}
+            {inFullscreen ? '✕ Exit' : '⤢'}
           </button>
         </div>
       </div>
 
       {/* Drag & Swipe Helper Banner */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-slate-900/75 border border-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] text-slate-300 pointer-events-none z-10 flex items-center gap-1.5">
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-slate-900/80 border border-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] text-slate-300 pointer-events-none z-30 flex items-center gap-1.5 shadow-md">
         <span>↔ Drag or swipe to rotate · Arrow keys</span>
       </div>
 
-      {/* Navigation Arrows */}
+      {/* Navigation Arrows with z-30 to remain above loading/error overlays */}
       <button
         type="button"
-        onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          handlePrev();
+        }}
         aria-label="Previous angle"
         title="Previous angle (ArrowLeft)"
-        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-slate-900/80 hover:bg-cyan-500/30 text-white border border-white/10 hover:border-cyan-400/50 backdrop-blur-md flex items-center justify-center font-bold text-lg transition-all shadow-lg active:scale-95"
+        className="absolute left-2 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full bg-slate-900/85 hover:bg-teal-600 text-white border border-white/15 backdrop-blur-md flex items-center justify-center font-bold text-lg transition-all shadow-lg active:scale-95"
       >
         ‹
       </button>
 
       <button
         type="button"
-        onClick={(e) => { e.stopPropagation(); handleNext(); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleNext();
+        }}
         aria-label="Next angle"
         title="Next angle (ArrowRight)"
-        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-slate-900/80 hover:bg-cyan-500/30 text-white border border-white/10 hover:border-cyan-400/50 backdrop-blur-md flex items-center justify-center font-bold text-lg transition-all shadow-lg active:scale-95"
+        className="absolute right-2 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full bg-slate-900/85 hover:bg-teal-600 text-white border border-white/15 backdrop-blur-md flex items-center justify-center font-bold text-lg transition-all shadow-lg active:scale-95"
       >
         ›
       </button>
     </div>
+  );
+
+  return (
+    <>
+      {renderViewerCore(false)}
+
+      {/* Fullscreen Portal rendered at document.body level to avoid modal clipping & transform traps */}
+      {isFullscreen &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 sm:p-8 animate-fade-in"
+            onClick={toggleFullscreen}
+          >
+            <div onClick={(e) => e.stopPropagation()} className="w-full h-full max-w-5xl flex items-center justify-center">
+              {renderViewerCore(true)}
+            </div>
+          </div>,
+          document.body
+        )}
+    </>
   );
 }

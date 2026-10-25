@@ -125,7 +125,7 @@ describe('Vehicle360Viewer Component (TDD Red)', () => {
   it('shows error state when frame fails to load', () => {
     render(
       <Vehicle360Viewer
-        images={['https://invalid-broken-url.com/frame1.jpg']}
+        images={['https://invalid-broken-url.com/frame1.jpg', 'https://invalid-broken-url.com/frame2.jpg']}
         fallbackImageUrl="https://images.unsplash.com/photo-sample.jpg"
         vehicleName="Porsche 911"
       />
