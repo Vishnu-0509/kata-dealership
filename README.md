@@ -247,13 +247,13 @@ Tests:       32 passed, 32 total
  ✓ src/tests/VehicleCard.test.tsx            (5 tests passed)
  ✓ src/tests/LoginForm.test.tsx              (3 tests passed)
  ✓ src/tests/RegisterForm.test.tsx           (3 tests passed)
- ✓ src/tests/VehicleComparisonModal.test.tsx (3 tests passed)
+ ✓ src/tests/VehicleComparisonModal.test.tsx (4 tests passed)
 
 Test Files:  4 passed (4)
-Tests:       14 passed (14)
+Tests:       15 passed (15)
 ```
 
-**Total automated tests across stack:** **46 tests, 100% passing.**
+**Total automated tests across stack:** **47 tests, 100% passing.**
 
 ---
 
