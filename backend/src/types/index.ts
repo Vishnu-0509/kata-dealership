@@ -71,8 +71,8 @@ export interface VehicleSearchQuery {
   make?: string;
   model?: string;
   category?: string;
-  minPrice?: string;
-  maxPrice?: string;
+  minPrice?: string | number;
+  maxPrice?: string | number;
 }
 
 export interface RestockBody {

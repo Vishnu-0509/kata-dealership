@@ -16,16 +16,30 @@ export class VehicleService {
   async search(query: VehicleSearchQuery) {
     const { make, model, category, minPrice, maxPrice } = query;
 
+    const min =
+      minPrice !== undefined && minPrice !== null && minPrice !== ''
+        ? typeof minPrice === 'number'
+          ? minPrice
+          : parseFloat(minPrice)
+        : undefined;
+
+    const max =
+      maxPrice !== undefined && maxPrice !== null && maxPrice !== ''
+        ? typeof maxPrice === 'number'
+          ? maxPrice
+          : parseFloat(maxPrice)
+        : undefined;
+
     return this.prisma.vehicle.findMany({
       where: {
         ...(make && { make: { contains: make } }),
         ...(model && { model: { contains: model } }),
         ...(category && { category: { contains: category } }),
-        ...(minPrice || maxPrice
+        ...(min !== undefined || max !== undefined
           ? {
               price: {
-                ...(minPrice && { gte: parseFloat(minPrice) }),
-                ...(maxPrice && { lte: parseFloat(maxPrice) }),
+                ...(min !== undefined && { gte: min }),
+                ...(max !== undefined && { lte: max }),
               },
             }
           : {}),

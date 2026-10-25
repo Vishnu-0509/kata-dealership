@@ -3,9 +3,9 @@ import { z } from 'zod';
 import { VehicleService } from '../services/vehicle.service';
 
 const createVehicleSchema = z.object({
-  make: z.string().min(1, 'Make is required'),
-  model: z.string().min(1, 'Model is required'),
-  category: z.string().min(1, 'Category is required'),
+  make: z.string().trim().min(1, 'Make is required'),
+  model: z.string().trim().min(1, 'Model is required'),
+  category: z.string().trim().min(1, 'Category is required'),
   price: z.number().positive('Price must be positive'),
   quantity: z.number().int().min(0, 'Quantity must be non-negative'),
   imageUrl: z.string().url('Invalid image URL').optional().or(z.literal('')).nullable(),
@@ -24,6 +24,35 @@ const createVehicleSchema = z.object({
 });
 
 const updateVehicleSchema = createVehicleSchema.partial();
+
+const searchVehicleSchema = z
+  .object({
+    make: z.string({ invalid_type_error: 'Make must be a string' }).trim().min(1).optional(),
+    model: z.string({ invalid_type_error: 'Model must be a string' }).trim().min(1).optional(),
+    category: z.string({ invalid_type_error: 'Category must be a string' }).trim().min(1).optional(),
+    minPrice: z
+      .string({ invalid_type_error: 'minPrice must be a string' })
+      .regex(/^\d+(\.\d+)?$/, 'minPrice must be a valid non-negative number')
+      .transform((val) => Number(val))
+      .optional(),
+    maxPrice: z
+      .string({ invalid_type_error: 'maxPrice must be a string' })
+      .regex(/^\d+(\.\d+)?$/, 'maxPrice must be a valid non-negative number')
+      .transform((val) => Number(val))
+      .optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.minPrice !== undefined && data.maxPrice !== undefined) {
+        return data.minPrice <= data.maxPrice;
+      }
+      return true;
+    },
+    {
+      message: 'minPrice cannot exceed maxPrice',
+      path: ['minPrice'],
+    }
+  );
 
 const restockSchema = z.object({
   quantity: z.number().int().positive('Quantity to restock must be positive'),
@@ -51,10 +80,20 @@ export class VehicleController {
   /**
    * GET /api/vehicles/search
    * Searches vehicles by make, model, category, minPrice, maxPrice query params.
+   * Validates input bounds, numbers, and types before querying.
    */
   searchVehicles = async (req: Request, res: Response): Promise<void> => {
+    const parsed = searchVehicleSchema.safeParse(req.query);
+    if (!parsed.success) {
+      res.status(400).json({
+        message: 'Validation error',
+        errors: parsed.error.flatten().fieldErrors,
+      });
+      return;
+    }
+
     try {
-      const vehicles = await this.vehicleService.search(req.query as Record<string, string>);
+      const vehicles = await this.vehicleService.search(parsed.data);
       res.status(200).json(vehicles);
     } catch {
       res.status(500).json({ message: 'Internal server error' });
