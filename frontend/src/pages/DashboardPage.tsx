@@ -431,6 +431,7 @@ export function DashboardPage() {
           initialSelectedIds={comparedVehicleIds}
           onClose={() => setShowCompareModal(false)}
           onPurchase={handleComparisonPurchase}
+          onSelectionChange={setComparedVehicleIds}
         />
       )}
     </div>

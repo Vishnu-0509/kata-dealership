@@ -70,7 +70,26 @@ const mockVehicles: Vehicle[] = [
 ];
 
 describe('VehicleComparisonModal', () => {
-  it('renders side-by-side comparison matrix with vehicles and specifications', () => {
+  it('does NOT automatically select cars when opened with empty selection', () => {
+    const onPurchase = vi.fn();
+    const onClose = vi.fn();
+
+    render(
+      <VehicleComparisonModal
+        allVehicles={mockVehicles}
+        initialSelectedIds={[]}
+        onClose={onClose}
+        onPurchase={onPurchase}
+      />
+    );
+
+    // Shows 0 selected and opens manual selection catalog
+    expect(screen.getByText(/0 of 4 Manually Selected/i)).toBeInTheDocument();
+    expect(screen.getByText(/Manual Vehicle Selection Catalog/i)).toBeInTheDocument();
+    expect(screen.getByText(/No vehicles selected yet/i)).toBeInTheDocument();
+  });
+
+  it('renders side-by-side comparison matrix when cars are manually selected', () => {
     const onPurchase = vi.fn();
     const onClose = vi.fn();
 
@@ -85,7 +104,8 @@ describe('VehicleComparisonModal', () => {
 
     // Modal Title & Header
     expect(screen.getByText(/Vehicle Specifications & Comparison Matrix/i)).toBeInTheDocument();
-    
+    expect(screen.getByText(/2 of 4 Manually Selected/i)).toBeInTheDocument();
+
     // Check cars are displayed
     expect(screen.getByText(/Porsche 911 Carrera/i)).toBeInTheDocument();
     expect(screen.getByText(/BMW M4 Competition/i)).toBeInTheDocument();
@@ -110,7 +130,7 @@ describe('VehicleComparisonModal', () => {
     render(
       <VehicleComparisonModal
         allVehicles={mockVehicles}
-        initialSelectedIds={['car-1']}
+        initialSelectedIds={['car-1', 'car-2']}
         onClose={onClose}
         onPurchase={onPurchase}
       />
@@ -141,7 +161,7 @@ describe('VehicleComparisonModal', () => {
     const removeButtons = screen.getAllByTitle('Remove from comparison');
     fireEvent.click(removeButtons[0]);
 
-    // Add car-3
+    // Add car-3 from the quick add bar
     const addCar3Button = screen.getByRole('button', { name: /\+.*Tesla Model 3/i });
     fireEvent.click(addCar3Button);
 
