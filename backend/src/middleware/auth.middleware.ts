@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { JwtPayload } from '../types';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
+import { getJwtSecret } from '../config/env';
 
 /**
  * Middleware to verify JWT token from Authorization header.
@@ -19,7 +18,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    const decoded = jwt.verify(token, getJwtSecret()) as JwtPayload;
     req.user = decoded;
     next();
   } catch {

@@ -1,9 +1,11 @@
+import { validateEnv, config } from './config/env';
 import { createApp } from './app';
 
-const PORT = process.env.PORT || 3001;
+// Validate environment before launching HTTP listener
+validateEnv();
 
 const app = createApp();
 
-app.listen(PORT, () => {
-  console.log(`🚗 Car Dealership API running on http://localhost:${PORT}`);
+app.listen(config.port, () => {
+  console.log(`🚗 Car Dealership API running on http://localhost:${config.port}`);
 });
