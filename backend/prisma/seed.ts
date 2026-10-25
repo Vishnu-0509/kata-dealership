@@ -6,6 +6,14 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Seeding database with high-resolution imagery and specs...');
 
+  const userCount = await prisma.user.count();
+  const vehicleCount = await prisma.vehicle.count();
+
+  if (userCount > 0 && vehicleCount > 0 && process.env.FORCE_RESEED !== 'true') {
+    console.log(`ℹ️ Database already contains ${userCount} users and ${vehicleCount} vehicles. Skipping re-seed to preserve records.`);
+    return;
+  }
+
   // Clean existing data
   await prisma.vehicle.deleteMany();
   await prisma.user.deleteMany();

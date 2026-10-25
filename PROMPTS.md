@@ -513,6 +513,21 @@ Do not change application features. If a genuine conversation export requires my
 
 ---
 
+### Prompt 27
+- **Timestamp:** `2026-10-25T21:00:38+05:30`
+- **Raw User Input:**
+```text
+Deploy my existing application and provide a working public HTTPS URL.
+
+Choose hosting compatible with the React frontend, Express backend, Prisma, and persistent database storage. Preserve the current functionality and avoid a major rewrite.
+
+Guide me through any required hosting-account sign-in. Verify registration, login, inventory loading, purchasing, and database persistence on the deployed application before reporting success.
+
+Return the verified live website URL alongside my GitHub repository link.
+```
+
+---
+
 ## Verifying Conversation Integrity & Transcript Disclosure
 
 The full raw execution log containing every step index, tool execution, and planner thinking block is archived in:

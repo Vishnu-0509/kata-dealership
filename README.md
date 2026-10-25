@@ -243,6 +243,12 @@ npm run preview
 
 Visit **`http://localhost:4173`** to access the production preview.
 
+### 6. Cloud Deployment (Render / Railway / Docker)
+
+The application is pre-configured for automated cloud deployment with a unified Express server serving both the React Single Page Application and the `/api/...` endpoints:
+- **Render Blueprint (`render.yaml`):** Sign in to [render.com](https://render.com) with GitHub, select **New > Blueprint**, choose `Vishnu-0509/kata-dealership`, and click **Apply**. Render automatically builds frontend and backend, applies migrations, seeds initial data, generates a secure `JWT_SECRET`, and provisions a public HTTPS URL (`https://<app-name>.onrender.com`).
+- **Container Deployment (`Dockerfile`):** Multi-stage production image compatible with Railway, Fly.io, or Koyeb.
+
 ---
 
 ## 👥 Default Demo Accounts
