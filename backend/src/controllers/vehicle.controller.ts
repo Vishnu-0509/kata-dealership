@@ -9,6 +9,7 @@ const createVehicleSchema = z.object({
   price: z.number().positive('Price must be positive'),
   quantity: z.number().int().min(0, 'Quantity must be non-negative'),
   imageUrl: z.string().url('Invalid image URL').optional().or(z.literal('')).nullable(),
+  images360: z.string().optional().nullable(),
   exhaustAudioUrl: z.string().url('Invalid audio URL').optional().or(z.literal('')).nullable(),
   year: z.number().int().min(1900).max(2100).optional().nullable(),
   bhp: z.number().int().positive().optional().nullable(),
@@ -32,12 +33,26 @@ const searchVehicleSchema = z
     category: z.string({ invalid_type_error: 'Category must be a string' }).trim().min(1).optional(),
     minPrice: z
       .string({ invalid_type_error: 'minPrice must be a string' })
-      .regex(/^\d+(\.\d+)?$/, 'minPrice must be a valid non-negative number')
+      .refine(
+        (val) => {
+          if (/infinity/i.test(val)) return false;
+          const n = Number(val);
+          return !Number.isNaN(n) && Number.isFinite(n) && n >= 0 && /^\d+(\.\d+)?([eE][+-]?\d+)?$/.test(val);
+        },
+        { message: 'minPrice must be a valid finite non-negative number' }
+      )
       .transform((val) => Number(val))
       .optional(),
     maxPrice: z
       .string({ invalid_type_error: 'maxPrice must be a string' })
-      .regex(/^\d+(\.\d+)?$/, 'maxPrice must be a valid non-negative number')
+      .refine(
+        (val) => {
+          if (/infinity/i.test(val)) return false;
+          const n = Number(val);
+          return !Number.isNaN(n) && Number.isFinite(n) && n >= 0 && /^\d+(\.\d+)?([eE][+-]?\d+)?$/.test(val);
+        },
+        { message: 'maxPrice must be a valid finite non-negative number' }
+      )
       .transform((val) => Number(val))
       .optional(),
   })

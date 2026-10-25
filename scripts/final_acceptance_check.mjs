@@ -8,6 +8,17 @@ function sleep(ms) {
 async function run() {
   console.log('🏁 Starting End-to-End Final Acceptance Verification...\n');
 
+  let failedChecks = [];
+
+  function assertCheck(name, condition, extraInfo = '') {
+    if (condition) {
+      console.log(`✓ ${name}: PASSED ${extraInfo ? '(' + extraInfo + ')' : ''}`);
+    } else {
+      console.error(`✗ ${name}: FAILED ${extraInfo ? '(' + extraInfo + ')' : ''}`);
+      failedChecks.push(name);
+    }
+  }
+
   function startServer() {
     return spawn('node', ['dist/server.js'], {
       cwd: path.resolve('backend'),
@@ -34,38 +45,39 @@ async function run() {
     // 1. Health check
     const healthRes = await fetch(`${BASE_URL}/api/health`);
     const health = await healthRes.json();
-    console.log('✓ Health check endpoint:', health.status === 'ok' ? 'PASSED' : 'FAILED');
+    assertCheck('Health check endpoint', health.status === 'ok');
 
-    // 2. Registration
+    // 2. Registration with Username and Email
     const testEmail = `accept_${Date.now()}@test.com`;
+    const testUsername = `user_${Date.now()}`;
     const regRes = await fetch(`${BASE_URL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: testEmail, password: 'password123' }),
+      body: JSON.stringify({ email: testEmail, username: testUsername, password: 'password123' }),
     });
-    console.log('✓ User Registration:', regRes.status === 201 ? 'PASSED' : 'FAILED');
+    assertCheck('User Registration with unique username', regRes.status === 201);
 
-    // 3. Login
+    // 3. Login using username
     const loginRes = await fetch(`${BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: testEmail, password: 'password123' }),
+      body: JSON.stringify({ usernameOrEmail: testUsername, password: 'password123' }),
     });
     const { token: userToken } = await loginRes.json();
-    console.log('✓ User Login & JWT issuance:', !!userToken ? 'PASSED' : 'FAILED');
+    assertCheck('User Login with username & JWT issuance', !!userToken);
 
-    // Admin Login
+    // Admin Login using username 'admin'
     const adminLoginRes = await fetch(`${BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'admin@dealership.com', password: 'admin123' }),
+      body: JSON.stringify({ usernameOrEmail: 'admin', password: 'admin123' }),
     });
     const { token: adminToken } = await adminLoginRes.json();
-    console.log('✓ Admin Login & JWT issuance:', !!adminToken ? 'PASSED' : 'FAILED');
+    assertCheck('Admin Login with username & JWT issuance', !!adminToken);
 
     // 4. Protected Route & Admin Restrictions
     const unauthRes = await fetch(`${BASE_URL}/api/vehicles`);
-    console.log('✓ Unauthenticated request rejected (401):', unauthRes.status === 401 ? 'PASSED' : 'FAILED');
+    assertCheck('Unauthenticated request rejected (401)', unauthRes.status === 401);
 
     const userForbiddenRes = await fetch(`${BASE_URL}/api/vehicles`, {
       method: 'POST',
@@ -81,7 +93,7 @@ async function run() {
         quantity: 1,
       }),
     });
-    console.log('✓ Regular user rejected from Admin route (403):', userForbiddenRes.status === 403 ? 'PASSED' : 'FAILED');
+    assertCheck('Regular user rejected from Admin route (403)', userForbiddenRes.status === 403);
 
     // 5. Vehicle CRUD by Admin
     const createRes = await fetch(`${BASE_URL}/api/vehicles`, {
@@ -99,7 +111,7 @@ async function run() {
       }),
     });
     const createdVehicle = await createRes.json();
-    console.log('✓ Vehicle Creation by Admin (201):', createRes.status === 201 ? 'PASSED' : 'FAILED');
+    assertCheck('Vehicle Creation by Admin (201)', createRes.status === 201);
 
     const updateRes = await fetch(`${BASE_URL}/api/vehicles/${createdVehicle.id}`, {
       method: 'PUT',
@@ -109,20 +121,25 @@ async function run() {
       },
       body: JSON.stringify({ price: 169000 }),
     });
-    console.log('✓ Vehicle Update by Admin (200):', updateRes.status === 200 ? 'PASSED' : 'FAILED');
+    assertCheck('Vehicle Update by Admin (200)', updateRes.status === 200);
 
-    // 6. Search Filters
+    // 6. Search Filters & Price Validation
     const searchRes = await fetch(
       `${BASE_URL}/api/vehicles/search?make=Audi&minPrice=100000&maxPrice=200000`,
       { headers: { Authorization: `Bearer ${userToken}` } }
     );
     const searchResults = await searchRes.json();
-    console.log('✓ Valid Search Filter Query:', searchRes.status === 200 && searchResults.length >= 1 ? 'PASSED' : 'FAILED');
+    assertCheck('Valid Search Filter Query', searchRes.status === 200 && Array.isArray(searchResults) && searchResults.length >= 1);
 
     const invalidSearchRes = await fetch(`${BASE_URL}/api/vehicles/search?minPrice=10junk`, {
       headers: { Authorization: `Bearer ${userToken}` },
     });
-    console.log('✓ Malformed Search Param Rejected (400):', invalidSearchRes.status === 400 ? 'PASSED' : 'FAILED');
+    assertCheck('Malformed Search Param Rejected (400)', invalidSearchRes.status === 400);
+
+    const infinitySearchRes = await fetch(`${BASE_URL}/api/vehicles/search?minPrice=Infinity`, {
+      headers: { Authorization: `Bearer ${userToken}` },
+    });
+    assertCheck('Infinity Price Param Rejected (400)', infinitySearchRes.status === 400);
 
     // 7. Atomic Concurrency Purchase (5 requests against 1 stock)
     console.log('Simulating 5 simultaneous purchases against 1 available unit...');
@@ -136,9 +153,10 @@ async function run() {
     const successes = purchaseResponses.filter((r) => r.status === 200);
     const rejections = purchaseResponses.filter((r) => r.status === 400);
 
-    console.log(
-      '✓ Concurrent Purchase Race Protection:',
-      successes.length === 1 && rejections.length === 4 ? 'PASSED (1 Success, 4 Out of Stock)' : 'FAILED'
+    assertCheck(
+      'Concurrent Purchase Race Protection',
+      successes.length === 1 && rejections.length === 4,
+      `1 Success, 4 Out of Stock`
     );
 
     // 8. Zero-Stock Purchase Rejection
@@ -146,7 +164,7 @@ async function run() {
       method: 'POST',
       headers: { Authorization: `Bearer ${userToken}` },
     });
-    console.log('✓ Zero-Stock Purchase Rejection (400):', zeroStockRes.status === 400 ? 'PASSED' : 'FAILED');
+    assertCheck('Zero-Stock Purchase Rejection (400)', zeroStockRes.status === 400);
 
     // 9. Restock by Admin
     const restockRes = await fetch(`${BASE_URL}/api/vehicles/${createdVehicle.id}/restock`, {
@@ -158,9 +176,9 @@ async function run() {
       body: JSON.stringify({ quantity: 5 }),
     });
     const restockedJson = await restockRes.json();
-    console.log(
-      '✓ Restocking by Admin (200):',
-      restockRes.status === 200 && restockedJson.vehicle.quantity === 5 ? 'PASSED' : 'FAILED'
+    assertCheck(
+      'Restocking by Admin (200)',
+      restockRes.status === 200 && restockedJson.vehicle?.quantity === 5
     );
 
     // 10. Persistence Across Backend Restarts
@@ -176,23 +194,34 @@ async function run() {
     );
     const afterRestartCars = await afterRestartRes.json();
     const persisted = afterRestartCars.find((c) => c.id === createdVehicle.id);
-    console.log(
-      '✓ Persistence across backend restart:',
-      persisted && persisted.quantity === 5 ? 'PASSED' : 'FAILED'
+    assertCheck(
+      'Persistence across backend restart',
+      Boolean(persisted && persisted.quantity === 5)
     );
 
     // Clean up created vehicle
-    await fetch(`${BASE_URL}/api/vehicles/${createdVehicle.id}`, {
+    const deleteRes = await fetch(`${BASE_URL}/api/vehicles/${createdVehicle.id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${adminToken}` },
     });
-    console.log('✓ Vehicle Deletion Cleanup (200): PASSED');
+    assertCheck('Vehicle Deletion Cleanup (200)', deleteRes.status === 200);
 
-    console.log('\n🎉 ALL ACCEPTANCE CHECKS PASSED SUCCESSFULLY!');
+    if (failedChecks.length > 0) {
+      console.error(`\n❌ ${failedChecks.length} ACCEPTANCE CHECK(S) FAILED:`);
+      failedChecks.forEach((name) => console.error(`  - ${name}`));
+      process.exitCode = 1;
+    } else {
+      console.log('\n🎉 ALL ACCEPTANCE CHECKS PASSED SUCCESSFULLY!');
+      process.exitCode = 0;
+    }
   } catch (err) {
-    console.error('Acceptance check failure:', err);
+    console.error('Acceptance check execution error:', err);
+    process.exitCode = 1;
   } finally {
     killTree(server);
+    if (process.exitCode && process.exitCode !== 0) {
+      process.exit(process.exitCode);
+    }
   }
 }
 

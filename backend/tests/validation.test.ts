@@ -98,6 +98,34 @@ describe('API Input Validation & Model Search (TDD)', () => {
       expect(res.body.message).toMatch(/validation error|price/i);
     });
 
+    it('returns 400 when minPrice converts to Infinity (e.g. minPrice=Infinity or 1e309)', async () => {
+      const res1 = await request(app)
+        .get('/api/vehicles/search?minPrice=Infinity')
+        .set('Authorization', `Bearer ${userToken}`);
+      expect(res1.status).toBe(400);
+      expect(res1.body.message).toMatch(/validation error/i);
+
+      const res2 = await request(app)
+        .get('/api/vehicles/search?minPrice=1e309')
+        .set('Authorization', `Bearer ${userToken}`);
+      expect(res2.status).toBe(400);
+      expect(res2.body.message).toMatch(/validation error/i);
+    });
+
+    it('returns 400 when maxPrice converts to Infinity', async () => {
+      const res1 = await request(app)
+        .get('/api/vehicles/search?maxPrice=Infinity')
+        .set('Authorization', `Bearer ${userToken}`);
+      expect(res1.status).toBe(400);
+      expect(res1.body.message).toMatch(/validation error/i);
+
+      const res2 = await request(app)
+        .get('/api/vehicles/search?maxPrice=1e309')
+        .set('Authorization', `Bearer ${userToken}`);
+      expect(res2.status).toBe(400);
+      expect(res2.body.message).toMatch(/validation error/i);
+    });
+
     it('successfully filters by model name', async () => {
       const res = await request(app)
         .get('/api/vehicles/search?model=Carrera')
